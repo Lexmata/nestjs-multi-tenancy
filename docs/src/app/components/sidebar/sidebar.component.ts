@@ -66,7 +66,7 @@ export class SidebarComponent {
         { title: 'Database Connection', path: '/', fragment: 'example-database' },
         { title: 'Tenant Repository', path: '/', fragment: 'example-repository' },
         { title: 'JWT Integration', path: '/', fragment: 'example-jwt' },
-        { title: 'Prisma 7 Multi-Tenancy', path: '/', fragment: 'example-prisma' },
+        { title: 'Prisma 7 Multi-Tenancy', path: '/examples/prisma' },
       ],
     },
   ];

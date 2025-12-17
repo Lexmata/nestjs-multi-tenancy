@@ -389,141 +389,27 @@
     <app-code-block [code]="exampleJwt" />
   </section>
 
-  <!-- Example: Prisma 7 -->
-  <section id="example-prisma" class="mb-16">
-    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
-      Comprehensive Example: Prisma 7 Multi-Tenancy
-    </h2>
-    <p class="text-text-secondary mb-6">
-      This comprehensive guide shows how to build a fully isolated multi-tenant application using Prisma 7 with automatic tenant filtering via Prisma Client Extensions.
-    </p>
-
-    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mb-8">
-      <span class="text-xl">✨</span>
-      <div class="text-text-secondary">
-        <strong>Why Prisma Extensions?</strong> Unlike middleware, extensions provide type-safe query modifications, better performance through caching, and cleaner separation of concerns.
+  <!-- Prisma Guide CTA -->
+  <section class="mb-16">
+    <a
+      routerLink="/examples/prisma"
+      class="block bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6 hover:border-primary/40 transition-colors group"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-text-primary mb-2 group-hover:text-primary transition-colors">
+            📘 Comprehensive Guide: Prisma 7 Multi-Tenancy
+          </h2>
+          <p class="text-text-secondary">
+            Complete step-by-step guide to building fully isolated multi-tenant applications
+            using Prisma 7 Client Extensions with automatic tenant filtering.
+          </p>
+        </div>
+        <svg class="w-6 h-6 text-primary shrink-0 ml-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
       </div>
-    </div>
-
-    <!-- Step 1: Schema -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">1</span>
-        Define Your Prisma Schema
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Set up your database schema with tenant relationships. Every tenant-scoped model should have a <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenantId</code> field and appropriate indexes.
-      </p>
-      <app-code-block [code]="prismaSchema" language="prisma" title="prisma/schema.prisma" />
-    </div>
-
-    <!-- Step 2: Extension -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">2</span>
-        Create the Tenant Extension
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Create a Prisma extension that automatically injects <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenantId</code> into all queries. This ensures complete tenant isolation at the database level.
-      </p>
-      <app-code-block [code]="prismaExtension" title="src/prisma/prisma-tenant.extension.ts" />
-    </div>
-
-    <!-- Step 3: Service -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">3</span>
-        Create the Tenant-Aware Prisma Service
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Wrap the Prisma client in a service that automatically applies the tenant extension based on the current request context.
-      </p>
-      <app-code-block [code]="prismaTenantService" title="src/prisma/prisma-tenant.service.ts" />
-    </div>
-
-    <!-- Step 4: Module -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">4</span>
-        Create the Prisma Module
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Export the service globally so it can be injected anywhere in your application.
-      </p>
-      <app-code-block [code]="prismaModule" title="src/prisma/prisma.module.ts" />
-    </div>
-
-    <!-- Step 5: App Module -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">5</span>
-        Configure the App Module
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Wire everything together with the multi-tenant module and a database-backed tenant resolver.
-      </p>
-      <app-code-block [code]="prismaAppModule" title="src/app.module.ts" />
-    </div>
-
-    <!-- Step 6: Service Usage -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">6</span>
-        Use in Your Services
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Your services can now use the tenant-scoped Prisma client. All queries automatically filter by the current tenant.
-      </p>
-      <app-code-block [code]="prismaUsersService" title="src/users/users.service.ts" />
-    </div>
-
-    <!-- Step 7: Controller -->
-    <div class="mb-12">
-      <h3 class="text-xl font-semibold text-text-primary mb-4 flex items-center gap-3">
-        <span class="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark text-white text-sm font-bold flex items-center justify-center rounded-full">7</span>
-        Create Your Controller
-      </h3>
-      <p class="text-text-secondary mb-4">
-        Use the decorators to access tenant information and protect routes.
-      </p>
-      <app-code-block [code]="prismaUsersController" title="src/users/users.controller.ts" />
-    </div>
-
-    <!-- Alternative: Middleware Approach -->
-    <div class="mb-8">
-      <h3 class="text-xl font-semibold text-text-primary mb-4">Alternative: Prisma Middleware Approach</h3>
-      <p class="text-text-secondary mb-4">
-        For simpler use cases, you can use Prisma middleware instead of extensions. This approach is less type-safe but requires less boilerplate.
-      </p>
-      <app-code-block [code]="prismaTenantMiddleware" title="src/prisma/prisma.service.ts" />
-    </div>
-
-    <!-- Key Benefits -->
-    <div class="bg-surface border border-border rounded-xl p-6 mt-8">
-      <h4 class="text-lg font-semibold text-text-primary mb-4">Key Benefits of This Approach</h4>
-      <ul class="space-y-3 text-text-secondary">
-        <li class="flex gap-3">
-          <span class="text-primary">✓</span>
-          <span><strong>Complete Isolation:</strong> Tenant data cannot leak between requests</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-primary">✓</span>
-          <span><strong>Automatic Filtering:</strong> No need to remember to add tenantId to every query</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-primary">✓</span>
-          <span><strong>Type Safety:</strong> Full TypeScript support with Prisma's generated types</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-primary">✓</span>
-          <span><strong>Performance:</strong> Client caching prevents extension recreation per request</span>
-        </li>
-        <li class="flex gap-3">
-          <span class="text-primary">✓</span>
-          <span><strong>Escape Hatch:</strong> <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">baseClientUnscoped</code> for cross-tenant operations</span>
-        </li>
-      </ul>
-    </div>
+    </a>
   </section>
 
   <!-- Footer -->
