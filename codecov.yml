@@ -1,0 +1,113 @@
+# Codecov Configuration
+# https://docs.codecov.io/docs/codecovyml-reference
+
+coverage:
+  # Coverage precision (number of decimal places)
+  precision: 2
+  # Rounding method: down, up, nearest
+  round: down
+  # Range for coverage colors (red to green)
+  range: '70...100'
+
+  status:
+    # Project-level coverage requirements
+    project:
+      default:
+        # Target coverage percentage
+        target: 90%
+        # Allow coverage to drop by this much without failing
+        threshold: 2%
+        # Only check coverage on files changed in the PR
+        only_changed: false
+        # Require CI to pass before checking coverage
+        if_ci_failed: error
+
+    # Patch coverage (coverage of changed lines only)
+    patch:
+      default:
+        # Target coverage for new/changed code
+        target: 80%
+        # Threshold for patch coverage
+        threshold: 5%
+        # Only apply to files with enough lines changed
+        if_ci_failed: error
+
+# Ignore certain paths from coverage reporting
+ignore:
+  - 'src/**/*.spec.ts'
+  - 'src/**/*.test.ts'
+  - 'src/**/index.ts'
+  - 'dist/**'
+  - 'docs/**'
+  - 'node_modules/**'
+  - 'coverage/**'
+  - '*.config.*'
+  - '*.json'
+
+# Comment configuration for PRs
+comment:
+  # Layout of the coverage comment
+  layout: 'header, diff, flags, components, tree, footer'
+  # Post new comment or edit existing
+  behavior: default
+  # Require specific changes before commenting
+  require_changes: false
+  # Require base coverage report
+  require_base: false
+  # Require head coverage report
+  require_head: true
+  # Hide comment if coverage is at 100%
+  hide_project_coverage: false
+
+# GitHub Checks integration
+github_checks:
+  annotations: true
+
+# Flags for different test types (if needed in the future)
+flags:
+  unittests:
+    paths:
+      - src/
+    carryforward: true
+    after_n_builds: 1
+
+# Component coverage (group files for reporting)
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+      - type: patch
+        target: auto
+  individual_components:
+    - component_id: module
+      name: Core Module
+      paths:
+        - src/multi-tenant.module.ts
+    - component_id: services
+      name: Services
+      paths:
+        - src/services/**
+    - component_id: middleware
+      name: Middleware
+      paths:
+        - src/middleware/**
+    - component_id: decorators
+      name: Decorators
+      paths:
+        - src/decorators/**
+    - component_id: guards
+      name: Guards
+      paths:
+        - src/guards/**
+
+# Parsers configuration
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      macro: false
+      method: false
+  javascript:
+    enable_partials: false

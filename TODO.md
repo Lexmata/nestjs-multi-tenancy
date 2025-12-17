@@ -35,15 +35,18 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Security & Quality
 
-- [ ] **Add CodeQL Security Scanning**
-  - Create `.github/workflows/codeql.yml`
-  - Enable JavaScript/TypeScript analysis
-  - Configure for push and PR triggers
+- [x] **Add CodeQL Security Scanning** ✅
+  - Created `.github/workflows/codeql.yml`
+  - JavaScript/TypeScript analysis enabled
+  - Runs on push, PR, and weekly schedule
+  - Uses security-extended and security-and-quality queries
 
-- [ ] **Set up Codecov Integration**
-  - Add `CODECOV_TOKEN` to repository secrets
-  - Configure coverage thresholds (e.g., 80% minimum)
-  - Add `codecov.yml` configuration file
+- [x] **Set up Codecov Integration** ✅
+  - CI workflow already uploads coverage
+  - Created `codecov.yml` configuration file
+  - 90% project coverage target, 80% patch target
+  - Component-level coverage tracking
+  - Note: Add `CODECOV_TOKEN` secret to repository
 
 - [ ] **Add SNYK or npm audit to CI**
   - Scan for vulnerable dependencies
