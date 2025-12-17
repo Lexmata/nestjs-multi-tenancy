@@ -4,6 +4,7 @@ import {
   DEFAULT_TENANT_HEADER,
   DEFAULT_TENANT_QUERY_PARAM,
   DEFAULT_TENANT_PATH_INDEX,
+  DEFAULT_TENANT_COOKIE,
 } from './constants';
 
 describe('Constants', () => {
@@ -54,5 +55,18 @@ describe('Constants', () => {
       expect(typeof DEFAULT_TENANT_PATH_INDEX).toBe('number');
     });
   });
-});
 
+  describe('DEFAULT_TENANT_COOKIE', () => {
+    it('should be defined', () => {
+      expect(DEFAULT_TENANT_COOKIE).toBeDefined();
+    });
+
+    it('should be tenant_id', () => {
+      expect(DEFAULT_TENANT_COOKIE).toBe('tenant_id');
+    });
+
+    it('should be a string', () => {
+      expect(typeof DEFAULT_TENANT_COOKIE).toBe('string');
+    });
+  });
+});

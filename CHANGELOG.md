@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Cookie-based Tenant Extraction**: New `cookie` extraction strategy
+  - Configure with `extractionStrategy: 'cookie'` and `tenantCookie: 'cookie_name'`
+  - Works with or without `cookie-parser` middleware
+  - Automatically parses `Cookie` header as fallback
+  - Handles cookies with `=` characters in values
+
+### Changed
+
+- Test suite expanded from 89 to 99 tests
+
 ## [0.1.0-beta] - 2025-12-17
 
 ### Added

@@ -59,13 +59,14 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### New Extraction Strategies
 
-- [ ] **Cookie-based Tenant Extraction**
+- [x] **Cookie-based Tenant Extraction** ✅
   ```typescript
   extractionStrategy: 'cookie',
-  tenantCookieName: 'tenant_id',
+  tenantCookie: 'tenant_id',
   ```
-  - Add option for signed cookies
-  - Support secure/httpOnly flags awareness
+  - Works with or without cookie-parser middleware
+  - Auto-parses Cookie header as fallback
+  - Handles cookies with `=` in values
 
 - [ ] **JWT-based Tenant Extraction**
   ```typescript

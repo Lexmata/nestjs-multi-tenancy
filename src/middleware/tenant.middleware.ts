@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import {
+  DEFAULT_TENANT_COOKIE,
   DEFAULT_TENANT_HEADER,
   DEFAULT_TENANT_PATH_INDEX,
   DEFAULT_TENANT_QUERY_PARAM,
@@ -76,6 +77,8 @@ export class TenantMiddleware implements NestMiddleware {
         return this.extractFromPath(req);
       case 'query':
         return this.extractFromQuery(req);
+      case 'cookie':
+        return this.extractFromCookie(req);
       case 'custom':
         return this.extractCustom(req);
       default:
@@ -130,6 +133,43 @@ export class TenantMiddleware implements NestMiddleware {
     const paramName = this.options.tenantQueryParam ?? DEFAULT_TENANT_QUERY_PARAM;
     const value = req.query[paramName];
     return typeof value === 'string' ? value : null;
+  }
+
+  /**
+   * Extract tenant ID from cookie
+   * e.g., Cookie: tenant_id=tenant1 -> tenant1
+   */
+  private extractFromCookie(req: Request): null | string {
+    const cookieName = this.options.tenantCookie ?? DEFAULT_TENANT_COOKIE;
+    const cookies = req.cookies as Record<string, string> | undefined;
+
+    if (!cookies) {
+      // Fallback: parse cookies from header if cookie-parser middleware is not used
+      const cookieHeader = req.headers.cookie;
+      if (typeof cookieHeader === 'string') {
+        const parsed = this.parseCookieHeader(cookieHeader);
+        return parsed[cookieName] ?? null;
+      }
+      return null;
+    }
+
+    const value = cookies[cookieName];
+    return typeof value === 'string' ? value : null;
+  }
+
+  /**
+   * Parse cookie header string into key-value pairs
+   * Used as fallback when cookie-parser middleware is not available
+   */
+  private parseCookieHeader(cookieHeader: string): Record<string, string> {
+    const cookies: Record<string, string> = {};
+    for (const pair of cookieHeader.split(';')) {
+      const [key, ...valueParts] = pair.trim().split('=');
+      if (key) {
+        cookies[key] = valueParts.join('=');
+      }
+    }
+    return cookies;
   }
 
   /**

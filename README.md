@@ -116,7 +116,7 @@ export class UsersService {
 ```typescript
 MultiTenantModule.forRoot({
   // Extraction strategy (default: 'header')
-  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'custom',
+  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'cookie' | 'custom',
 
   // Header name for 'header' strategy (default: 'x-tenant-id')
   tenantHeader: 'x-tenant-id',
@@ -126,6 +126,9 @@ MultiTenantModule.forRoot({
 
   // Path segment index for 'path' strategy (default: 0)
   tenantPathIndex: 0,
+
+  // Cookie name for 'cookie' strategy (default: 'tenant_id')
+  tenantCookie: 'tenant_id',
 
   // Custom extractor function for 'custom' strategy
   customExtractor: (request) => request.headers['x-custom-header'],
@@ -225,6 +228,23 @@ MultiTenantModule.forRoot({
 ```
 /api/users?tenantId=tenant-123 → tenant ID: "tenant-123"
 ```
+
+### Cookie Strategy
+
+Extract tenant ID from a cookie.
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'cookie',
+  tenantCookie: 'tenant_id', // default
+})
+```
+
+```
+Cookie: tenant_id=tenant-123 → tenant ID: "tenant-123"
+```
+
+> **Note:** Works with or without `cookie-parser` middleware. If `cookie-parser` is not used, cookies are parsed from the `Cookie` header automatically.
 
 ### Custom Strategy
 
@@ -388,10 +408,11 @@ MultiTenantModule.forRoot({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
+| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'cookie' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
 | `tenantHeader` | `string` | `'x-tenant-id'` | Header name for header strategy |
 | `tenantQueryParam` | `string` | `'tenantId'` | Query param for query strategy |
 | `tenantPathIndex` | `number` | `0` | Path segment index for path strategy |
+| `tenantCookie` | `string` | `'tenant_id'` | Cookie name for cookie strategy |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

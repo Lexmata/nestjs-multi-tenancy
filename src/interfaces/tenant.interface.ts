@@ -24,7 +24,13 @@ export interface Tenant {
 /**
  * Strategy for extracting tenant identifier from requests
  */
-export type TenantExtractionStrategy = 'custom' | 'header' | 'path' | 'query' | 'subdomain';
+export type TenantExtractionStrategy =
+  | 'cookie'
+  | 'custom'
+  | 'header'
+  | 'path'
+  | 'query'
+  | 'subdomain';
 
 /**
  * Function type for custom tenant extraction
@@ -61,6 +67,12 @@ export interface MultiTenantModuleOptions {
    * @default false
    */
   requireTenant?: boolean;
+
+  /**
+   * Cookie name to extract tenant ID from (when using 'cookie' strategy)
+   * @default 'tenant_id'
+   */
+  tenantCookie?: string;
 
   /**
    * Header name to extract tenant ID from (when using 'header' strategy)
@@ -109,7 +121,5 @@ export interface MultiTenantModuleAsyncOptions {
   /**
    * Factory function to create options
    */
-  useFactory: (
-    ...args: unknown[]
-  ) => MultiTenantModuleOptions | Promise<MultiTenantModuleOptions>;
+  useFactory: (...args: unknown[]) => MultiTenantModuleOptions | Promise<MultiTenantModuleOptions>;
 }

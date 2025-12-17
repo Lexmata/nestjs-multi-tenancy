@@ -36,11 +36,7 @@ describe('TenantMiddleware', () => {
     it('should extract tenant ID from default header', async () => {
       mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -52,21 +48,13 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.headers = { 'x-custom-tenant': 'tenant-456' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
 
     it('should call next without tenant when header is missing', async () => {
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -80,11 +68,7 @@ describe('TenantMiddleware', () => {
     it('should extract tenant ID from subdomain', async () => {
       mockRequest.hostname = 'tenant1.example.com';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -92,11 +76,7 @@ describe('TenantMiddleware', () => {
     it('should not extract tenant when no subdomain exists', async () => {
       mockRequest.hostname = 'example.com';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -110,11 +90,7 @@ describe('TenantMiddleware', () => {
     it('should extract tenant ID from path', async () => {
       mockRequest.path = '/tenant-abc/api/users';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -123,11 +99,7 @@ describe('TenantMiddleware', () => {
       createMiddleware({ extractionStrategy: 'path', tenantPathIndex: 1 });
       mockRequest.path = '/api/tenant-xyz/users';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -141,11 +113,7 @@ describe('TenantMiddleware', () => {
     it('should extract tenant ID from default query param', async () => {
       mockRequest.query = { tenantId: 'tenant-query' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -157,11 +125,100 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.query = { org: 'org-123' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('cookie extraction strategy', () => {
+    beforeEach(() => {
+      createMiddleware({ extractionStrategy: 'cookie' });
+    });
+
+    it('should extract tenant ID from default cookie using cookie-parser', async () => {
+      mockRequest.cookies = { tenant_id: 'cookie-tenant' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('cookie-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should extract tenant ID from custom cookie name', async () => {
+      createMiddleware({
+        extractionStrategy: 'cookie',
+        tenantCookie: 'org_id',
+      });
+      mockRequest.cookies = { org_id: 'custom-cookie-tenant' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('custom-cookie-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should extract tenant ID from cookie header when cookie-parser is not used', async () => {
+      mockRequest.cookies = undefined;
+      mockRequest.headers = { cookie: 'tenant_id=header-parsed-tenant; other=value' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('header-parsed-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle cookie with equals sign in value', async () => {
+      mockRequest.cookies = undefined;
+      mockRequest.headers = { cookie: 'tenant_id=tenant=with=equals' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('tenant=with=equals');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when cookie is missing', async () => {
+      mockRequest.cookies = {};
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when cookies object is undefined and no cookie header', async () => {
+      mockRequest.cookies = undefined;
+      mockRequest.headers = {};
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when cookie value is not a string', async () => {
+      mockRequest.cookies = { tenant_id: { complex: 'object' } as any };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -175,11 +232,7 @@ describe('TenantMiddleware', () => {
         customExtractor,
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(customExtractor).toHaveBeenCalled();
       expect(mockNext).toHaveBeenCalled();
@@ -192,11 +245,7 @@ describe('TenantMiddleware', () => {
         customExtractor,
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(customExtractor).toHaveBeenCalled();
       expect(mockNext).toHaveBeenCalled();
@@ -222,11 +271,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -245,11 +290,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(tenantResolver).toHaveBeenCalledWith('tenant-123');
       expect(mockNext).toHaveBeenCalled();
@@ -279,11 +320,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '/health';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -296,11 +333,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '/api/v2/public/docs';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -313,11 +346,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '/api/public/some/nested/path';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -329,11 +358,7 @@ describe('TenantMiddleware', () => {
         extractionStrategy: 'unknown' as any,
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -344,11 +369,7 @@ describe('TenantMiddleware', () => {
         // No customExtractor provided
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -360,11 +381,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '/api/users';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -375,11 +392,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.headers = { 'x-tenant-id': ['tenant-1', 'tenant-2'] as any };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -390,11 +403,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.query = { tenantId: ['tenant-1', 'tenant-2'] };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -406,11 +415,7 @@ describe('TenantMiddleware', () => {
       mockRequest.hostname = '';
       mockRequest.headers = { host: 'tenant1.example.com' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -422,11 +427,7 @@ describe('TenantMiddleware', () => {
       mockRequest.hostname = '';
       mockRequest.headers = {};
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -440,11 +441,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.headers = { 'x-tenant-id': 'unknown-tenant' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(tenantResolver).toHaveBeenCalledWith('unknown-tenant');
       expect(mockNext).toHaveBeenCalled();
@@ -454,11 +451,7 @@ describe('TenantMiddleware', () => {
       createMiddleware({}); // No extraction strategy
       mockRequest.headers = { 'x-tenant-id': 'default-tenant' };
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -470,11 +463,7 @@ describe('TenantMiddleware', () => {
         customExtractor,
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(customExtractor).toHaveBeenCalled();
       expect(mockNext).toHaveBeenCalled();
@@ -487,11 +476,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '///tenant-123///api';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -503,11 +488,7 @@ describe('TenantMiddleware', () => {
       });
       mockRequest.path = '/';
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(mockNext).toHaveBeenCalled();
     });
@@ -524,11 +505,7 @@ describe('TenantMiddleware', () => {
         capturedTenantId = tenantContext.getTenantId();
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(capturedTenantId).toBe('tenant-from-default');
     });
@@ -545,11 +522,7 @@ describe('TenantMiddleware', () => {
         capturedTenantId = tenantContext.getTenantId();
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(capturedTenantId).toBe('explicit-zero-tenant');
     });
@@ -567,11 +540,7 @@ describe('TenantMiddleware', () => {
         capturedTenantId = tenantContext.getTenantId();
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(capturedTenantId).toBe('context-tenant');
     });
@@ -594,11 +563,7 @@ describe('TenantMiddleware', () => {
         capturedTenant = tenantContext.getTenant();
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(capturedTenant).toEqual(resolvedTenant);
     });
@@ -615,14 +580,9 @@ describe('TenantMiddleware', () => {
         hasTenant = tenantContext.hasTenant();
       });
 
-      await middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
       expect(hasTenant).toBe(false);
     });
   });
 });
-
