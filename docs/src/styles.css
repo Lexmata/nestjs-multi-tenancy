@@ -15,7 +15,9 @@
   --color-sidebar-section: #6c6c80;
 
   /* Content colors */
+  --color-background: #0f0f1a;
   --color-content-bg: #0f0f1a;
+  --color-header-bg: rgba(15, 15, 26, 0.85);
   --color-surface: #16162a;
   --color-text-primary: #e8e8f0;
   --color-text-secondary: #a0a0b8;
@@ -34,7 +36,7 @@
 /* Base styles */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 2rem;
+  scroll-padding-top: 5rem; /* Account for fixed header */
 }
 
 body {

@@ -1,18 +1,6 @@
 @reference "../styles.css";
 
-.mobile-toggle {
-  @apply fixed top-4 left-4 z-[200] lg:hidden flex flex-col gap-1 p-3 bg-surface border border-border rounded-lg;
-}
-
-.toggle-bar {
-  @apply block w-5 h-0.5 bg-text-primary transition-transform;
-}
-
-.toggle-bar:nth-child(2) {
-  @apply transition-opacity;
-}
-
 .mobile-overlay {
-  @apply fixed inset-0 bg-black/50 z-40 lg:hidden;
+  @apply fixed inset-0 bg-black/50 z-30 lg:hidden;
 }
 

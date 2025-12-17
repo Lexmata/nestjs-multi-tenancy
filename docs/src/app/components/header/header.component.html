@@ -1,0 +1,124 @@
+<header
+  class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 lg:left-[280px]"
+  [class.bg-header-bg]="isScrolled"
+  [class.backdrop-blur-xl]="isScrolled"
+  [class.border-b]="isScrolled"
+  [class.border-border]="isScrolled"
+  [class.shadow-lg]="isScrolled"
+  [class.shadow-black/20]="isScrolled"
+>
+  <div class="max-w-[1400px] mx-auto px-4 lg:px-8">
+    <nav class="flex items-center justify-between h-16">
+      <!-- Mobile menu button -->
+      <button
+        class="lg:hidden p-2 -ml-2 text-text-secondary hover:text-text-primary transition-colors"
+        (click)="menuToggled.emit()"
+        aria-label="Toggle menu"
+      >
+        <fa-icon [icon]="faBars" class="text-xl" />
+      </button>
+
+      <!-- Logo (mobile only) -->
+      <a routerLink="/" class="lg:hidden flex items-center gap-2 no-underline">
+        <span class="text-2xl">🏢</span>
+        <span class="font-bold text-text-primary">Multi-Tenant</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center gap-1">
+        @for (link of navLinks; track link.path + link.fragment) {
+          <a
+            [routerLink]="link.path"
+            [fragment]="link.fragment"
+            class="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-surface"
+          >
+            {{ link.title }}
+          </a>
+        }
+
+        <!-- Examples Dropdown -->
+        <div class="relative examples-dropdown">
+          <button
+            class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-surface"
+            [class.text-primary]="examplesOpen"
+            (click)="toggleExamples()"
+          >
+            <span>Examples</span>
+            <fa-icon
+              [icon]="faChevronDown"
+              class="text-xs transition-transform duration-200"
+              [class.rotate-180]="examplesOpen"
+            />
+          </button>
+
+          <!-- Dropdown Menu -->
+          @if (examplesOpen) {
+            <div
+              class="absolute top-full left-0 mt-2 w-80 bg-surface border border-border rounded-xl shadow-xl shadow-black/30 overflow-hidden animate-dropdown"
+            >
+              <div class="p-2">
+                <div class="px-3 py-2 text-xs font-semibold text-text-muted uppercase tracking-wider">
+                  ORM Integrations
+                </div>
+                @for (item of exampleItems; track item.path) {
+                  <a
+                    [routerLink]="item.path"
+                    class="flex items-start gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors group"
+                    (click)="closeExamples()"
+                  >
+                    <div
+                      class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-lg shrink-0 group-hover:from-primary/30 group-hover:to-primary/10 transition-colors"
+                    >
+                      {{ item.icon }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium text-text-primary group-hover:text-primary transition-colors">
+                        {{ item.title }}
+                      </div>
+                      <div class="text-xs text-text-muted mt-0.5 line-clamp-1">
+                        {{ item.description }}
+                      </div>
+                    </div>
+                  </a>
+                }
+              </div>
+              <div class="border-t border-border p-2 bg-background/50">
+                <a
+                  routerLink="/"
+                  fragment="orm-guides"
+                  class="flex items-center gap-2 px-3 py-2 text-sm text-text-secondary hover:text-primary transition-colors"
+                  (click)="closeExamples()"
+                >
+                  <fa-icon [icon]="faBook" />
+                  <span>View all guides</span>
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right side actions -->
+      <div class="flex items-center gap-2">
+        <a
+          href="https://github.com/Lexmata/nestjs-multi-tenancy"
+          target="_blank"
+          rel="noopener"
+          class="p-2 text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-surface"
+          aria-label="GitHub"
+        >
+          <fa-icon [icon]="faGithub" class="text-xl" />
+        </a>
+        <a
+          routerLink="/"
+          fragment="quick-start"
+          class="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-light text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          <fa-icon [icon]="faRocket" class="text-sm" />
+          <span>Get Started</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
