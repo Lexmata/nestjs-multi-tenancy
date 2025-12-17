@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import {
+  DEFAULT_CACHE_MAX,
+  DEFAULT_CACHE_TTL,
   DEFAULT_JWT_TENANT_CLAIM,
   DEFAULT_TENANT_COOKIE,
   DEFAULT_TENANT_HEADER,
@@ -13,16 +15,34 @@ import type { MultiTenantModuleOptions, Tenant } from '../interfaces';
 import { TenantContextService } from '../services';
 
 /**
+ * Cache entry with expiration time
+ */
+interface CacheEntry {
+  tenant: Tenant;
+  expiresAt: number;
+}
+
+/**
  * Middleware that extracts tenant information from incoming requests
  * and establishes the tenant context for the request lifecycle
  */
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
+  private readonly cache = new Map<string, CacheEntry>();
+  private readonly cacheEnabled: boolean;
+  private readonly cacheTtl: number;
+  private readonly cacheMax: number;
+
   constructor(
     private readonly tenantContext: TenantContextService,
     @Inject(MULTI_TENANT_OPTIONS)
     private readonly options: MultiTenantModuleOptions,
-  ) {}
+  ) {
+    // Initialize cache settings
+    this.cacheEnabled = options.tenantResolverCache?.enabled ?? false;
+    this.cacheTtl = options.tenantResolverCache?.ttl ?? DEFAULT_CACHE_TTL;
+    this.cacheMax = options.tenantResolverCache?.max ?? DEFAULT_CACHE_MAX;
+  }
 
   async use(req: Request, _res: Response, next: NextFunction): Promise<void> {
     // Check if route is excluded
@@ -44,7 +64,7 @@ export class TenantMiddleware implements NestMiddleware {
     // Resolve full tenant data if resolver is provided
     let tenant: Tenant;
     if (this.options.tenantResolver) {
-      const resolved = await this.options.tenantResolver(tenantId);
+      const resolved = await this.resolveTenant(tenantId);
       if (!resolved) {
         if (this.options.requireTenant) {
           throw new HttpException('Tenant not found', HttpStatus.NOT_FOUND);
@@ -61,6 +81,97 @@ export class TenantMiddleware implements NestMiddleware {
     this.tenantContext.run(tenant, () => {
       next();
     });
+  }
+
+  /**
+   * Resolve tenant data with optional caching
+   */
+  private async resolveTenant(tenantId: string): Promise<null | Tenant> {
+    const resolver = this.options.tenantResolver;
+    if (!resolver) {
+      return null;
+    }
+
+    // Check cache first if enabled
+    if (this.cacheEnabled) {
+      const cached = this.getFromCache(tenantId);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    // Call the resolver
+    const resolved = await resolver(tenantId);
+
+    // Cache the result if enabled and tenant was found
+    if (this.cacheEnabled && resolved) {
+      this.setInCache(tenantId, resolved);
+    }
+
+    return resolved;
+  }
+
+  /**
+   * Get tenant from cache if valid
+   */
+  private getFromCache(tenantId: string): null | Tenant {
+    const entry = this.cache.get(tenantId);
+    if (!entry) {
+      return null;
+    }
+
+    // Check if expired
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(tenantId);
+      return null;
+    }
+
+    return entry.tenant;
+  }
+
+  /**
+   * Set tenant in cache with TTL
+   */
+  private setInCache(tenantId: string, tenant: Tenant): void {
+    // Enforce max cache size (simple LRU: delete oldest when full)
+    if (this.cache.size >= this.cacheMax) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) {
+        this.cache.delete(firstKey);
+      }
+    }
+
+    this.cache.set(tenantId, {
+      tenant,
+      expiresAt: Date.now() + this.cacheTtl,
+    });
+  }
+
+  /**
+   * Clear the tenant cache
+   * Useful for testing or when tenant data is updated
+   */
+  clearCache(): void {
+    this.cache.clear();
+  }
+
+  /**
+   * Invalidate a specific tenant from cache
+   */
+  invalidateTenant(tenantId: string): boolean {
+    return this.cache.delete(tenantId);
+  }
+
+  /**
+   * Get current cache statistics
+   */
+  getCacheStats(): { enabled: boolean; max: number; size: number; ttl: number } {
+    return {
+      enabled: this.cacheEnabled,
+      size: this.cache.size,
+      max: this.cacheMax,
+      ttl: this.cacheTtl,
+    };
   }
 
   /**

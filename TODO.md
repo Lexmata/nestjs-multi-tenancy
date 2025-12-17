@@ -88,6 +88,18 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - For opaque tokens like API keys that need database lookup
   - Supports sync and async resolver functions
 
+- [x] **Tenant Resolver Caching** ✅
+  ```typescript
+  tenantResolverCache: {
+    enabled: true,
+    ttl: 300_000,  // 5 minutes
+    max: 1000,     // Max entries
+  },
+  ```
+  - In-memory cache with TTL support
+  - LRU eviction when cache is full
+  - Cache management: `clearCache()`, `invalidateTenant()`, `getCacheStats()`
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification

@@ -51,6 +51,29 @@ export type BearerTokenResolver = (token: string) => null | Promise<null | strin
 export type TenantResolver = (tenantId: string) => null | Promise<null | Tenant> | Tenant;
 
 /**
+ * Cache configuration options for tenant resolver
+ */
+export interface TenantCacheOptions {
+  /**
+   * Whether caching is enabled
+   * @default false
+   */
+  enabled?: boolean;
+
+  /**
+   * Maximum number of tenants to cache
+   * @default 1000
+   */
+  max?: number;
+
+  /**
+   * Time-to-live in milliseconds
+   * @default 300000 (5 minutes)
+   */
+  ttl?: number;
+}
+
+/**
  * Configuration options for the MultiTenantModule
  */
 export interface MultiTenantModuleOptions {
@@ -118,6 +141,12 @@ export interface MultiTenantModuleOptions {
    * If not provided, tenant will only contain the ID
    */
   tenantResolver?: TenantResolver;
+
+  /**
+   * Cache configuration for tenant resolver results
+   * Caches resolved tenant data to avoid repeated lookups
+   */
+  tenantResolverCache?: TenantCacheOptions;
 }
 
 /**

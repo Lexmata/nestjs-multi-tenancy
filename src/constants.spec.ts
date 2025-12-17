@@ -6,6 +6,8 @@ import {
   DEFAULT_TENANT_PATH_INDEX,
   DEFAULT_TENANT_COOKIE,
   DEFAULT_JWT_TENANT_CLAIM,
+  DEFAULT_CACHE_TTL,
+  DEFAULT_CACHE_MAX,
 } from './constants';
 
 describe('Constants', () => {
@@ -82,6 +84,34 @@ describe('Constants', () => {
 
     it('should be a string', () => {
       expect(typeof DEFAULT_JWT_TENANT_CLAIM).toBe('string');
+    });
+  });
+
+  describe('DEFAULT_CACHE_TTL', () => {
+    it('should be defined', () => {
+      expect(DEFAULT_CACHE_TTL).toBeDefined();
+    });
+
+    it('should be 300000 (5 minutes)', () => {
+      expect(DEFAULT_CACHE_TTL).toBe(300_000);
+    });
+
+    it('should be a number', () => {
+      expect(typeof DEFAULT_CACHE_TTL).toBe('number');
+    });
+  });
+
+  describe('DEFAULT_CACHE_MAX', () => {
+    it('should be defined', () => {
+      expect(DEFAULT_CACHE_MAX).toBeDefined();
+    });
+
+    it('should be 1000', () => {
+      expect(DEFAULT_CACHE_MAX).toBe(1000);
+    });
+
+    it('should be a number', () => {
+      expect(typeof DEFAULT_CACHE_MAX).toBe('number');
     });
   });
 });

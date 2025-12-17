@@ -140,6 +140,13 @@ MultiTenantModule.forRoot({
     return apiKey?.tenantId ?? null;
   },
 
+  // Cache configuration for tenant resolver (reduces database lookups)
+  tenantResolverCache: {
+    enabled: true,           // Enable caching
+    ttl: 300_000,           // 5 minutes (default)
+    max: 1000,              // Max entries (default)
+  },
+
   // Custom extractor function for 'custom' strategy
   customExtractor: (request) => request.headers['x-custom-header'],
 
@@ -360,6 +367,63 @@ MultiTenantModule.forRoot({
 })
 ```
 
+## Tenant Resolver Caching
+
+Reduce database lookups by caching resolved tenant data:
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'header',
+  tenantResolver: async (tenantId) => {
+    return await this.tenantsRepository.findOne(tenantId);
+  },
+  tenantResolverCache: {
+    enabled: true,
+    ttl: 300_000,  // 5 minutes (default)
+    max: 1000,     // Max cached tenants (default)
+  },
+})
+```
+
+### Cache Management
+
+The middleware exposes methods for cache management:
+
+```typescript
+@Injectable()
+export class TenantService {
+  constructor(
+    @Inject(TenantMiddleware)
+    private readonly tenantMiddleware: TenantMiddleware,
+  ) {}
+
+  // Get cache statistics
+  getStats() {
+    return this.tenantMiddleware.getCacheStats();
+    // { enabled: true, size: 42, max: 1000, ttl: 300000 }
+  }
+
+  // Invalidate a specific tenant (e.g., after update)
+  onTenantUpdate(tenantId: string) {
+    this.tenantMiddleware.invalidateTenant(tenantId);
+  }
+
+  // Clear entire cache
+  clearAllCache() {
+    this.tenantMiddleware.clearCache();
+  }
+}
+```
+
+### When to Use Caching
+
+| Scenario | Recommendation |
+|----------|----------------|
+| High-traffic APIs | ✅ Enable with short TTL (1-5 min) |
+| Tenant data rarely changes | ✅ Enable with longer TTL (10-30 min) |
+| Real-time tenant updates needed | ❌ Disable or use very short TTL |
+| Low-traffic internal APIs | ❌ Usually not needed |
+
 ## Decorators
 
 ### @CurrentTenant()
@@ -488,6 +552,10 @@ MultiTenantModule.forRoot({
 | `tenantCookie` | `string` | `'tenant_id'` | Cookie name for cookie strategy |
 | `jwtTenantClaim` | `string` | `'tenantId'` | JWT claim path for jwt strategy (supports dot notation) |
 | `bearerTokenResolver` | `(token: string) => string \| null \| Promise<string \| null>` | `undefined` | Function to resolve tenant ID from bearer token |
+| `tenantResolverCache` | `TenantCacheOptions` | `undefined` | Cache configuration for tenant resolver results |
+| `tenantResolverCache.enabled` | `boolean` | `false` | Enable caching of resolved tenants |
+| `tenantResolverCache.ttl` | `number` | `300000` | Cache TTL in milliseconds (5 min default) |
+| `tenantResolverCache.max` | `number` | `1000` | Maximum number of cached entries |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

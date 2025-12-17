@@ -27,3 +27,13 @@ export const DEFAULT_TENANT_COOKIE = 'tenant_id';
  * Default JWT claim path for tenant ID extraction
  */
 export const DEFAULT_JWT_TENANT_CLAIM = 'tenantId';
+
+/**
+ * Default cache TTL in milliseconds (5 minutes)
+ */
+export const DEFAULT_CACHE_TTL = 300_000;
+
+/**
+ * Default maximum cache size
+ */
+export const DEFAULT_CACHE_MAX = 1000;

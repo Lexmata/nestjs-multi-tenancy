@@ -888,4 +888,272 @@ describe('TenantMiddleware', () => {
       expect(hasTenant).toBe(false);
     });
   });
+
+  describe('tenant resolver caching', () => {
+    it('should cache resolved tenant when caching is enabled', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Cached Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      // First request - should call resolver
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(1);
+
+      // Second request - should use cache
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not cache when caching is disabled', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: false },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not cache when no cache options provided', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+    });
+
+    it('should expire cached entries after TTL', async () => {
+      vi.useFakeTimers();
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true, ttl: 1000 },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      // First request
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(1);
+
+      // Advance time past TTL
+      vi.advanceTimersByTime(1001);
+
+      // Second request - should call resolver again
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
+    });
+
+    it('should not expire cached entries before TTL', async () => {
+      vi.useFakeTimers();
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true, ttl: 5000 },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(1);
+
+      // Advance time but stay within TTL
+      vi.advanceTimersByTime(4999);
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(1);
+
+      vi.useRealTimers();
+    });
+
+    it('should enforce max cache size', async () => {
+      const tenantResolver = vi
+        .fn()
+        .mockImplementation((id: string) => Promise.resolve({ id, name: `Tenant ${id}` }));
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true, max: 2 },
+      });
+
+      // Add 3 tenants to cache (max is 2)
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-3' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(3);
+
+      // tenant-1 should be evicted, tenant-2 and tenant-3 should be cached
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(4); // Called again
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-3' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(4); // Still cached
+    });
+
+    it('should not cache null resolver results', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue(null);
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'unknown-tenant' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+    });
+
+    it('should provide cache statistics via getCacheStats', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true, ttl: 10_000, max: 500 },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      const initialStats = middleware.getCacheStats();
+      expect(initialStats.enabled).toBe(true);
+      expect(initialStats.ttl).toBe(10_000);
+      expect(initialStats.max).toBe(500);
+      expect(initialStats.size).toBe(0);
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      const afterStats = middleware.getCacheStats();
+      expect(afterStats.size).toBe(1);
+    });
+
+    it('should clear cache via clearCache', async () => {
+      const tenantResolver = vi.fn().mockResolvedValue({ id: 'tenant-123', name: 'Tenant' });
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(middleware.getCacheStats().size).toBe(1);
+
+      middleware.clearCache();
+      expect(middleware.getCacheStats().size).toBe(0);
+
+      // Should call resolver again
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+    });
+
+    it('should invalidate specific tenant via invalidateTenant', async () => {
+      const tenantResolver = vi
+        .fn()
+        .mockImplementation((id: string) => Promise.resolve({ id, name: `Tenant ${id}` }));
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true },
+      });
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+      expect(middleware.getCacheStats().size).toBe(2);
+
+      // Invalidate tenant-1
+      const result = middleware.invalidateTenant('tenant-1');
+      expect(result).toBe(true);
+      expect(middleware.getCacheStats().size).toBe(1);
+
+      // tenant-1 should call resolver, tenant-2 should use cache
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(3);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(tenantResolver).toHaveBeenCalledTimes(3);
+    });
+
+    it('should return false when invalidating non-existent tenant', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: vi.fn(),
+        tenantResolverCache: { enabled: true },
+      });
+
+      const result = middleware.invalidateTenant('non-existent');
+      expect(result).toBe(false);
+    });
+
+    it('should use default cache values when not specified', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: vi.fn(),
+        tenantResolverCache: { enabled: true },
+      });
+
+      const stats = middleware.getCacheStats();
+      expect(stats.ttl).toBe(300_000); // 5 minutes default
+      expect(stats.max).toBe(1000); // default max
+    });
+
+    it('should cache different tenants separately', async () => {
+      const tenantResolver = vi
+        .fn()
+        .mockImplementation((id: string) => Promise.resolve({ id, name: `Tenant ${id}` }));
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver,
+        tenantResolverCache: { enabled: true },
+      });
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+
+      // Both should be cached now
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(tenantResolver).toHaveBeenCalledTimes(2);
+    });
+  });
 });

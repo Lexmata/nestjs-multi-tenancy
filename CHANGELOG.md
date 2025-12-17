@@ -28,9 +28,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supports sync and async resolver functions
   - Ideal for API key authentication where keys map to tenants
 
+- **Tenant Resolver Caching**: Cache resolved tenant data to reduce database lookups
+  - Configure with `tenantResolverCache: { enabled: true, ttl: 300000, max: 1000 }`
+  - Configurable TTL (time-to-live) and max cache size
+  - Simple LRU eviction when cache is full
+  - Automatic expiration of stale entries
+  - Cache management methods: `clearCache()`, `invalidateTenant()`, `getCacheStats()`
+
 ### Changed
 
-- Test suite expanded from 89 to 123 tests
+- Test suite expanded from 89 to 142 tests
 
 ## [0.1.0-beta] - 2025-12-17
 
