@@ -48,9 +48,10 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Component-level coverage tracking
   - Note: Add `CODECOV_TOKEN` secret to repository
 
-- [ ] **Add SNYK or npm audit to CI**
-  - Scan for vulnerable dependencies
-  - Fail CI on high/critical vulnerabilities
+- [x] **Add SNYK or npm audit to CI** ✅
+  - Added `pnpm audit` to CI workflow
+  - Fails on high/critical vulnerabilities (all deps)
+  - Fails on moderate+ vulnerabilities (production deps only)
 
 ---
 
