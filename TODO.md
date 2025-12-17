@@ -138,6 +138,23 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Logs validation results
   - Uses NestJS Logger with `[MultiTenant]` context
 
+- [x] **GraphQL Support** ✅
+  ```typescript
+  @Resolver(() => User)
+  @UseGuards(TenantGuard)
+  @RequireTenant()
+  export class UsersResolver {
+    @Query(() => [User])
+    users(@CurrentTenant() tenant: Tenant) {
+      return this.userService.findByTenant(tenant.id);
+    }
+  }
+  ```
+  - `@CurrentTenant()` and `@TenantId()` work with resolvers
+  - `TenantGuard` supports GraphQL context
+  - Automatic HTTP/GraphQL context detection
+  - No hard dependency on `@nestjs/graphql`
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification

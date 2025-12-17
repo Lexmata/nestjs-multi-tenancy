@@ -599,14 +599,23 @@ MultiTenantModule.forRoot({
 
 ## Decorators
 
+All decorators work with both REST controllers and GraphQL resolvers.
+
 ### @CurrentTenant()
 
-Inject the full tenant object into a controller method.
+Inject the full tenant object into a controller method or resolver.
 
 ```typescript
+// REST Controller
 @Get()
 findAll(@CurrentTenant() tenant: Tenant) {
   // tenant: { id: 'tenant-123', name: 'Acme Corp', ... }
+}
+
+// GraphQL Resolver
+@Query(() => [User])
+users(@CurrentTenant() tenant: Tenant) {
+  return this.userService.findByTenant(tenant.id);
 }
 ```
 
@@ -615,15 +624,22 @@ findAll(@CurrentTenant() tenant: Tenant) {
 Inject only the tenant ID.
 
 ```typescript
+// REST Controller
 @Get()
 findAll(@TenantId() tenantId: string) {
   // tenantId: 'tenant-123'
+}
+
+// GraphQL Resolver
+@Query(() => User)
+user(@TenantId() tenantId: string, @Args('id') id: string) {
+  return this.userService.findOne(tenantId, id);
 }
 ```
 
 ### @RequireTenant()
 
-Mark a controller or method as requiring a valid tenant context. Use with `TenantGuard`.
+Mark a controller, resolver, or method as requiring a valid tenant context. Use with `TenantGuard`.
 
 ```typescript
 import { Controller, Get, UseGuards } from '@nestjs/common';
@@ -636,6 +652,17 @@ import { RequireTenant, TenantGuard } from '@lexmata/nestjs-multi-tenant';
 export class UsersController {
   @Get()
   findAll() {
+    // Guaranteed to have tenant context
+  }
+}
+
+// Apply to GraphQL resolver
+@Resolver(() => User)
+@UseGuards(TenantGuard)
+@RequireTenant()
+export class UsersResolver {
+  @Query(() => [User])
+  users() {
     // Guaranteed to have tenant context
   }
 }
@@ -653,6 +680,82 @@ export class MixedController {
   @RequireTenant()
   privateEndpoint() {
     // Tenant required
+  }
+}
+```
+
+## GraphQL Support
+
+The module automatically detects GraphQL context and extracts tenant from the underlying HTTP request.
+
+### Setup
+
+```typescript
+// app.module.ts
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { MultiTenantModule } from '@lexmata/nestjs-multi-tenant';
+
+@Module({
+  imports: [
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      context: ({ req }) => ({ req }), // Important: pass request to context
+    }),
+    MultiTenantModule.forRoot({
+      extractionStrategy: 'header',
+      tenantResolver: (id) => this.tenantService.findById(id),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Complete Resolver Example
+
+```typescript
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { CurrentTenant, TenantId, RequireTenant, TenantGuard } from '@lexmata/nestjs-multi-tenant';
+import type { Tenant } from '@lexmata/nestjs-multi-tenant';
+
+@Resolver(() => User)
+@UseGuards(TenantGuard)
+@RequireTenant()
+export class UsersResolver {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Query(() => [User])
+  async users(@CurrentTenant() tenant: Tenant) {
+    return this.usersService.findAllByTenant(tenant.id);
+  }
+
+  @Query(() => User, { nullable: true })
+  async user(@TenantId() tenantId: string, @Args('id') id: string) {
+    return this.usersService.findOne(tenantId, id);
+  }
+
+  @Mutation(() => User)
+  async createUser(
+    @CurrentTenant() tenant: Tenant,
+    @Args('input') input: CreateUserInput,
+  ) {
+    return this.usersService.create(tenant.id, input);
+  }
+}
+```
+
+### GraphQL Client Headers
+
+Send tenant identification in HTTP headers with your GraphQL requests:
+
+```graphql
+# Header: x-tenant-id: tenant-123
+query {
+  users {
+    id
+    name
   }
 }
 ```

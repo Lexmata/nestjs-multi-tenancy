@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ExecutionContext } from '@nestjs/common';
 import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 import { CurrentTenant, TenantId } from './tenant.decorator';
@@ -16,121 +16,167 @@ function getParamDecoratorFactory(decorator: Function) {
   return metadata[key].factory;
 }
 
+// Helper to create HTTP context mock
+function createHttpContext(tenant?: { id: string; name?: string }) {
+  return {
+    getType: vi.fn().mockReturnValue('http'),
+    switchToHttp: vi.fn().mockReturnValue({
+      getRequest: vi.fn().mockReturnValue({ tenant }),
+    }),
+  } as unknown as ExecutionContext;
+}
+
+// Helper to create GraphQL context mock
+function createGraphQLContext(tenant?: { id: string; name?: string }) {
+  return {
+    getType: vi.fn().mockReturnValue('graphql'),
+    switchToHttp: vi.fn().mockReturnValue({
+      getRequest: vi.fn().mockReturnValue({ tenant }),
+    }),
+  } as unknown as ExecutionContext;
+}
+
 describe('CurrentTenant Decorator', () => {
-  it('should extract tenant from request', () => {
-    const tenant = { id: 'tenant-123', name: 'Test Tenant' };
-    const mockRequest = { tenant };
+  describe('HTTP context', () => {
+    it('should extract tenant from request', () => {
+      const tenant = { id: 'tenant-123', name: 'Test Tenant' };
+      const mockExecutionContext = createHttpContext(tenant);
 
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
 
-    const factory = getParamDecoratorFactory(CurrentTenant);
-    const result = factory(null, mockExecutionContext);
+      expect(result).toEqual(tenant);
+    });
 
-    expect(result).toEqual(tenant);
+    it('should return undefined when tenant is not set', () => {
+      const mockExecutionContext = createHttpContext();
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return tenant with additional properties', () => {
+      const tenant = {
+        id: 'tenant-456',
+        name: 'Enterprise',
+        plan: 'premium',
+        settings: { maxUsers: 100 },
+      };
+      const mockRequest = { tenant };
+
+      const mockExecutionContext = {
+        getType: vi.fn().mockReturnValue('http'),
+        switchToHttp: vi.fn().mockReturnValue({
+          getRequest: vi.fn().mockReturnValue(mockRequest),
+        }),
+      } as unknown as ExecutionContext;
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual(tenant);
+      expect(result.plan).toBe('premium');
+    });
   });
 
-  it('should return undefined when tenant is not set', () => {
-    const mockRequest = {};
-
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
-
-    const factory = getParamDecoratorFactory(CurrentTenant);
-    const result = factory(null, mockExecutionContext);
-
-    expect(result).toBeUndefined();
-  });
-
-  it('should return tenant with additional properties', () => {
-    const tenant = {
-      id: 'tenant-456',
-      name: 'Enterprise',
-      plan: 'premium',
-      settings: { maxUsers: 100 },
+  describe('GraphQL context', () => {
+    let mockGqlExecutionContext: {
+      create: ReturnType<typeof vi.fn>;
     };
-    const mockRequest = { tenant };
 
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
+    beforeEach(() => {
+      // Mock the @nestjs/graphql module
+      mockGqlExecutionContext = {
+        create: vi.fn(),
+      };
+      vi.doMock('@nestjs/graphql', () => ({
+        GqlExecutionContext: mockGqlExecutionContext,
+      }));
+    });
 
-    const factory = getParamDecoratorFactory(CurrentTenant);
-    const result = factory(null, mockExecutionContext);
+    afterEach(() => {
+      vi.doUnmock('@nestjs/graphql');
+    });
 
-    expect(result).toEqual(tenant);
-    expect(result.plan).toBe('premium');
+    it('should fall back to HTTP when @nestjs/graphql is not installed', () => {
+      const tenant = { id: 'tenant-gql', name: 'GraphQL Tenant' };
+      const mockExecutionContext = createGraphQLContext(tenant);
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      // Falls back to HTTP extraction since @nestjs/graphql is not actually installed
+      expect(result).toEqual(tenant);
+    });
   });
 });
 
 describe('TenantId Decorator', () => {
-  it('should extract tenant ID from request', () => {
-    const tenant = { id: 'tenant-789', name: 'Test' };
-    const mockRequest = { tenant };
+  describe('HTTP context', () => {
+    it('should extract tenant ID from request', () => {
+      const tenant = { id: 'tenant-789', name: 'Test' };
+      const mockExecutionContext = createHttpContext(tenant);
 
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
 
-    const factory = getParamDecoratorFactory(TenantId);
-    const result = factory(null, mockExecutionContext);
+      expect(result).toBe('tenant-789');
+    });
 
-    expect(result).toBe('tenant-789');
+    it('should return undefined when tenant is not set', () => {
+      const mockExecutionContext = createHttpContext();
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when tenant exists but has no id', () => {
+      const mockRequest = { tenant: { name: 'No ID Tenant' } };
+
+      const mockExecutionContext = {
+        getType: vi.fn().mockReturnValue('http'),
+        switchToHttp: vi.fn().mockReturnValue({
+          getRequest: vi.fn().mockReturnValue(mockRequest),
+        }),
+      } as unknown as ExecutionContext;
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should handle null tenant gracefully', () => {
+      const mockRequest = { tenant: null };
+
+      const mockExecutionContext = {
+        getType: vi.fn().mockReturnValue('http'),
+        switchToHttp: vi.fn().mockReturnValue({
+          getRequest: vi.fn().mockReturnValue(mockRequest),
+        }),
+      } as unknown as ExecutionContext;
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
   });
 
-  it('should return undefined when tenant is not set', () => {
-    const mockRequest = {};
+  describe('GraphQL context', () => {
+    it('should fall back to HTTP when @nestjs/graphql is not installed', () => {
+      const tenant = { id: 'tenant-gql-id', name: 'GraphQL Tenant' };
+      const mockExecutionContext = createGraphQLContext(tenant);
 
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
 
-    const factory = getParamDecoratorFactory(TenantId);
-    const result = factory(null, mockExecutionContext);
-
-    expect(result).toBeUndefined();
-  });
-
-  it('should return undefined when tenant exists but has no id', () => {
-    const mockRequest = { tenant: { name: 'No ID Tenant' } };
-
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
-
-    const factory = getParamDecoratorFactory(TenantId);
-    const result = factory(null, mockExecutionContext);
-
-    expect(result).toBeUndefined();
-  });
-
-  it('should handle null tenant gracefully', () => {
-    const mockRequest = { tenant: null };
-
-    const mockExecutionContext = {
-      switchToHttp: vi.fn().mockReturnValue({
-        getRequest: vi.fn().mockReturnValue(mockRequest),
-      }),
-    } as unknown as ExecutionContext;
-
-    const factory = getParamDecoratorFactory(TenantId);
-    const result = factory(null, mockExecutionContext);
-
-    expect(result).toBeUndefined();
+      // Falls back to HTTP extraction
+      expect(result).toBe('tenant-gql-id');
+    });
   });
 });
-

@@ -56,9 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses NestJS Logger with `[MultiTenant]` context
   - Shows HTTP method and path for each request
 
+- **GraphQL Support**: Full support for GraphQL resolvers
+  - `@CurrentTenant()` and `@TenantId()` decorators work with GraphQL resolvers
+  - `TenantGuard` works with GraphQL execution context
+  - Automatic context detection (HTTP vs GraphQL)
+  - No hard dependency on `@nestjs/graphql` (graceful fallback)
+
 ### Changed
 
-- Test suite expanded from 89 to 188 tests
+- Test suite expanded from 89 to 193 tests
 
 ## [0.1.0-beta] - 2025-12-17
 
