@@ -1,0 +1,406 @@
+<div class="max-w-[900px] mx-auto px-4 lg:px-8 py-12">
+  <!-- Hero Section -->
+  <section id="introduction" class="text-center py-16 mb-12 border-b border-border">
+    <span class="inline-block bg-gradient-to-r from-primary to-primary-dark text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
+      Open Source
+    </span>
+    <h1 class="text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+      &#64;lexmata/nestjs-multi-tenant
+    </h1>
+    <p class="text-lg text-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
+      A flexible NestJS module for building multi-tenant applications. 
+      Supports multiple tenant identification strategies and provides seamless 
+      tenant context management throughout your application.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🔌</span> Multiple Strategies
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🧵</span> AsyncLocalStorage
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🔒</span> Guards & Decorators
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>📦</span> Zero Dependencies
+      </span>
+    </div>
+  </section>
+
+  <!-- Installation -->
+  <section id="installation" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Installation
+    </h2>
+    <p class="text-text-secondary mb-4">Install the package using your preferred package manager:</p>
+    
+    <div class="mb-6">
+      <div class="flex gap-2 mb-0">
+        <button 
+          (click)="setActiveTab('pnpm')"
+          [class]="activeTab === 'pnpm' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
+          class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
+        >
+          pnpm
+        </button>
+        <button 
+          (click)="setActiveTab('npm')"
+          [class]="activeTab === 'npm' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
+          class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
+        >
+          npm
+        </button>
+        <button 
+          (click)="setActiveTab('yarn')"
+          [class]="activeTab === 'yarn' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
+          class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
+        >
+          yarn
+        </button>
+      </div>
+      @if (activeTab === 'pnpm') {
+        <app-code-block [code]="installPnpm" language="bash" />
+      }
+      @if (activeTab === 'npm') {
+        <app-code-block [code]="installNpm" language="bash" />
+      }
+      @if (activeTab === 'yarn') {
+        <app-code-block [code]="installYarn" language="bash" />
+      }
+    </div>
+
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">Peer Dependencies</h3>
+    <p class="text-text-secondary mb-4">This package requires the following peer dependencies:</p>
+    <app-code-block [code]="peerDeps" language="json" />
+  </section>
+
+  <!-- Quick Start -->
+  <section id="quick-start" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Quick Start
+    </h2>
+
+    <!-- Step 1 -->
+    <div class="flex gap-6 my-8 p-6 bg-surface rounded-xl border border-border">
+      <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white font-bold text-xl flex items-center justify-center rounded-full shrink-0">
+        1
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-semibold text-text-primary mb-3">Import the module</h3>
+        <app-code-block [code]="quickStart1" />
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="flex gap-6 my-8 p-6 bg-surface rounded-xl border border-border">
+      <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white font-bold text-xl flex items-center justify-center rounded-full shrink-0">
+        2
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-semibold text-text-primary mb-3">Use in your controllers</h3>
+        <app-code-block [code]="quickStart2" />
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="flex gap-6 my-8 p-6 bg-surface rounded-xl border border-border">
+      <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white font-bold text-xl flex items-center justify-center rounded-full shrink-0">
+        3
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-semibold text-text-primary mb-3">Access tenant anywhere with TenantContextService</h3>
+        <app-code-block [code]="quickStart3" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Basic Configuration -->
+  <section id="basic-config" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Basic Configuration
+    </h2>
+    <p class="text-text-secondary mb-4">Configure the module with the options that fit your application's needs:</p>
+    <app-code-block [code]="basicConfig" />
+  </section>
+
+  <!-- Async Configuration -->
+  <section id="async-config" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Async Configuration
+    </h2>
+    <p class="text-text-secondary mb-4">Load configuration from external sources using the async configuration pattern:</p>
+    <app-code-block [code]="asyncConfig" />
+  </section>
+
+  <!-- Options Reference -->
+  <section id="options" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Options Reference
+    </h2>
+    
+    <div class="overflow-x-auto mt-6">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-surface">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Option</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Type</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Default</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-text-secondary">
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">extractionStrategy</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">'header' | 'subdomain' | 'path' | 'query' | 'custom'</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">'header'</code></td>
+            <td class="px-4 py-3 border-b border-border">Strategy for extracting tenant ID</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">tenantHeader</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">string</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">'x-tenant-id'</code></td>
+            <td class="px-4 py-3 border-b border-border">Header name for header strategy</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">tenantQueryParam</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">string</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">'tenantId'</code></td>
+            <td class="px-4 py-3 border-b border-border">Query parameter for query strategy</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">tenantPathIndex</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">number</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">0</code></td>
+            <td class="px-4 py-3 border-b border-border">Path segment index for path strategy</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">customExtractor</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">(req) => string | null | Promise</code></td>
+            <td class="px-4 py-3 border-b border-border">-</td>
+            <td class="px-4 py-3 border-b border-border">Custom extraction function</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">tenantResolver</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">(id) => Tenant | null | Promise</code></td>
+            <td class="px-4 py-3 border-b border-border">-</td>
+            <td class="px-4 py-3 border-b border-border">Resolve full tenant from ID</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">requireTenant</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">boolean</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">false</code></td>
+            <td class="px-4 py-3 border-b border-border">Throw if tenant not found</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">excludeRoutes</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">(string | RegExp)[]</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">[]</code></td>
+            <td class="px-4 py-3 border-b border-border">Routes to skip tenant extraction</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Header Strategy -->
+  <section id="header-strategy" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Header Strategy
+    </h2>
+    <p class="text-text-secondary mb-4">Extract tenant ID from a request header. This is the default and most common strategy.</p>
+    <app-code-block [code]="headerStrategy" />
+    
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">Usage</h3>
+    <app-code-block [code]="headerCurl" language="bash" />
+  </section>
+
+  <!-- Subdomain Strategy -->
+  <section id="subdomain-strategy" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Subdomain Strategy
+    </h2>
+    <p class="text-text-secondary mb-4">Extract tenant ID from the subdomain of the request URL.</p>
+    <app-code-block [code]="subdomainStrategy" />
+    
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+      <span class="text-xl">💡</span>
+      <div class="text-text-secondary">
+        <strong>Example:</strong> <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenant-123.example.com</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Path Strategy -->
+  <section id="path-strategy" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Path Strategy
+    </h2>
+    <p class="text-text-secondary mb-4">Extract tenant ID from a URL path segment.</p>
+    <app-code-block [code]="pathStrategy" />
+    
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+      <span class="text-xl">💡</span>
+      <div class="text-text-secondary space-y-1">
+        <p><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">/tenant-123/api/users</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code></p>
+        <p><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">/api/tenant-123/users</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code> (with tenantPathIndex: 1)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Query Strategy -->
+  <section id="query-strategy" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Query Strategy
+    </h2>
+    <p class="text-text-secondary mb-4">Extract tenant ID from a query parameter.</p>
+    <app-code-block [code]="queryStrategy" />
+    
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+      <span class="text-xl">💡</span>
+      <div class="text-text-secondary">
+        <strong>Example:</strong> <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">/api/users?tenantId=tenant-123</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Custom Strategy -->
+  <section id="custom-strategy" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Custom Strategy
+    </h2>
+    <p class="text-text-secondary mb-4">Implement your own extraction logic for complex scenarios.</p>
+    <app-code-block [code]="customStrategy" />
+  </section>
+
+  <!-- Decorators -->
+  <section id="decorators" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Decorators
+    </h2>
+    
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">&#64;CurrentTenant()</h3>
+    <p class="text-text-secondary mb-4">Inject the full tenant object into a controller method.</p>
+    <app-code-block [code]="currentTenantDecorator" />
+
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">&#64;TenantId()</h3>
+    <p class="text-text-secondary mb-4">Inject only the tenant ID.</p>
+    <app-code-block [code]="tenantIdDecorator" />
+
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">&#64;RequireTenant()</h3>
+    <p class="text-text-secondary mb-4">Mark a controller or method as requiring a valid tenant context.</p>
+    <app-code-block [code]="requireTenantDecorator" />
+  </section>
+
+  <!-- Guards -->
+  <section id="guards" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Guards
+    </h2>
+    <p class="text-text-secondary mb-4">Use the <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">TenantGuard</code> with the <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">&#64;RequireTenant()</code> decorator to enforce tenant requirements:</p>
+    <app-code-block [code]="guardsExample" />
+  </section>
+
+  <!-- Context Service -->
+  <section id="context-service" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      TenantContextService
+    </h2>
+    <p class="text-text-secondary mb-4">Access tenant information from anywhere in your application using AsyncLocalStorage.</p>
+    <app-code-block [code]="contextService" />
+
+    <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">Running code in a tenant context programmatically</h3>
+    <app-code-block [code]="contextRun" />
+
+    <div class="overflow-x-auto mt-6">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-surface">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Method</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Return Type</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-text-primary uppercase tracking-wider border-b border-border">Description</th>
+          </tr>
+        </thead>
+        <tbody class="text-text-secondary">
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">getTenant()</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">Tenant | undefined</code></td>
+            <td class="px-4 py-3 border-b border-border">Get current tenant object</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">getTenantId()</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">string | undefined</code></td>
+            <td class="px-4 py-3 border-b border-border">Get current tenant ID</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">hasTenant()</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">boolean</code></td>
+            <td class="px-4 py-3 border-b border-border">Check if in tenant context</td>
+          </tr>
+          <tr class="hover:bg-primary/5">
+            <td class="px-4 py-3 border-b border-border"><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-xs">run(tenant, fn)</code></td>
+            <td class="px-4 py-3 border-b border-border"><code class="text-xs">T</code></td>
+            <td class="px-4 py-3 border-b border-border">Execute function in tenant context</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Tenant Resolver -->
+  <section id="tenant-resolver" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Tenant Resolver
+    </h2>
+    <p class="text-text-secondary mb-4">Enrich tenant data by providing a resolver function that fetches additional tenant information:</p>
+    <app-code-block [code]="tenantResolver" />
+  </section>
+
+  <!-- Route Exclusions -->
+  <section id="route-exclusions" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Route Exclusions
+    </h2>
+    <p class="text-text-secondary mb-4">Exclude specific routes from tenant extraction:</p>
+    <app-code-block [code]="routeExclusions" />
+  </section>
+
+  <!-- Example: Database -->
+  <section id="example-database" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Example: Multi-tenant Database Connection
+    </h2>
+    <app-code-block [code]="exampleDatabase" />
+  </section>
+
+  <!-- Example: Repository -->
+  <section id="example-repository" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Example: Tenant-aware Repository
+    </h2>
+    <app-code-block [code]="exampleRepository" />
+  </section>
+
+  <!-- Example: JWT -->
+  <section id="example-jwt" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
+      Example: JWT-based Tenant Extraction
+    </h2>
+    <app-code-block [code]="exampleJwt" />
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-16 pt-8 border-t border-border text-center">
+    <p class="text-text-muted text-sm mb-2">
+      MIT © <a href="https://github.com/Lexmata" target="_blank" rel="noopener" class="text-primary hover:text-primary-light transition-colors">Lexmata LLC</a>
+    </p>
+    <p class="text-text-muted text-sm flex justify-center gap-2">
+      <a href="https://github.com/Lexmata/nestjs-multi-tenancy" target="_blank" rel="noopener" class="text-primary hover:text-primary-light transition-colors">GitHub</a>
+      <span>•</span>
+      <a href="https://github.com/Lexmata/nestjs-multi-tenancy/issues" target="_blank" rel="noopener" class="text-primary hover:text-primary-light transition-colors">Issues</a>
+      <span>•</span>
+      <a href="https://www.npmjs.com/package/@lexmata/nestjs-multi-tenant" target="_blank" rel="noopener" class="text-primary hover:text-primary-light transition-colors">npm</a>
+    </p>
+  </footer>
+</div>
+
