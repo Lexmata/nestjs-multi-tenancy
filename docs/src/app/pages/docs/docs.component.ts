@@ -1,14 +1,41 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {
+  faArrowRight,
+  faChevronRight,
+  faLock,
+  faBolt,
+  faLayerGroup,
+  faPlug,
+  faRocket,
+  faShield,
+  faCode,
+  faDatabase,
+  faCube,
+} from '@fortawesome/free-solid-svg-icons';
 import { CodeBlockComponent } from '../../components/code-block/code-block.component';
 
 @Component({
   selector: 'app-docs',
   standalone: true,
-  imports: [CodeBlockComponent, RouterLink],
+  imports: [CodeBlockComponent, RouterLink, FaIconComponent],
   templateUrl: './docs.component.html',
 })
 export class DocsComponent {
+  // Icons
+  faArrowRight = faArrowRight;
+  faChevronRight = faChevronRight;
+  faLock = faLock;
+  faBolt = faBolt;
+  faLayerGroup = faLayerGroup;
+  faPlug = faPlug;
+  faRocket = faRocket;
+  faShield = faShield;
+  faCode = faCode;
+  faDatabase = faDatabase;
+  faCube = faCube;
+
   // Installation code examples
   installPnpm = 'pnpm add @lexmata/nestjs-multi-tenant';
   installNpm = 'npm install @lexmata/nestjs-multi-tenant';

@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { CodeBlockComponent } from '../../components/code-block/code-block.component';
 
 @Component({
   selector: 'app-drizzle',
   standalone: true,
-  imports: [CodeBlockComponent, RouterLink],
+  imports: [CodeBlockComponent, RouterLink, FaIconComponent],
   templateUrl: './drizzle.component.html',
   styleUrl: './drizzle.component.css',
 })
 export class DrizzleComponent {
+  faArrowLeft = faArrowLeft;
+
   // Schema
   schema = `// src/database/schema.ts
 import {

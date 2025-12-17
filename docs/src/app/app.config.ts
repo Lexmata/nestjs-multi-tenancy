@@ -1,7 +1,14 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  inject,
+  provideAppInitializer,
+} from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withHashLocation } from '@angular/router';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 import { routes } from './app.routes';
+import { initializeIcons } from './icons';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,5 +21,10 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
+    // Initialize Font Awesome icons
+    provideAppInitializer(() => {
+      const library = inject(FaIconLibrary);
+      initializeIcons(library);
+    }),
   ],
 };

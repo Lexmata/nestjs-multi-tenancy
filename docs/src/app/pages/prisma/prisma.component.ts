@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { CodeBlockComponent } from '../../components/code-block/code-block.component';
 
 @Component({
   selector: 'app-prisma',
   standalone: true,
-  imports: [CodeBlockComponent, RouterLink],
+  imports: [CodeBlockComponent, RouterLink, FaIconComponent],
   templateUrl: './prisma.component.html',
   styleUrl: './prisma.component.css',
 })
 export class PrismaComponent {
+  faArrowLeft = faArrowLeft;
+
   // Prisma 7 Comprehensive Example
   prismaSchema = `// prisma/schema.prisma
 generator client {
