@@ -1,0 +1,38 @@
+@reference "../../../styles.css";
+
+.code-block-container {
+  @apply relative my-4;
+}
+
+.code-block-container:hover .copy-button {
+  @apply opacity-100;
+}
+
+.code-title {
+  @apply bg-code-border text-text-secondary text-xs px-4 py-2 rounded-t-lg border border-b-0 border-code-border;
+}
+
+.code-pre {
+  @apply bg-code-bg border border-code-border rounded-lg overflow-x-auto m-0;
+}
+
+.code-pre.has-title {
+  @apply rounded-t-none;
+}
+
+.code-content {
+  @apply block p-4 text-sm leading-relaxed font-mono;
+}
+
+.copy-button {
+  @apply absolute top-2 right-2 p-2 bg-white/10 rounded opacity-0 transition-opacity text-text-secondary;
+}
+
+.copy-button:hover {
+  @apply text-text-primary bg-white/20;
+}
+
+.copy-button.with-title {
+  @apply top-10;
+}
+

@@ -1,0 +1,26 @@
+@reference "../../../styles.css";
+
+.nav-link {
+  @apply block px-3 py-1.5 text-sidebar-text text-[0.8rem] border-l-2 border-transparent transition-all duration-150 no-underline;
+}
+
+.nav-link:hover {
+  @apply text-text-primary bg-white/5 border-l-primary/50;
+}
+
+.nav-link.active {
+  @apply bg-primary/15 text-primary border-l-primary font-medium;
+}
+
+.github-link {
+  @apply flex items-center gap-2 text-sidebar-text text-sm no-underline transition-colors;
+}
+
+.github-link:hover {
+  @apply text-text-primary;
+}
+
+.version-badge {
+  @apply bg-primary text-white text-xs font-semibold px-2 py-1 rounded;
+}
+

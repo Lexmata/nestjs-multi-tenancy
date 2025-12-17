@@ -1,0 +1,32 @@
+<!-- Mobile Menu Toggle -->
+<button
+  class="mobile-toggle"
+  (click)="toggleSidebar()"
+  aria-label="Toggle navigation"
+>
+  <span
+    class="toggle-bar"
+    [class.rotate-45]="sidebarOpen()"
+    [class.translate-y-1.5]="sidebarOpen()"
+  ></span>
+  <span class="toggle-bar" [class.opacity-0]="sidebarOpen()"></span>
+  <span
+    class="toggle-bar"
+    [class.-rotate-45]="sidebarOpen()"
+    [class.-translate-y-1.5]="sidebarOpen()"
+  ></span>
+</button>
+
+<!-- Sidebar -->
+<app-sidebar [isOpen]="sidebarOpen()" (linkClicked)="closeSidebar()" />
+
+<!-- Main Content -->
+<main class="lg:ml-[280px] min-h-screen">
+  <router-outlet />
+</main>
+
+<!-- Mobile Overlay -->
+@if (sidebarOpen()) {
+  <div class="mobile-overlay" (click)="closeSidebar()"></div>
+}
+

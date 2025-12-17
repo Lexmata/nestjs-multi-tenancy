@@ -16,80 +16,8 @@ interface NavSection {
   selector: 'app-sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  template: `
-    <aside
-      class="fixed top-0 left-0 w-[280px] h-screen bg-sidebar-bg border-r border-border flex flex-col z-50 transition-transform duration-300"
-      [class.translate-x-0]="isOpen()"
-      [class.-translate-x-full]="!isOpen()"
-      [class.lg:translate-x-0]="true"
-    >
-      <!-- Header -->
-      <div class="p-6 border-b border-border">
-        <a routerLink="/" class="flex items-center gap-3 no-underline">
-          <span class="text-3xl">🏢</span>
-          <div class="flex flex-col">
-            <span class="font-bold text-lg text-text-primary tracking-tight">Multi-Tenant</span>
-            <span class="text-xs text-primary font-semibold uppercase tracking-wider"
-              >for NestJS</span
-            >
-          </div>
-        </a>
-      </div>
-
-      <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto py-6 px-4">
-        @for (section of navSections; track section.title; let isLast = $last) {
-          <div
-            class="mb-1"
-            [class.pb-5]="!isLast"
-            [class.border-b]="!isLast"
-            [class.border-border/50]="!isLast"
-          >
-            <h3
-              class="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.15em] text-text-muted mb-3 pl-3"
-            >
-              <span class="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
-              {{ section.title }}
-            </h3>
-            <ul class="list-none space-y-0.5">
-              @for (item of section.items; track item.path + item.fragment) {
-                <li>
-                  <a
-                    [routerLink]="item.path"
-                    [fragment]="item.fragment"
-                    routerLinkActive="!bg-primary/15 !text-primary !border-l-primary font-medium"
-                    [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-                    class="block px-3 py-1.5 text-sidebar-text text-[0.8rem] border-l-2 border-transparent transition-all duration-150 hover:text-text-primary hover:bg-white/5 hover:border-l-primary/50 no-underline"
-                    (click)="linkClicked.emit()"
-                  >
-                    {{ item.title }}
-                  </a>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-      </nav>
-
-      <!-- Footer -->
-      <div class="p-4 border-t border-border flex items-center justify-between">
-        <a
-          href="https://github.com/Lexmata/nestjs-multi-tenancy"
-          target="_blank"
-          rel="noopener"
-          class="flex items-center gap-2 text-sidebar-text text-sm no-underline hover:text-text-primary transition-colors"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path
-              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
-            />
-          </svg>
-          <span>GitHub</span>
-        </a>
-        <span class="bg-primary text-white text-xs font-semibold px-2 py-1 rounded">v0.1.0</span>
-      </div>
-    </aside>
-  `,
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.css',
 })
 export class SidebarComponent {
   isOpen = input(false);
