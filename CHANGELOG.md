@@ -15,9 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatically parses `Cookie` header as fallback
   - Handles cookies with `=` characters in values
 
+- **JWT-based Tenant Extraction**: New `jwt` extraction strategy
+  - Configure with `extractionStrategy: 'jwt'` and `jwtTenantClaim: 'claim_path'`
+  - Extracts tenant ID from JWT tokens in Authorization header
+  - Supports nested claims with dot notation (e.g., `user.organization.id`)
+  - Decodes without verification (auth guards should handle verification)
+  - Handles both `Bearer` and `bearer` prefixes
+
 ### Changed
 
-- Test suite expanded from 89 to 99 tests
+- Test suite expanded from 89 to 114 tests
 
 ## [0.1.0-beta] - 2025-12-17
 

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import {
+  DEFAULT_JWT_TENANT_CLAIM,
   DEFAULT_TENANT_COOKIE,
   DEFAULT_TENANT_HEADER,
   DEFAULT_TENANT_PATH_INDEX,
@@ -79,6 +80,8 @@ export class TenantMiddleware implements NestMiddleware {
         return this.extractFromQuery(req);
       case 'cookie':
         return this.extractFromCookie(req);
+      case 'jwt':
+        return this.extractFromJwt(req);
       case 'custom':
         return this.extractCustom(req);
       default:
@@ -170,6 +173,80 @@ export class TenantMiddleware implements NestMiddleware {
       }
     }
     return cookies;
+  }
+
+  /**
+   * Extract tenant ID from JWT token in Authorization header
+   * Supports Bearer tokens and decodes without verification
+   * (verification should be handled by auth guards)
+   */
+  private extractFromJwt(req: Request): null | string {
+    const authHeader = req.headers.authorization;
+    if (typeof authHeader !== 'string') {
+      return null;
+    }
+
+    // Extract token from Bearer scheme (case-insensitive)
+    const lowerAuth = authHeader.toLowerCase();
+    if (!lowerAuth.startsWith('bearer ')) {
+      return null;
+    }
+    const token = authHeader.slice(7); // Remove "Bearer " prefix
+
+    if (!token) {
+      return null;
+    }
+
+    // Decode JWT payload (without verification)
+    const payload = this.decodeJwtPayload(token);
+    if (!payload) {
+      return null;
+    }
+
+    // Get tenant ID from configured claim path
+    const claimPath = this.options.jwtTenantClaim ?? DEFAULT_JWT_TENANT_CLAIM;
+    const tenantId = this.getNestedValue(payload, claimPath);
+
+    return typeof tenantId === 'string' ? tenantId : null;
+  }
+
+  /**
+   * Decode JWT payload without verification
+   * Returns null if token is invalid or malformed
+   */
+  private decodeJwtPayload(token: string): Record<string, unknown> | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      // Decode base64url payload (second part)
+      const payload = parts[1];
+      const base64 = payload.replaceAll('-', '+').replaceAll('_', '/');
+      const jsonPayload = Buffer.from(base64, 'base64').toString('utf8');
+      return JSON.parse(jsonPayload) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Get a nested value from an object using dot notation
+   * e.g., getNestedValue({ user: { tenantId: '123' } }, 'user.tenantId') => '123'
+   */
+  private getNestedValue(obj: Record<string, unknown>, path: string): unknown {
+    const keys = path.split('.');
+    let current: unknown = obj;
+
+    for (const key of keys) {
+      if (current === null || current === undefined || typeof current !== 'object') {
+        return undefined;
+      }
+      current = (current as Record<string, unknown>)[key];
+    }
+
+    return current;
   }
 
   /**

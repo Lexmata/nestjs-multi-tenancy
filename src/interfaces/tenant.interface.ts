@@ -28,6 +28,7 @@ export type TenantExtractionStrategy =
   | 'cookie'
   | 'custom'
   | 'header'
+  | 'jwt'
   | 'path'
   | 'query'
   | 'subdomain';
@@ -79,6 +80,13 @@ export interface MultiTenantModuleOptions {
    * @default 'x-tenant-id'
    */
   tenantHeader?: string;
+
+  /**
+   * JWT claim path to extract tenant ID from (when using 'jwt' strategy)
+   * Supports dot notation for nested claims (e.g., 'user.tenantId', 'org.id')
+   * @default 'tenantId'
+   */
+  jwtTenantClaim?: string;
 
   /**
    * Path segment index to extract tenant ID from (when using 'path' strategy)

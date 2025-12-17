@@ -5,6 +5,7 @@ import {
   DEFAULT_TENANT_QUERY_PARAM,
   DEFAULT_TENANT_PATH_INDEX,
   DEFAULT_TENANT_COOKIE,
+  DEFAULT_JWT_TENANT_CLAIM,
 } from './constants';
 
 describe('Constants', () => {
@@ -67,6 +68,20 @@ describe('Constants', () => {
 
     it('should be a string', () => {
       expect(typeof DEFAULT_TENANT_COOKIE).toBe('string');
+    });
+  });
+
+  describe('DEFAULT_JWT_TENANT_CLAIM', () => {
+    it('should be defined', () => {
+      expect(DEFAULT_JWT_TENANT_CLAIM).toBeDefined();
+    });
+
+    it('should be tenantId', () => {
+      expect(DEFAULT_JWT_TENANT_CLAIM).toBe('tenantId');
+    });
+
+    it('should be a string', () => {
+      expect(typeof DEFAULT_JWT_TENANT_CLAIM).toBe('string');
     });
   });
 });

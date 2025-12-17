@@ -68,15 +68,14 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Auto-parses Cookie header as fallback
   - Handles cookies with `=` in values
 
-- [ ] **JWT-based Tenant Extraction**
+- [x] **JWT-based Tenant Extraction** ✅
   ```typescript
   extractionStrategy: 'jwt',
-  jwtSecret: process.env.JWT_SECRET,
   jwtTenantClaim: 'tenantId', // defaults to 'tenantId'
   ```
-  - Auto-extract tenant from JWT payload
-  - Support custom claim paths (e.g., `user.organization.id`)
-  - Optional JWT verification (or trust pre-verified)
+  - Auto-extract tenant from JWT payload (decodes without verification)
+  - Supports nested claim paths with dot notation (e.g., `user.organization.id`)
+  - Auth guards should handle JWT verification
 
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback

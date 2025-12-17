@@ -116,7 +116,7 @@ export class UsersService {
 ```typescript
 MultiTenantModule.forRoot({
   // Extraction strategy (default: 'header')
-  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'cookie' | 'custom',
+  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'cookie' | 'jwt' | 'custom',
 
   // Header name for 'header' strategy (default: 'x-tenant-id')
   tenantHeader: 'x-tenant-id',
@@ -129,6 +129,10 @@ MultiTenantModule.forRoot({
 
   // Cookie name for 'cookie' strategy (default: 'tenant_id')
   tenantCookie: 'tenant_id',
+
+  // JWT claim path for 'jwt' strategy (default: 'tenantId')
+  // Supports dot notation for nested claims (e.g., 'user.tenantId')
+  jwtTenantClaim: 'tenantId',
 
   // Custom extractor function for 'custom' strategy
   customExtractor: (request) => request.headers['x-custom-header'],
@@ -245,6 +249,43 @@ Cookie: tenant_id=tenant-123 → tenant ID: "tenant-123"
 ```
 
 > **Note:** Works with or without `cookie-parser` middleware. If `cookie-parser` is not used, cookies are parsed from the `Cookie` header automatically.
+
+### JWT Strategy
+
+Extract tenant ID from a JWT token in the Authorization header.
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'jwt',
+  jwtTenantClaim: 'tenantId', // default
+})
+```
+
+```
+Authorization: Bearer eyJhbGc... → Decodes JWT, extracts claim "tenantId"
+```
+
+**Supports nested claims with dot notation:**
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'jwt',
+  jwtTenantClaim: 'user.organization.id', // nested path
+})
+```
+
+```json
+// JWT Payload:
+{
+  "user": {
+    "organization": {
+      "id": "tenant-123"  // ← extracted
+    }
+  }
+}
+```
+
+> **Note:** The JWT is decoded but **not verified**. Token verification should be handled by your authentication guards (e.g., `@nestjs/passport`, `@nestjs/jwt`). This strategy trusts that tokens have already been validated.
 
 ### Custom Strategy
 
@@ -408,11 +449,12 @@ MultiTenantModule.forRoot({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'cookie' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
+| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'cookie' \| 'jwt' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
 | `tenantHeader` | `string` | `'x-tenant-id'` | Header name for header strategy |
 | `tenantQueryParam` | `string` | `'tenantId'` | Query param for query strategy |
 | `tenantPathIndex` | `number` | `0` | Path segment index for path strategy |
 | `tenantCookie` | `string` | `'tenant_id'` | Cookie name for cookie strategy |
+| `jwtTenantClaim` | `string` | `'tenantId'` | JWT claim path for jwt strategy (supports dot notation) |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

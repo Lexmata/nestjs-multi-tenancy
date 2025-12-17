@@ -5,6 +5,14 @@ import { TenantContextService } from '../services';
 import { MultiTenantModuleOptions } from '../interfaces';
 import { Request, Response } from 'express';
 
+// Helper to create a valid JWT token (unsigned, for testing)
+const createTestJwt = (payload: Record<string, unknown>): string => {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = 'test-signature';
+  return `${header}.${body}.${signature}`;
+};
+
 describe('TenantMiddleware', () => {
   let middleware: TenantMiddleware;
   let tenantContext: TenantContextService;
@@ -217,6 +225,161 @@ describe('TenantMiddleware', () => {
 
     it('should return null when cookie value is not a string', async () => {
       mockRequest.cookies = { tenant_id: { complex: 'object' } as any };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('jwt extraction strategy', () => {
+    beforeEach(() => {
+      createMiddleware({ extractionStrategy: 'jwt' });
+    });
+
+    it('should extract tenant ID from default JWT claim', async () => {
+      const token = createTestJwt({ tenantId: 'jwt-tenant-123' });
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('jwt-tenant-123');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should extract tenant ID from custom JWT claim', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'organizationId',
+      });
+      const token = createTestJwt({ organizationId: 'org-456' });
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('org-456');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should extract tenant ID from nested JWT claim using dot notation', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'user.organization.id',
+      });
+      const token = createTestJwt({
+        user: {
+          organization: {
+            id: 'nested-tenant',
+            name: 'Acme Corp',
+          },
+        },
+      });
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('nested-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle lowercase bearer prefix', async () => {
+      const token = createTestJwt({ tenantId: 'lowercase-bearer' });
+      mockRequest.headers = { authorization: `bearer ${token}` };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(capturedTenantId).toBe('lowercase-bearer');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when authorization header is missing', async () => {
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when authorization header has no Bearer prefix', async () => {
+      const token = createTestJwt({ tenantId: 'no-bearer' });
+      mockRequest.headers = { authorization: token }; // No Bearer prefix
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null for malformed JWT (not 3 parts)', async () => {
+      mockRequest.headers = { authorization: 'Bearer invalid.token' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null for invalid base64 in JWT', async () => {
+      mockRequest.headers = { authorization: 'Bearer header.!!!invalid-base64!!!.signature' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when JWT claim is not a string', async () => {
+      const token = createTestJwt({ tenantId: 12_345 }); // Number, not string
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when nested claim path does not exist', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'user.tenant.id',
+      });
+      const token = createTestJwt({ user: { name: 'John' } }); // No tenant.id
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when intermediate path is not an object', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'user.tenant.id',
+      });
+      const token = createTestJwt({ user: 'not-an-object' });
+      mockRequest.headers = { authorization: `Bearer ${token}` };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when authorization header is not a string', async () => {
+      mockRequest.headers = { authorization: ['token1', 'token2'] as any };
 
       await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 

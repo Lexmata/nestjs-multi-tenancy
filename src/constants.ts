@@ -22,3 +22,8 @@ export const DEFAULT_TENANT_PATH_INDEX = 0;
  * Default cookie name for tenant ID extraction
  */
 export const DEFAULT_TENANT_COOKIE = 'tenant_id';
+
+/**
+ * Default JWT claim path for tenant ID extraction
+ */
+export const DEFAULT_JWT_TENANT_CLAIM = 'tenantId';
