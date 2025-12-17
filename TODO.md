@@ -77,6 +77,17 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Supports nested claim paths with dot notation (e.g., `user.organization.id`)
   - Auth guards should handle JWT verification
 
+- [x] **Bearer Token Tenant Extraction** ✅
+  ```typescript
+  extractionStrategy: 'bearer',
+  bearerTokenResolver: async (token) => {
+    const apiKey = await apiKeyService.findByKey(token);
+    return apiKey?.tenantId ?? null;
+  },
+  ```
+  - For opaque tokens like API keys that need database lookup
+  - Supports sync and async resolver functions
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification

@@ -25,6 +25,7 @@ export interface Tenant {
  * Strategy for extracting tenant identifier from requests
  */
 export type TenantExtractionStrategy =
+  | 'bearer'
   | 'cookie'
   | 'custom'
   | 'header'
@@ -39,6 +40,12 @@ export type TenantExtractionStrategy =
 export type CustomTenantExtractor = (request: Request) => null | Promise<null | string> | string;
 
 /**
+ * Function type for resolving tenant ID from a bearer token
+ * Used for opaque tokens like API keys
+ */
+export type BearerTokenResolver = (token: string) => null | Promise<null | string> | string;
+
+/**
  * Function type for resolving tenant data from an identifier
  */
 export type TenantResolver = (tenantId: string) => null | Promise<null | Tenant> | Tenant;
@@ -47,6 +54,12 @@ export type TenantResolver = (tenantId: string) => null | Promise<null | Tenant>
  * Configuration options for the MultiTenantModule
  */
 export interface MultiTenantModuleOptions {
+  /**
+   * Function to resolve tenant ID from bearer token (when using 'bearer' strategy)
+   * Use this for opaque tokens like API keys that need database lookup
+   */
+  bearerTokenResolver?: BearerTokenResolver;
+
   /**
    * Custom extractor function (when using 'custom' strategy)
    */

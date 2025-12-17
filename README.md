@@ -116,7 +116,7 @@ export class UsersService {
 ```typescript
 MultiTenantModule.forRoot({
   // Extraction strategy (default: 'header')
-  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'cookie' | 'jwt' | 'custom',
+  extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'cookie' | 'jwt' | 'bearer' | 'custom',
 
   // Header name for 'header' strategy (default: 'x-tenant-id')
   tenantHeader: 'x-tenant-id',
@@ -133,6 +133,12 @@ MultiTenantModule.forRoot({
   // JWT claim path for 'jwt' strategy (default: 'tenantId')
   // Supports dot notation for nested claims (e.g., 'user.tenantId')
   jwtTenantClaim: 'tenantId',
+
+  // Function to resolve tenant ID from bearer token (for 'bearer' strategy)
+  bearerTokenResolver: async (token) => {
+    const apiKey = await apiKeyService.findByKey(token);
+    return apiKey?.tenantId ?? null;
+  },
 
   // Custom extractor function for 'custom' strategy
   customExtractor: (request) => request.headers['x-custom-header'],
@@ -286,6 +292,32 @@ MultiTenantModule.forRoot({
 ```
 
 > **Note:** The JWT is decoded but **not verified**. Token verification should be handled by your authentication guards (e.g., `@nestjs/passport`, `@nestjs/jwt`). This strategy trusts that tokens have already been validated.
+
+### Bearer Token Strategy
+
+Extract tenant ID from opaque bearer tokens (like API keys) using a resolver function.
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'bearer',
+  bearerTokenResolver: async (token) => {
+    // Look up API key in database to get tenant ID
+    const apiKey = await this.apiKeyService.findByKey(token);
+    return apiKey?.tenantId ?? null;
+  },
+})
+```
+
+```
+Authorization: Bearer sk_live_abc123 → Calls resolver with "sk_live_abc123"
+```
+
+**Use cases:**
+- API key authentication where keys are mapped to tenants
+- OAuth2 opaque access tokens
+- Session tokens that require database lookup
+
+> **Note:** Unlike `jwt` strategy which decodes the token, `bearer` strategy passes the raw token to your resolver function. This is ideal for opaque tokens that require external lookup.
 
 ### Custom Strategy
 
@@ -449,12 +481,13 @@ MultiTenantModule.forRoot({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'cookie' \| 'jwt' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
+| `extractionStrategy` | `'header' \| 'subdomain' \| 'path' \| 'query' \| 'cookie' \| 'jwt' \| 'bearer' \| 'custom'` | `'header'` | Strategy for extracting tenant ID |
 | `tenantHeader` | `string` | `'x-tenant-id'` | Header name for header strategy |
 | `tenantQueryParam` | `string` | `'tenantId'` | Query param for query strategy |
 | `tenantPathIndex` | `number` | `0` | Path segment index for path strategy |
 | `tenantCookie` | `string` | `'tenant_id'` | Cookie name for cookie strategy |
 | `jwtTenantClaim` | `string` | `'tenantId'` | JWT claim path for jwt strategy (supports dot notation) |
+| `bearerTokenResolver` | `(token: string) => string \| null \| Promise<string \| null>` | `undefined` | Function to resolve tenant ID from bearer token |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

@@ -387,6 +387,146 @@ describe('TenantMiddleware', () => {
     });
   });
 
+  describe('bearer extraction strategy', () => {
+    it('should extract tenant ID using bearer token resolver', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('bearer-tenant-123');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'Bearer my-api-key-abc123' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).toHaveBeenCalledWith('my-api-key-abc123');
+      expect(capturedTenantId).toBe('bearer-tenant-123');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should support async bearer token resolver', async () => {
+      const bearerTokenResolver = vi.fn().mockResolvedValue('async-bearer-tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'Bearer async-api-key' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).toHaveBeenCalledWith('async-api-key');
+      expect(capturedTenantId).toBe('async-bearer-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle lowercase bearer prefix', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('lowercase-tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'bearer lowercase-token' };
+
+      let capturedTenantId: string | undefined;
+      mockNext.mockImplementation(() => {
+        capturedTenantId = tenantContext.getTenantId();
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).toHaveBeenCalledWith('lowercase-token');
+      expect(capturedTenantId).toBe('lowercase-tenant');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when bearer resolver is not provided', async () => {
+      createMiddleware({ extractionStrategy: 'bearer' });
+      mockRequest.headers = { authorization: 'Bearer some-token' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when authorization header is missing', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when authorization header has no Bearer prefix', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'Basic dXNlcjpwYXNz' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when bearer resolver returns null', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue(null);
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'Bearer invalid-token' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).toHaveBeenCalledWith('invalid-token');
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should return null when token is empty after Bearer prefix', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: 'Bearer ' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle authorization header that is not a string', async () => {
+      const bearerTokenResolver = vi.fn().mockReturnValue('tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver,
+      });
+      mockRequest.headers = { authorization: ['token1', 'token2'] as any };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(bearerTokenResolver).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
   describe('custom extraction strategy', () => {
     it('should use custom extractor function', async () => {
       const customExtractor = vi.fn().mockReturnValue('custom-tenant');

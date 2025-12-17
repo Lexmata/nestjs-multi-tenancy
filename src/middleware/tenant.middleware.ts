@@ -82,6 +82,8 @@ export class TenantMiddleware implements NestMiddleware {
         return this.extractFromCookie(req);
       case 'jwt':
         return this.extractFromJwt(req);
+      case 'bearer':
+        return this.extractFromBearer(req);
       case 'custom':
         return this.extractCustom(req);
       default:
@@ -247,6 +249,35 @@ export class TenantMiddleware implements NestMiddleware {
     }
 
     return current;
+  }
+
+  /**
+   * Extract tenant ID from bearer token using resolver function
+   * Used for opaque tokens like API keys that require database lookup
+   */
+  private async extractFromBearer(req: Request): Promise<null | string> {
+    if (!this.options.bearerTokenResolver) {
+      return null;
+    }
+
+    const authHeader = req.headers.authorization;
+    if (typeof authHeader !== 'string') {
+      return null;
+    }
+
+    // Extract token from Bearer scheme (case-insensitive)
+    const lowerAuth = authHeader.toLowerCase();
+    if (!lowerAuth.startsWith('bearer ')) {
+      return null;
+    }
+    const token = authHeader.slice(7); // Remove "Bearer " prefix
+
+    if (!token) {
+      return null;
+    }
+
+    // Use resolver to get tenant ID from token
+    return this.options.bearerTokenResolver(token);
   }
 
   /**

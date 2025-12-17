@@ -22,9 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Decodes without verification (auth guards should handle verification)
   - Handles both `Bearer` and `bearer` prefixes
 
+- **Bearer Token Tenant Extraction**: New `bearer` extraction strategy
+  - Configure with `extractionStrategy: 'bearer'` and `bearerTokenResolver: (token) => tenantId`
+  - For opaque tokens like API keys that require database lookup
+  - Supports sync and async resolver functions
+  - Ideal for API key authentication where keys map to tenants
+
 ### Changed
 
-- Test suite expanded from 89 to 114 tests
+- Test suite expanded from 89 to 123 tests
 
 ## [0.1.0-beta] - 2025-12-17
 
