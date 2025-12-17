@@ -62,9 +62,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic context detection (HTTP vs GraphQL)
   - No hard dependency on `@nestjs/graphql` (graceful fallback)
 
+- **WebSocket Support**: Full support for WebSocket gateways
+  - `@CurrentTenant()` and `@TenantId()` decorators work with WebSocket gateways
+  - `TenantGuard` works with WebSocket execution context
+  - Extracts tenant from `client.tenant`, `client.handshake.tenant`, or `client.data.tenant`
+  - WebSocket-specific error messages
+
 ### Changed
 
-- Test suite expanded from 89 to 193 tests
+- Test suite expanded from 89 to 204 tests
 
 ## [0.1.0-beta] - 2025-12-17
 

@@ -760,6 +760,101 @@ query {
 }
 ```
 
+## WebSocket Support
+
+All decorators and guards work with WebSocket gateways. The tenant is extracted from the WebSocket client object.
+
+### Setup
+
+Set tenant on the WebSocket client during the connection handshake:
+
+```typescript
+// chat.gateway.ts
+import { WebSocketGateway, OnGatewayConnection, WebSocketServer } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { MultiTenantModule, TenantContextService } from '@lexmata/nestjs-multi-tenant';
+
+@WebSocketGateway()
+export class ChatGateway implements OnGatewayConnection {
+  @WebSocketServer()
+  server: Server;
+
+  constructor(
+    private readonly tenantService: TenantService,
+    private readonly tenantContext: TenantContextService,
+  ) {}
+
+  async handleConnection(client: Socket) {
+    // Extract tenant ID from handshake (headers, query, or auth)
+    const tenantId = client.handshake.headers['x-tenant-id'] as string
+      || client.handshake.query.tenantId as string;
+
+    if (tenantId) {
+      // Resolve and attach tenant to client
+      const tenant = await this.tenantService.findById(tenantId);
+      if (tenant) {
+        client.data.tenant = tenant; // or client.tenant = tenant
+      }
+    }
+  }
+}
+```
+
+### Gateway with Decorators
+
+```typescript
+import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { UseGuards } from '@nestjs/common';
+import { CurrentTenant, TenantId, RequireTenant, TenantGuard } from '@lexmata/nestjs-multi-tenant';
+import type { Tenant } from '@lexmata/nestjs-multi-tenant';
+import { Socket } from 'socket.io';
+
+@WebSocketGateway()
+@UseGuards(TenantGuard)
+@RequireTenant()
+export class ChatGateway {
+  constructor(private readonly chatService: ChatService) {}
+
+  @SubscribeMessage('message')
+  handleMessage(
+    @CurrentTenant() tenant: Tenant,
+    @MessageBody() data: { room: string; message: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    return this.chatService.broadcastMessage(tenant.id, data.room, data.message);
+  }
+
+  @SubscribeMessage('join-room')
+  handleJoinRoom(
+    @TenantId() tenantId: string,
+    @MessageBody() roomId: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    // Join tenant-specific room
+    client.join(`${tenantId}:${roomId}`);
+    return { event: 'joined', room: `${tenantId}:${roomId}` };
+  }
+}
+```
+
+### Tenant Location on WebSocket Client
+
+The decorator checks these locations in order:
+1. `client.tenant` - Direct property on socket
+2. `client.handshake.tenant` - Set during handshake
+3. `client.data.tenant` - Socket.io data property (recommended)
+
+```typescript
+// Option 1: Direct property
+client.tenant = tenant;
+
+// Option 2: Handshake (read-only after connection)
+// Set via middleware before connection
+
+// Option 3: Data property (recommended for Socket.io)
+client.data.tenant = tenant;
+```
+
 ## TenantContextService
 
 Access tenant information from anywhere in your application using AsyncLocalStorage.

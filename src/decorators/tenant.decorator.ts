@@ -10,10 +10,55 @@ interface RequestWithTenant {
 }
 
 /**
- * Get the request object from execution context (supports HTTP and GraphQL)
+ * Interface for WebSocket client with tenant
+ */
+interface WsClientWithTenant {
+  tenant?: Tenant;
+  handshake?: {
+    tenant?: Tenant;
+    headers?: Record<string, string>;
+    query?: Record<string, string>;
+  };
+  data?: {
+    tenant?: Tenant;
+  };
+}
+
+/**
+ * Get tenant from WebSocket client
+ * Checks client.tenant, client.handshake.tenant, and client.data.tenant
+ */
+function getTenantFromWsClient(client: WsClientWithTenant): Tenant | undefined {
+  // Check direct tenant property on client
+  if (client.tenant) {
+    return client.tenant;
+  }
+
+  // Check handshake tenant (set during connection)
+  if (client.handshake?.tenant) {
+    return client.handshake.tenant;
+  }
+
+  // Check data tenant (could be set via middleware)
+  if (client.data?.tenant) {
+    return client.data.tenant;
+  }
+
+  return undefined;
+}
+
+/**
+ * Get the request object from execution context (supports HTTP, GraphQL, and WebSocket)
  */
 function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
   const contextType = ctx.getType<'http' | 'graphql' | 'rpc' | 'ws'>();
+
+  // Handle WebSocket context
+  if (contextType === 'ws') {
+    const client = ctx.switchToWs().getClient<WsClientWithTenant>();
+    const tenant = getTenantFromWsClient(client);
+    return { tenant };
+  }
 
   // Handle GraphQL context
   if (contextType === 'graphql') {
@@ -38,7 +83,7 @@ function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
 }
 
 /**
- * Parameter decorator to inject the current tenant into a controller method or GraphQL resolver
+ * Parameter decorator to inject the current tenant into a controller method, GraphQL resolver, or WebSocket gateway
  *
  * @example REST Controller
  * ```typescript
@@ -55,6 +100,14 @@ function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
  *   return this.userService.findByTenant(tenant.id);
  * }
  * ```
+ *
+ * @example WebSocket Gateway
+ * ```typescript
+ * @SubscribeMessage('message')
+ * handleMessage(@CurrentTenant() tenant: Tenant, @MessageBody() data: string) {
+ *   return this.chatService.handleMessage(tenant.id, data);
+ * }
+ * ```
  */
 export const CurrentTenant = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): Tenant | undefined => {
@@ -64,7 +117,7 @@ export const CurrentTenant = createParamDecorator(
 );
 
 /**
- * Parameter decorator to inject only the current tenant ID into a controller method or GraphQL resolver
+ * Parameter decorator to inject only the current tenant ID into a controller method, GraphQL resolver, or WebSocket gateway
  *
  * @example REST Controller
  * ```typescript
@@ -79,6 +132,14 @@ export const CurrentTenant = createParamDecorator(
  * @Query(() => [User])
  * async users(@TenantId() tenantId: string) {
  *   return this.userService.findAllByTenant(tenantId);
+ * }
+ * ```
+ *
+ * @example WebSocket Gateway
+ * ```typescript
+ * @SubscribeMessage('join-room')
+ * handleJoinRoom(@TenantId() tenantId: string, @MessageBody() roomId: string) {
+ *   return this.chatService.joinRoom(tenantId, roomId);
  * }
  * ```
  */

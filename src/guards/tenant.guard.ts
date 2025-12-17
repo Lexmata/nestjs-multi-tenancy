@@ -15,8 +15,8 @@ export const REQUIRE_TENANT_KEY = 'requireTenant';
 
 /**
  * Guard that ensures a valid tenant context exists for the request.
- * Works with both REST controllers and GraphQL resolvers.
- * Use with @RequireTenant() decorator on controllers, resolvers, or methods.
+ * Works with REST controllers, GraphQL resolvers, and WebSocket gateways.
+ * Use with @RequireTenant() decorator on controllers, resolvers, gateways, or methods.
  *
  * @example REST Controller
  * ```typescript
@@ -32,6 +32,14 @@ export const REQUIRE_TENANT_KEY = 'requireTenant';
  * @UseGuards(TenantGuard)
  * @RequireTenant()
  * export class UsersResolver {}
+ * ```
+ *
+ * @example WebSocket Gateway
+ * ```typescript
+ * @WebSocketGateway()
+ * @UseGuards(TenantGuard)
+ * @RequireTenant()
+ * export class ChatGateway {}
  * ```
  */
 @Injectable()
@@ -56,12 +64,21 @@ export class TenantGuard implements CanActivate {
     if (!this.tenantContext.hasTenant()) {
       const contextType = context.getType<'http' | 'graphql' | 'rpc' | 'ws'>();
 
-      // For GraphQL, throw a more appropriate error
-      if (contextType === 'graphql') {
-        throw new HttpException('Tenant context required for this operation', HttpStatus.FORBIDDEN);
+      // Context-specific error messages
+      switch (contextType) {
+        case 'graphql':
+          throw new HttpException(
+            'Tenant context required for this operation',
+            HttpStatus.FORBIDDEN,
+          );
+        case 'ws':
+          throw new HttpException(
+            'Tenant context required for this WebSocket operation',
+            HttpStatus.FORBIDDEN,
+          );
+        default:
+          throw new HttpException('Tenant context required', HttpStatus.FORBIDDEN);
       }
-
-      throw new HttpException('Tenant context required', HttpStatus.FORBIDDEN);
     }
 
     return true;

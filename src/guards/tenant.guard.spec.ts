@@ -119,5 +119,52 @@ describe('TenantGuard', () => {
         expect(result).toBe(true);
       });
     });
+
+    describe('WebSocket context', () => {
+      beforeEach(() => {
+        mockExecutionContext = {
+          getHandler: vi.fn(),
+          getClass: vi.fn(),
+          getType: vi.fn().mockReturnValue('ws'),
+          switchToWs: vi.fn().mockReturnValue({
+            getClient: vi.fn().mockReturnValue({}),
+            getData: vi.fn().mockReturnValue({}),
+          }),
+        } as unknown as ExecutionContext;
+      });
+
+      it('should allow access when @RequireTenant is not applied', () => {
+        vi.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined);
+
+        const result = guard.canActivate(mockExecutionContext);
+
+        expect(result).toBe(true);
+      });
+
+      it('should throw WebSocket-specific message when no tenant context', () => {
+        vi.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+        try {
+          guard.canActivate(mockExecutionContext);
+          expect.fail('Should have thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect((error as HttpException).message).toBe(
+            'Tenant context required for this WebSocket operation',
+          );
+          expect((error as HttpException).getStatus()).toBe(HttpStatus.FORBIDDEN);
+        }
+      });
+
+      it('should allow access when tenant exists in WebSocket context', () => {
+        vi.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+        const result = tenantContext.run({ id: 'tenant-ws' }, () => {
+          return guard.canActivate(mockExecutionContext);
+        });
+
+        expect(result).toBe(true);
+      });
+    });
   });
 });

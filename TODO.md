@@ -155,6 +155,23 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Automatic HTTP/GraphQL context detection
   - No hard dependency on `@nestjs/graphql`
 
+- [x] **WebSocket Support** ✅
+  ```typescript
+  @WebSocketGateway()
+  @UseGuards(TenantGuard)
+  @RequireTenant()
+  export class ChatGateway {
+    @SubscribeMessage('message')
+    handleMessage(@CurrentTenant() tenant: Tenant, @MessageBody() data: string) {
+      return this.chatService.broadcast(tenant.id, data);
+    }
+  }
+  ```
+  - `@CurrentTenant()` and `@TenantId()` work with WebSocket gateways
+  - `TenantGuard` supports WebSocket context
+  - Extracts tenant from `client.tenant`, `client.handshake.tenant`, or `client.data.tenant`
+  - WebSocket-specific error messages
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification
