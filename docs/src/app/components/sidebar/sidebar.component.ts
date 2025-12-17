@@ -66,7 +66,15 @@ export class SidebarComponent {
         { title: 'Database Connection', path: '/', fragment: 'example-database' },
         { title: 'Tenant Repository', path: '/', fragment: 'example-repository' },
         { title: 'JWT Integration', path: '/', fragment: 'example-jwt' },
-        { title: 'Prisma 7 Multi-Tenancy', path: '/examples/prisma' },
+      ],
+    },
+    {
+      title: 'ORM Integrations',
+      items: [
+        { title: 'Prisma 7', path: '/examples/prisma' },
+        { title: 'TypeORM', path: '/examples/typeorm' },
+        { title: 'Drizzle ORM', path: '/examples/drizzle' },
+        { title: 'MikroORM', path: '/examples/mikro-orm' },
       ],
     },
   ];

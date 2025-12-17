@@ -389,27 +389,109 @@
     <app-code-block [code]="exampleJwt" />
   </section>
 
-  <!-- Prisma Guide CTA -->
-  <section class="mb-16">
-    <a
-      routerLink="/examples/prisma"
-      class="block bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6 hover:border-primary/40 transition-colors group"
-    >
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-xl font-bold text-text-primary mb-2 group-hover:text-primary transition-colors">
-            📘 Comprehensive Guide: Prisma 7 Multi-Tenancy
-          </h2>
-          <p class="text-text-secondary">
-            Complete step-by-step guide to building fully isolated multi-tenant applications
-            using Prisma 7 Client Extensions with automatic tenant filtering.
-          </p>
+  <!-- ORM Integration Guides -->
+  <section id="orm-guides" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-6 pb-2 border-b-2 border-primary inline-block">
+      ORM Integration Guides
+    </h2>
+    <p class="text-text-secondary mb-8">
+      Complete step-by-step guides for integrating multi-tenancy with popular TypeScript ORMs.
+      Each guide includes schemas, services, and best practices.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <!-- Prisma -->
+      <a
+        routerLink="/examples/prisma"
+        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+      >
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-[#2D3748] to-[#1A202C] rounded-lg flex items-center justify-center shrink-0">
+            <span class="text-2xl">◮</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+              Prisma 7
+            </h3>
+            <p class="text-text-secondary text-sm">
+              Client Extensions for automatic tenant filtering with full type safety.
+            </p>
+          </div>
+          <svg class="w-5 h-5 text-text-muted group-hover:text-primary shrink-0 group-hover:translate-x-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </div>
-        <svg class="w-6 h-6 text-primary shrink-0 ml-4 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </div>
-    </a>
+      </a>
+
+      <!-- TypeORM -->
+      <a
+        routerLink="/examples/typeorm"
+        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+      >
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-[#E83524] to-[#C62828] rounded-lg flex items-center justify-center shrink-0">
+            <span class="text-white text-xl font-bold">T</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+              TypeORM
+            </h3>
+            <p class="text-text-secondary text-sm">
+              Base repository pattern with QueryBuilder and subscriber support.
+            </p>
+          </div>
+          <svg class="w-5 h-5 text-text-muted group-hover:text-primary shrink-0 group-hover:translate-x-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- Drizzle -->
+      <a
+        routerLink="/examples/drizzle"
+        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+      >
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-[#C5F74F] to-[#8BC34A] rounded-lg flex items-center justify-center shrink-0">
+            <span class="text-black text-xl">🌧</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+              Drizzle ORM
+            </h3>
+            <p class="text-text-secondary text-sm">
+              Lightweight, blazing fast queries with prepared statements.
+            </p>
+          </div>
+          <svg class="w-5 h-5 text-text-muted group-hover:text-primary shrink-0 group-hover:translate-x-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </div>
+      </a>
+
+      <!-- MikroORM -->
+      <a
+        routerLink="/examples/mikro-orm"
+        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+      >
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-[#1976D2] to-[#0D47A1] rounded-lg flex items-center justify-center shrink-0">
+            <span class="text-white text-xl font-bold">M</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+              MikroORM
+            </h3>
+            <p class="text-text-secondary text-sm">
+              Global filters with Unit of Work and Identity Map patterns.
+            </p>
+          </div>
+          <svg class="w-5 h-5 text-text-muted group-hover:text-primary shrink-0 group-hover:translate-x-1 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </div>
+      </a>
+    </div>
   </section>
 
   <!-- Footer -->

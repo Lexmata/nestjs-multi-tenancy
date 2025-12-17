@@ -1,0 +1,190 @@
+<div class="max-w-[900px] mx-auto px-4 lg:px-8 py-12">
+  <!-- Hero Section -->
+  <section class="text-center py-12 mb-12 border-b border-border">
+    <a
+      routerLink="/"
+      class="inline-flex items-center gap-2 text-sm text-text-muted hover:text-primary transition-colors mb-6"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Documentation
+    </a>
+    <h1 class="text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+      MikroORM Multi-Tenancy
+    </h1>
+    <p class="text-lg text-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
+      Build enterprise-grade multi-tenant applications using MikroORM's powerful
+      global filters and Unit of Work pattern for data isolation.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🔧</span> Global Filters
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>📦</span> Unit of Work
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🧬</span> Identity Map
+      </span>
+    </div>
+  </section>
+
+  <!-- Why MikroORM -->
+  <section class="mb-12">
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-6">
+      <span class="text-2xl">✨</span>
+      <div>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Why MikroORM?</h3>
+        <p class="text-text-secondary">
+          MikroORM offers built-in global filters that make multi-tenancy a breeze.
+          Combined with its Unit of Work pattern and Identity Map, you get automatic
+          transaction management and optimized database operations.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 1: Entities -->
+  <section id="entities" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">1</span>
+      <h2 class="text-2xl font-bold text-text-primary">Define Your Entities</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create MikroORM entities with tenant relationships and proper decorators.
+    </p>
+    <app-code-block [code]="entities" title="Entity Definitions" />
+  </section>
+
+  <!-- Step 2: Global Filter -->
+  <section id="global-filter" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">2</span>
+      <h2 class="text-2xl font-bold text-text-primary">Configure Global Filters</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      MikroORM's global filters automatically apply tenant conditions to all queries.
+      This is the cleanest approach for multi-tenancy.
+    </p>
+    <app-code-block [code]="globalFilter" title="src/database/tenant.filter.ts" />
+
+    <h3 class="text-lg font-semibold text-text-primary mt-8 mb-4">MikroORM Configuration</h3>
+    <app-code-block [code]="mikroOrmConfig" title="src/mikro-orm.config.ts" />
+  </section>
+
+  <!-- Step 3: Base Repository -->
+  <section id="base-repository" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">3</span>
+      <h2 class="text-2xl font-bold text-text-primary">Create the Base Repository</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create an abstract base repository that configures the tenant filter
+      and provides reusable CRUD methods.
+    </p>
+    <app-code-block [code]="baseRepository" title="src/database/tenant-base.repository.ts" />
+  </section>
+
+  <!-- Step 4: Users Repository -->
+  <section id="users-repository" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">4</span>
+      <h2 class="text-2xl font-bold text-text-primary">Extend the Base Repository</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create entity-specific repositories with custom query methods.
+    </p>
+    <app-code-block [code]="usersRepository" title="src/users/users.repository.ts" />
+  </section>
+
+  <!-- Step 5: App Module -->
+  <section id="app-module" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">5</span>
+      <h2 class="text-2xl font-bold text-text-primary">Configure the App Module</h2>
+    </div>
+    <app-code-block [code]="appModule" title="src/app.module.ts" />
+  </section>
+
+  <!-- Step 6: Service -->
+  <section id="service" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">6</span>
+      <h2 class="text-2xl font-bold text-text-primary">Create Your Service</h2>
+    </div>
+    <app-code-block [code]="usersService" title="src/users/users.service.ts" />
+  </section>
+
+  <!-- QueryBuilder -->
+  <section id="querybuilder" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-border inline-block">
+      Advanced: QueryBuilder with Tenant Scope
+    </h2>
+    <p class="text-text-secondary mb-6">
+      For complex queries, use MikroORM's QueryBuilder with the tenant filter enabled.
+    </p>
+    <app-code-block [code]="queryBuilder" title="Advanced QueryBuilder Usage" />
+  </section>
+
+  <!-- Unit of Work -->
+  <section id="unit-of-work" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-border inline-block">
+      Unit of Work Pattern
+    </h2>
+    <p class="text-text-secondary mb-6">
+      MikroORM's Unit of Work pattern ensures all changes are flushed in a single
+      transaction, perfect for complex multi-tenant operations.
+    </p>
+    <app-code-block [code]="unitOfWork" title="Transaction with Unit of Work" />
+  </section>
+
+  <!-- Key Benefits -->
+  <section id="benefits" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-6">Key Benefits</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🔧</div>
+        <h3 class="font-semibold text-text-primary mb-2">Built-in Global Filters</h3>
+        <p class="text-text-secondary text-sm">
+          Native support for automatic query filtering without manual scoping.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">📦</div>
+        <h3 class="font-semibold text-text-primary mb-2">Unit of Work</h3>
+        <p class="text-text-secondary text-sm">
+          Automatic transaction management with optimized batch operations.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🧬</div>
+        <h3 class="font-semibold text-text-primary mb-2">Identity Map</h3>
+        <p class="text-text-secondary text-sm">
+          Ensures entity consistency within a request context.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🎯</div>
+        <h3 class="font-semibold text-text-primary mb-2">Data Mapper Pattern</h3>
+        <p class="text-text-secondary text-sm">
+          Clean separation between domain entities and database mapping.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-16 pt-8 border-t border-border text-center">
+    <a
+      routerLink="/"
+      class="inline-flex items-center gap-2 text-primary hover:text-primary-light transition-colors"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Documentation
+    </a>
+  </footer>
+</div>
+

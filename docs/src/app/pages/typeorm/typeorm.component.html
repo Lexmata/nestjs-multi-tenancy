@@ -1,0 +1,184 @@
+<div class="max-w-[900px] mx-auto px-4 lg:px-8 py-12">
+  <!-- Hero Section -->
+  <section class="text-center py-12 mb-12 border-b border-border">
+    <a
+      routerLink="/"
+      class="inline-flex items-center gap-2 text-sm text-text-muted hover:text-primary transition-colors mb-6"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Documentation
+    </a>
+    <h1 class="text-4xl lg:text-5xl font-bold text-text-primary mb-4 tracking-tight">
+      TypeORM Multi-Tenancy
+    </h1>
+    <p class="text-lg text-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
+      Build multi-tenant applications using TypeORM with a reusable base repository pattern
+      that automatically scopes all database operations to the current tenant.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🏗️</span> Base Repository
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>🔍</span> QueryBuilder
+      </span>
+      <span class="flex items-center gap-2 bg-surface border border-border px-4 py-2 rounded-lg text-sm text-text-secondary">
+        <span>📡</span> Subscribers
+      </span>
+    </div>
+  </section>
+
+  <!-- Step 1: Entities -->
+  <section id="entities" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">1</span>
+      <h2 class="text-2xl font-bold text-text-primary">Define Your Entities</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create TypeORM entities with proper tenant relationships. Add <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenantId</code>
+      to every tenant-scoped entity with indexes for performance.
+    </p>
+    <app-code-block [code]="entities" title="Entity Definitions" />
+  </section>
+
+  <!-- Step 2: Base Repository -->
+  <section id="base-repository" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">2</span>
+      <h2 class="text-2xl font-bold text-text-primary">Create the Base Repository</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create an abstract base repository that automatically scopes all queries to the current tenant.
+      This pattern provides DRY, type-safe multi-tenancy across all your repositories.
+    </p>
+    <app-code-block [code]="baseRepository" title="src/database/tenant-base.repository.ts" />
+  </section>
+
+  <!-- Step 3: Users Repository -->
+  <section id="users-repository" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">3</span>
+      <h2 class="text-2xl font-bold text-text-primary">Extend the Base Repository</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Create entity-specific repositories by extending the base. Add custom query methods as needed.
+    </p>
+    <app-code-block [code]="usersRepository" title="src/users/users.repository.ts" />
+  </section>
+
+  <!-- Step 4: Service -->
+  <section id="service" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">4</span>
+      <h2 class="text-2xl font-bold text-text-primary">Create Your Service</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Services use the repository without worrying about tenant scoping—it's handled automatically.
+    </p>
+    <app-code-block [code]="usersService" title="src/users/users.service.ts" />
+  </section>
+
+  <!-- Step 5: Module Setup -->
+  <section id="modules" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">5</span>
+      <h2 class="text-2xl font-bold text-text-primary">Configure Modules</h2>
+    </div>
+    <p class="text-text-secondary mb-6">
+      Set up the database module, app module with multi-tenant configuration, and feature modules.
+    </p>
+
+    <h3 class="text-lg font-semibold text-text-primary mt-8 mb-4">Database Module</h3>
+    <app-code-block [code]="databaseModule" title="src/database/database.module.ts" />
+
+    <h3 class="text-lg font-semibold text-text-primary mt-8 mb-4">App Module</h3>
+    <app-code-block [code]="appModule" title="src/app.module.ts" />
+
+    <h3 class="text-lg font-semibold text-text-primary mt-8 mb-4">Users Module</h3>
+    <app-code-block [code]="usersModule" title="src/users/users.module.ts" />
+  </section>
+
+  <!-- Step 6: Controller -->
+  <section id="controller" class="mb-16">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark text-white text-lg font-bold flex items-center justify-center rounded-full shrink-0">6</span>
+      <h2 class="text-2xl font-bold text-text-primary">Create Your Controller</h2>
+    </div>
+    <app-code-block [code]="usersController" title="src/users/users.controller.ts" />
+  </section>
+
+  <!-- Alternative: QueryBuilder -->
+  <section id="querybuilder" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-border inline-block">
+      Alternative: QueryBuilder Approach
+    </h2>
+    <p class="text-text-secondary mb-6">
+      For complex queries, you can use TypeORM's QueryBuilder with a helper method that
+      pre-scopes queries to the current tenant.
+    </p>
+    <app-code-block [code]="queryBuilder" title="QueryBuilder with Tenant Scope" />
+  </section>
+
+  <!-- Subscriber -->
+  <section id="subscriber" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-border inline-block">
+      Bonus: TypeORM Subscriber for Audit
+    </h2>
+    <p class="text-text-secondary mb-6">
+      Use a TypeORM subscriber to automatically set <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenantId</code>
+      on insert and validate tenant access on updates.
+    </p>
+    <app-code-block [code]="subscriber" title="src/database/tenant-audit.subscriber.ts" />
+  </section>
+
+  <!-- Key Benefits -->
+  <section id="benefits" class="mb-16">
+    <h2 class="text-2xl font-bold text-text-primary mb-6">Key Benefits</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🏗️</div>
+        <h3 class="font-semibold text-text-primary mb-2">DRY Base Repository</h3>
+        <p class="text-text-secondary text-sm">
+          Write tenant scoping logic once, reuse across all entity repositories.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🔒</div>
+        <h3 class="font-semibold text-text-primary mb-2">Automatic Scoping</h3>
+        <p class="text-text-secondary text-sm">
+          Every query is automatically filtered by tenant. No manual filtering needed.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">📝</div>
+        <h3 class="font-semibold text-text-primary mb-2">Type Safety</h3>
+        <p class="text-text-secondary text-sm">
+          Full TypeScript support with generics in the base repository.
+        </p>
+      </div>
+      <div class="bg-surface border border-border rounded-xl p-6">
+        <div class="text-2xl mb-3">🔍</div>
+        <h3 class="font-semibold text-text-primary mb-2">QueryBuilder Support</h3>
+        <p class="text-text-secondary text-sm">
+          Complex queries via QueryBuilder with tenant scope helpers.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-16 pt-8 border-t border-border text-center">
+    <a
+      routerLink="/"
+      class="inline-flex items-center gap-2 text-primary hover:text-primary-light transition-colors"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      Back to Documentation
+    </a>
+  </footer>
+</div>
+
