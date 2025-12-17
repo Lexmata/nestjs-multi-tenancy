@@ -6,27 +6,27 @@
   --color-primary: #e0234e;
   --color-primary-dark: #c41e44;
   --color-primary-light: #ff3d5e;
-  
+
   /* Sidebar colors */
   --color-sidebar-bg: #1a1a2e;
   --color-sidebar-text: #a0a0b8;
   --color-sidebar-active: #ffffff;
   --color-sidebar-hover: rgba(224, 35, 78, 0.1);
   --color-sidebar-section: #6c6c80;
-  
+
   /* Content colors */
   --color-content-bg: #0f0f1a;
   --color-surface: #16162a;
   --color-text-primary: #e8e8f0;
   --color-text-secondary: #a0a0b8;
   --color-text-muted: #6c6c80;
-  
+
   /* Code colors */
   --color-code-bg: #1e1e32;
   --color-code-border: #2a2a42;
   --color-inline-code-bg: rgba(224, 35, 78, 0.15);
   --color-inline-code-text: #ff6b8a;
-  
+
   /* Border */
   --color-border: #2a2a42;
 }

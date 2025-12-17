@@ -37,23 +37,29 @@ interface NavSection {
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto py-4">
-        @for (section of navSections; track section.title) {
-          <div class="px-4 mb-6">
+      <nav class="flex-1 overflow-y-auto py-6 px-4">
+        @for (section of navSections; track section.title; let isLast = $last) {
+          <div
+            class="mb-1"
+            [class.pb-5]="!isLast"
+            [class.border-b]="!isLast"
+            [class.border-border/50]="!isLast"
+          >
             <h3
-              class="text-[0.7rem] font-bold uppercase tracking-widest text-sidebar-section px-3 mb-2"
+              class="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.15em] text-text-muted mb-3 pl-3"
             >
+              <span class="w-1.5 h-1.5 rounded-full bg-primary/60"></span>
               {{ section.title }}
             </h3>
-            <ul class="list-none">
-              @for (item of section.items; track item.path) {
+            <ul class="list-none space-y-0.5">
+              @for (item of section.items; track item.path + item.fragment) {
                 <li>
                   <a
                     [routerLink]="item.path"
                     [fragment]="item.fragment"
-                    routerLinkActive="bg-primary text-white font-semibold"
+                    routerLinkActive="!bg-primary/15 !text-primary !border-l-primary font-medium"
                     [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-                    class="block px-3 py-2 text-sidebar-text text-sm rounded-md transition-all duration-200 hover:text-text-primary hover:bg-sidebar-hover no-underline"
+                    class="block px-3 py-1.5 text-sidebar-text text-[0.8rem] border-l-2 border-transparent transition-all duration-150 hover:text-text-primary hover:bg-white/5 hover:border-l-primary/50 no-underline"
                     (click)="linkClicked.emit()"
                   >
                     {{ item.title }}

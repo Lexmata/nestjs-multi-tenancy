@@ -8,8 +8,8 @@
       &#64;lexmata/nestjs-multi-tenant
     </h1>
     <p class="text-lg text-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
-      A flexible NestJS module for building multi-tenant applications. 
-      Supports multiple tenant identification strategies and provides seamless 
+      A flexible NestJS module for building multi-tenant applications.
+      Supports multiple tenant identification strategies and provides seamless
       tenant context management throughout your application.
     </p>
     <div class="flex flex-wrap justify-center gap-3">
@@ -34,24 +34,24 @@
       Installation
     </h2>
     <p class="text-text-secondary mb-4">Install the package using your preferred package manager:</p>
-    
+
     <div class="mb-6">
       <div class="flex gap-2 mb-0">
-        <button 
+        <button
           (click)="setActiveTab('pnpm')"
           [class]="activeTab === 'pnpm' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
           class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
         >
           pnpm
         </button>
-        <button 
+        <button
           (click)="setActiveTab('npm')"
           [class]="activeTab === 'npm' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
           class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
         >
           npm
         </button>
-        <button 
+        <button
           (click)="setActiveTab('yarn')"
           [class]="activeTab === 'yarn' ? 'bg-code-bg text-primary border-code-border' : 'bg-surface text-text-secondary border-border'"
           class="px-4 py-2 text-sm border border-b-0 rounded-t-lg transition-colors"
@@ -138,7 +138,7 @@
     <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
       Options Reference
     </h2>
-    
+
     <div class="overflow-x-auto mt-6">
       <table class="w-full text-sm">
         <thead>
@@ -210,7 +210,7 @@
     </h2>
     <p class="text-text-secondary mb-4">Extract tenant ID from a request header. This is the default and most common strategy.</p>
     <app-code-block [code]="headerStrategy" />
-    
+
     <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">Usage</h3>
     <app-code-block [code]="headerCurl" language="bash" />
   </section>
@@ -222,7 +222,7 @@
     </h2>
     <p class="text-text-secondary mb-4">Extract tenant ID from the subdomain of the request URL.</p>
     <app-code-block [code]="subdomainStrategy" />
-    
+
     <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary">
@@ -238,7 +238,7 @@
     </h2>
     <p class="text-text-secondary mb-4">Extract tenant ID from a URL path segment.</p>
     <app-code-block [code]="pathStrategy" />
-    
+
     <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary space-y-1">
@@ -255,7 +255,7 @@
     </h2>
     <p class="text-text-secondary mb-4">Extract tenant ID from a query parameter.</p>
     <app-code-block [code]="queryStrategy" />
-    
+
     <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary">
@@ -278,7 +278,7 @@
     <h2 class="text-2xl font-bold text-text-primary mb-4 pb-2 border-b-2 border-primary inline-block">
       Decorators
     </h2>
-    
+
     <h3 class="text-xl font-semibold text-text-primary mt-8 mb-4">&#64;CurrentTenant()</h3>
     <p class="text-text-secondary mb-4">Inject the full tenant object into a controller method.</p>
     <app-code-block [code]="currentTenantDecorator" />
