@@ -1,6 +1,21 @@
 # @lexmata/nestjs-multi-tenant
 
+[![npm version](https://img.shields.io/npm/v/@lexmata/nestjs-multi-tenant.svg?style=flat-square)](https://www.npmjs.com/package/@lexmata/nestjs-multi-tenant)
+[![npm downloads](https://img.shields.io/npm/dm/@lexmata/nestjs-multi-tenant.svg?style=flat-square)](https://www.npmjs.com/package/@lexmata/nestjs-multi-tenant)
+[![CI](https://img.shields.io/github/actions/workflow/status/Lexmata/nestjs-multi-tenancy/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Lexmata/nestjs-multi-tenancy/actions/workflows/ci.yml)
+[![codecov](https://img.shields.io/codecov/c/github/Lexmata/nestjs-multi-tenancy?style=flat-square)](https://codecov.io/gh/Lexmata/nestjs-multi-tenancy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/@lexmata/nestjs-multi-tenant.svg?style=flat-square)](https://nodejs.org)
+[![NestJS](https://img.shields.io/badge/NestJS-10.x%20%7C%2011.x-ea2845.svg?style=flat-square)](https://nestjs.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat-square)](https://www.typescriptlang.org)
+
 A flexible NestJS module for building multi-tenant applications. Supports multiple tenant identification strategies and provides seamless tenant context management throughout your application.
+
+<p align="center">
+  <a href="https://lexmata.github.io/nestjs-multi-tenancy/">📖 Documentation</a> •
+  <a href="https://github.com/Lexmata/nestjs-multi-tenancy/issues">🐛 Report Bug</a> •
+  <a href="https://github.com/Lexmata/nestjs-multi-tenancy/issues">✨ Request Feature</a>
+</p>
 
 ## Features
 

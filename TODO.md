@@ -17,19 +17,21 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 - [ ] **Publish v0.1.0-beta to npm registry**
   - Run `pnpm publish --access public` after setting up `NPM_TOKEN` secret
   - Verify package contents with `pnpm pack --dry-run`
-  
+
 - [ ] **Create GitHub Release**
   - Tag current commit as `v0.1.0-beta`
   - Generate release notes from CHANGELOG.md
   - Consider using `git-cliff` for automated changelog generation
 
-- [ ] **Add README Badges**
+- [x] **Add README Badges** ✅
   - npm version badge
   - CI status badge
   - Test coverage badge (Codecov)
   - License badge
   - npm downloads badge
-  - Bundle size badge (bundlephobia)
+  - Node.js version badge
+  - NestJS compatibility badge
+  - TypeScript badge
 
 ### Security & Quality
 
@@ -167,7 +169,7 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 - [ ] **Add Test Utilities Export**
   ```typescript
   import { createMockTenantContext } from '@lexmata/nestjs-multi-tenant/testing';
-  
+
   const mockContext = createMockTenantContext({ id: 'test-tenant' });
   ```
   - Mock TenantContextService for unit tests
