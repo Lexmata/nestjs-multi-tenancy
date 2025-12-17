@@ -164,7 +164,7 @@ function initCopyButtons() {
 
     button.addEventListener('click', async () => {
       const code = block.querySelector('code').textContent;
-      
+
       try {
         await navigator.clipboard.writeText(code);
         button.innerHTML = `
@@ -173,7 +173,7 @@ function initCopyButtons() {
           </svg>
         `;
         button.classList.add('copied');
-        
+
         setTimeout(() => {
           button.innerHTML = `
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

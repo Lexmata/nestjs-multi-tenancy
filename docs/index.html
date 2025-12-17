@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    
+
     <nav class="sidebar-nav">
       <div class="nav-section">
         <h3 class="nav-section-title">Overview</h3>
@@ -40,7 +40,7 @@
           <li><a href="#quick-start" class="nav-link">Quick Start</a></li>
         </ul>
       </div>
-      
+
       <div class="nav-section">
         <h3 class="nav-section-title">Configuration</h3>
         <ul class="nav-list">
@@ -49,7 +49,7 @@
           <li><a href="#options" class="nav-link">Options Reference</a></li>
         </ul>
       </div>
-      
+
       <div class="nav-section">
         <h3 class="nav-section-title">Extraction Strategies</h3>
         <ul class="nav-list">
@@ -60,7 +60,7 @@
           <li><a href="#custom-strategy" class="nav-link">Custom Strategy</a></li>
         </ul>
       </div>
-      
+
       <div class="nav-section">
         <h3 class="nav-section-title">Features</h3>
         <ul class="nav-list">
@@ -71,7 +71,7 @@
           <li><a href="#route-exclusions" class="nav-link">Route Exclusions</a></li>
         </ul>
       </div>
-      
+
       <div class="nav-section">
         <h3 class="nav-section-title">Examples</h3>
         <ul class="nav-list">
@@ -81,7 +81,7 @@
         </ul>
       </div>
     </nav>
-    
+
     <div class="sidebar-footer">
       <a href="https://github.com/Lexmata/nestjs-multi-tenancy" class="github-link" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -101,8 +101,8 @@
         <div class="hero-badge">Open Source</div>
         <h1 class="hero-title">@lexmata/nestjs-multi-tenant</h1>
         <p class="hero-description">
-          A flexible NestJS module for building multi-tenant applications. 
-          Supports multiple tenant identification strategies and provides seamless 
+          A flexible NestJS module for building multi-tenant applications.
+          Supports multiple tenant identification strategies and provides seamless
           tenant context management throughout your application.
         </p>
         <div class="hero-features">
@@ -129,7 +129,7 @@
       <section class="content-section" id="installation">
         <h2 class="section-title">Installation</h2>
         <p>Install the package using your preferred package manager:</p>
-        
+
         <div class="code-tabs">
           <div class="code-tab-buttons">
             <button class="code-tab-btn active" data-tab="pnpm">pnpm</button>
@@ -156,7 +156,7 @@
       <!-- Quick Start -->
       <section class="content-section" id="quick-start">
         <h2 class="section-title">Quick Start</h2>
-        
+
         <div class="step">
           <div class="step-number">1</div>
           <div class="step-content">
@@ -223,7 +223,7 @@ export class UsersService {
       <section class="content-section" id="basic-config">
         <h2 class="section-title">Basic Configuration</h2>
         <p>Configure the module with the options that fit your application's needs:</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   // Extraction strategy (default: 'header')
   extractionStrategy: 'header' | 'subdomain' | 'path' | 'query' | 'custom',
@@ -257,7 +257,7 @@ export class UsersService {
       <section class="content-section" id="async-config">
         <h2 class="section-title">Async Configuration</h2>
         <p>Load configuration from external sources using the async configuration pattern:</p>
-        
+
         <pre class="code-block"><code class="language-typescript">import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -279,7 +279,7 @@ export class AppModule {}</code></pre>
       <!-- Options Reference -->
       <section class="content-section" id="options">
         <h2 class="section-title">Options Reference</h2>
-        
+
         <div class="table-wrapper">
           <table class="options-table">
             <thead>
@@ -348,7 +348,7 @@ export class AppModule {}</code></pre>
       <section class="content-section" id="header-strategy">
         <h2 class="section-title">Header Strategy</h2>
         <p>Extract tenant ID from a request header. This is the default and most common strategy.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'header',
   tenantHeader: 'x-tenant-id', // default
@@ -362,7 +362,7 @@ export class AppModule {}</code></pre>
       <section class="content-section" id="subdomain-strategy">
         <h2 class="section-title">Subdomain Strategy</h2>
         <p>Extract tenant ID from the subdomain of the request URL.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'subdomain',
 })</code></pre>
@@ -379,7 +379,7 @@ export class AppModule {}</code></pre>
       <section class="content-section" id="path-strategy">
         <h2 class="section-title">Path Strategy</h2>
         <p>Extract tenant ID from a URL path segment.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'path',
   tenantPathIndex: 0, // First path segment after /
@@ -398,7 +398,7 @@ export class AppModule {}</code></pre>
       <section class="content-section" id="query-strategy">
         <h2 class="section-title">Query Strategy</h2>
         <p>Extract tenant ID from a query parameter.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'query',
   tenantQueryParam: 'tenantId', // default
@@ -416,7 +416,7 @@ export class AppModule {}</code></pre>
       <section class="content-section" id="custom-strategy">
         <h2 class="section-title">Custom Strategy</h2>
         <p>Implement your own extraction logic for complex scenarios.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'custom',
   customExtractor: async (request) => {
@@ -434,7 +434,7 @@ export class AppModule {}</code></pre>
       <!-- Decorators -->
       <section class="content-section" id="decorators">
         <h2 class="section-title">Decorators</h2>
-        
+
         <h3 class="subsection-title">@CurrentTenant()</h3>
         <p>Inject the full tenant object into a controller method.</p>
         <pre class="code-block"><code class="language-typescript">@Get()
@@ -469,7 +469,7 @@ export class UsersController {
       <section class="content-section" id="guards">
         <h2 class="section-title">Guards</h2>
         <p>Use the <code>TenantGuard</code> with the <code>@RequireTenant()</code> decorator to enforce tenant requirements:</p>
-        
+
         <pre class="code-block"><code class="language-typescript">@Controller('mixed')
 @UseGuards(TenantGuard)
 export class MixedController {
@@ -490,7 +490,7 @@ export class MixedController {
       <section class="content-section" id="context-service">
         <h2 class="section-title">TenantContextService</h2>
         <p>Access tenant information from anywhere in your application using AsyncLocalStorage.</p>
-        
+
         <pre class="code-block"><code class="language-typescript">import { Injectable } from '@nestjs/common';
 import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
@@ -559,7 +559,7 @@ tenantContext.run(tenant, () => {
       <section class="content-section" id="tenant-resolver">
         <h2 class="section-title">Tenant Resolver</h2>
         <p>Enrich tenant data by providing a resolver function that fetches additional tenant information:</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'header',
   tenantResolver: async (tenantId: string) => {
@@ -581,7 +581,7 @@ tenantContext.run(tenant, () => {
       <section class="content-section" id="route-exclusions">
         <h2 class="section-title">Route Exclusions</h2>
         <p>Exclude specific routes from tenant extraction:</p>
-        
+
         <pre class="code-block"><code class="language-typescript">MultiTenantModule.forRoot({
   extractionStrategy: 'header',
   requireTenant: true,
@@ -597,7 +597,7 @@ tenantContext.run(tenant, () => {
       <!-- Example: Database Connection -->
       <section class="content-section" id="example-database">
         <h2 class="section-title">Example: Multi-tenant Database Connection</h2>
-        
+
         <pre class="code-block"><code class="language-typescript">import { Injectable, Scope } from '@nestjs/common';
 import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
@@ -616,7 +616,7 @@ export class TenantDatabaseService {
       <!-- Example: Tenant Repository -->
       <section class="content-section" id="example-repository">
         <h2 class="section-title">Example: Tenant-aware Repository</h2>
-        
+
         <pre class="code-block"><code class="language-typescript">import { Injectable } from '@nestjs/common';
 import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
@@ -646,7 +646,7 @@ export class UsersRepository {
       <!-- Example: JWT Integration -->
       <section class="content-section" id="example-jwt">
         <h2 class="section-title">Example: JWT-based Tenant Extraction</h2>
-        
+
         <pre class="code-block"><code class="language-typescript">import { JwtService } from '@nestjs/jwt';
 
 MultiTenantModule.forRootAsync({
