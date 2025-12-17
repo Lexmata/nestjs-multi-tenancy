@@ -21,11 +21,11 @@
 }
 
 .code-content {
-  @apply block p-4 text-sm leading-relaxed font-mono;
+  @apply block p-6 text-sm leading-relaxed font-mono;
 }
 
 .copy-button {
-  @apply absolute top-2 right-2 p-2 bg-white/10 rounded opacity-0 transition-opacity text-text-secondary;
+  @apply absolute top-3 right-3 p-2 bg-white/10 rounded opacity-0 transition-opacity text-text-secondary;
 }
 
 .copy-button:hover {
@@ -33,6 +33,6 @@
 }
 
 .copy-button.with-title {
-  @apply top-10;
+  @apply top-12;
 }
 
