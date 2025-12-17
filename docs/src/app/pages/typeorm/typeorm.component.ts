@@ -7,6 +7,7 @@ import { CodeBlockComponent } from '../../components/code-block/code-block.compo
   standalone: true,
   imports: [CodeBlockComponent, RouterLink],
   templateUrl: './typeorm.component.html',
+  styleUrl: './typeorm.component.css',
 })
 export class TypeormComponent {
   // Entity definitions

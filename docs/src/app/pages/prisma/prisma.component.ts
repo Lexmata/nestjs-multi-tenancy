@@ -7,6 +7,7 @@ import { CodeBlockComponent } from '../../components/code-block/code-block.compo
   standalone: true,
   imports: [CodeBlockComponent, RouterLink],
   templateUrl: './prisma.component.html',
+  styleUrl: './prisma.component.css',
 })
 export class PrismaComponent {
   // Prisma 7 Comprehensive Example

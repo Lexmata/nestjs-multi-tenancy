@@ -7,6 +7,7 @@ import { CodeBlockComponent } from '../../components/code-block/code-block.compo
   standalone: true,
   imports: [CodeBlockComponent, RouterLink],
   templateUrl: './drizzle.component.html',
+  styleUrl: './drizzle.component.css',
 })
 export class DrizzleComponent {
   // Schema

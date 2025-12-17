@@ -7,6 +7,7 @@ import { CodeBlockComponent } from '../../components/code-block/code-block.compo
   standalone: true,
   imports: [CodeBlockComponent, RouterLink],
   templateUrl: './mikro-orm.component.html',
+  styleUrl: './mikro-orm.component.css',
 })
 export class MikroOrmComponent {
   // Entities
