@@ -1,5 +1,5 @@
 {
-  "name": "@pegasusheavy/nestjs-multi-tenant",
+  "name": "@lexmata/nestjs-multi-tenant",
   "version": "0.1.0",
   "description": "A NestJS module for building multi-tenant applications",
   "main": "dist/index.js",
@@ -41,18 +41,18 @@
     "typescript"
   ],
   "author": {
-    "name": "Pegasus Heavy Industries LLC",
-    "url": "https://github.com/pegasusheavy"
+    "name": "Lexmata LLC",
+    "url": "https://github.com/Lexmata"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pegasusheavy/nestjs-multi-tenant.git"
+    "url": "git+https://github.com/Lexmata/nestjs-multi-tenancy.git"
   },
   "bugs": {
-    "url": "https://github.com/pegasusheavy/nestjs-multi-tenant/issues"
+    "url": "https://github.com/Lexmata/nestjs-multi-tenancy/issues"
   },
-  "homepage": "https://github.com/pegasusheavy/nestjs-multi-tenant#readme",
+  "homepage": "https://github.com/Lexmata/nestjs-multi-tenancy#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"

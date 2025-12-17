@@ -1,4 +1,4 @@
-# @pegasusheavy/nestjs-multi-tenant
+# @lexmata/nestjs-multi-tenant
 
 A flexible NestJS module for building multi-tenant applications. Supports multiple tenant identification strategies and provides seamless tenant context management throughout your application.
 
@@ -15,13 +15,13 @@ A flexible NestJS module for building multi-tenant applications. Supports multip
 
 ```bash
 # npm
-npm install @pegasusheavy/nestjs-multi-tenant
+npm install @lexmata/nestjs-multi-tenant
 
 # yarn
-yarn add @pegasusheavy/nestjs-multi-tenant
+yarn add @lexmata/nestjs-multi-tenant
 
 # pnpm
-pnpm add @pegasusheavy/nestjs-multi-tenant
+pnpm add @lexmata/nestjs-multi-tenant
 ```
 
 ### Peer Dependencies
@@ -43,7 +43,7 @@ This package requires the following peer dependencies:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MultiTenantModule } from '@pegasusheavy/nestjs-multi-tenant';
+import { MultiTenantModule } from '@lexmata/nestjs-multi-tenant';
 
 @Module({
   imports: [
@@ -60,7 +60,7 @@ export class AppModule {}
 
 ```typescript
 import { Controller, Get } from '@nestjs/common';
-import { CurrentTenant, TenantId, Tenant } from '@pegasusheavy/nestjs-multi-tenant';
+import { CurrentTenant, TenantId, Tenant } from '@lexmata/nestjs-multi-tenant';
 
 @Controller('users')
 export class UsersController {
@@ -81,7 +81,7 @@ export class UsersController {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { TenantContextService } from '@pegasusheavy/nestjs-multi-tenant';
+import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
 @Injectable()
 export class UsersService {
@@ -282,7 +282,7 @@ Mark a controller or method as requiring a valid tenant context. Use with `Tenan
 
 ```typescript
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { RequireTenant, TenantGuard } from '@pegasusheavy/nestjs-multi-tenant';
+import { RequireTenant, TenantGuard } from '@lexmata/nestjs-multi-tenant';
 
 // Apply to entire controller
 @Controller('users')
@@ -318,7 +318,7 @@ Access tenant information from anywhere in your application using AsyncLocalStor
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { TenantContextService } from '@pegasusheavy/nestjs-multi-tenant';
+import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
 @Injectable()
 export class AnyService {
@@ -417,7 +417,7 @@ pnpm test:coverage # With coverage
 
 ```typescript
 import { Injectable, Scope } from '@nestjs/common';
-import { TenantContextService } from '@pegasusheavy/nestjs-multi-tenant';
+import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TenantDatabaseService {
@@ -435,7 +435,7 @@ export class TenantDatabaseService {
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { TenantContextService } from '@pegasusheavy/nestjs-multi-tenant';
+import { TenantContextService } from '@lexmata/nestjs-multi-tenant';
 
 @Injectable()
 export class UsersRepository {
@@ -480,5 +480,5 @@ MultiTenantModule.forRootAsync({
 
 ## License
 
-MIT © [Pegasus Heavy Industries LLC](https://github.com/PegasusHeavyIndustries)
+MIT © [Lexmata LLC](https://github.com/Lexmata)
 
