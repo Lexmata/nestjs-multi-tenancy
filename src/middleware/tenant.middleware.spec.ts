@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { TenantMiddleware } from './tenant.middleware';
 import { TenantContextService } from '../services';
 import { MultiTenantModuleOptions } from '../interfaces';
@@ -1734,6 +1734,194 @@ describe('TenantMiddleware', () => {
 
         expect(mockNext).toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('debug mode', () => {
+    let loggerDebugSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      // Spy on Logger.prototype.debug to capture log calls
+      loggerDebugSpy = vi.spyOn(Logger.prototype, 'debug').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      loggerDebugSpy.mockRestore();
+    });
+
+    it('should log initialization when debug is true', () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        debug: true,
+      });
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith('MultiTenant middleware initialized');
+      expect(loggerDebugSpy).toHaveBeenCalledWith('  Strategy: header');
+    });
+
+    it('should not log when debug is false', () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        debug: false,
+      });
+
+      expect(loggerDebugSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not log when debug is not specified', () => {
+      createMiddleware({ extractionStrategy: 'header' });
+
+      expect(loggerDebugSpy).not.toHaveBeenCalled();
+    });
+
+    it('should log tenant extraction process', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Extracting tenant using 'header' strategy"),
+      );
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Tenant ID extracted: tenant-123'),
+      );
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Setting tenant context: tenant-123'),
+      );
+    });
+
+    it('should log when no tenant ID found', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        debug: true,
+      });
+      // No tenant header
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(expect.stringContaining('No tenant ID found'));
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Continuing without tenant'),
+      );
+    });
+
+    it('should log route exclusion', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        excludeRoutes: ['/health'],
+        debug: true,
+      });
+      mockRequest.path = '/health';
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Route excluded from tenant extraction'),
+      );
+    });
+
+    it('should log tenant resolution', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id, name: 'Acme Corp' }),
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Resolving tenant data for: tenant-123'),
+      );
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Tenant resolved: tenant-123 (Acme Corp)'),
+      );
+    });
+
+    it('should log tenant not found', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: () => null,
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'unknown' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Tenant not found: unknown'),
+      );
+    });
+
+    it('should log validation process', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantValidator: () => true,
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Validating tenant: tenant-123'),
+      );
+      expect(loggerDebugSpy).toHaveBeenCalledWith(expect.stringContaining('Validation passed'));
+    });
+
+    it('should log validation failure', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantValidator: () => ({ valid: false, reason: 'Subscription expired' }),
+        requireTenant: true,
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await expect(
+        middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+      ).rejects.toThrow();
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Validation failed: Subscription expired'),
+      );
+    });
+
+    it('should log cache hit', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id, name: 'Acme' }),
+        tenantResolverCache: { enabled: true },
+        debug: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      // First call - cache miss
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      // Second call - cache hit
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith('Cache miss for tenant: tenant-123');
+      expect(loggerDebugSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Cached tenant: tenant-123'),
+      );
+      expect(loggerDebugSpy).toHaveBeenCalledWith('Cache hit for tenant: tenant-123');
+    });
+
+    it('should log cache configuration on init', () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolverCache: { enabled: true, ttl: 60_000, max: 500 },
+        debug: true,
+      });
+
+      expect(loggerDebugSpy).toHaveBeenCalledWith('  Cache enabled: true');
+      expect(loggerDebugSpy).toHaveBeenCalledWith('  Cache TTL: 60000ms');
+      expect(loggerDebugSpy).toHaveBeenCalledWith('  Cache max: 500');
     });
   });
 });

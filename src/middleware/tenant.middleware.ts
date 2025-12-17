@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import type { NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Request, Response } from 'express';
 import {
@@ -34,10 +34,12 @@ interface CacheEntry {
  */
 @Injectable()
 export class TenantMiddleware implements NestMiddleware {
+  private readonly logger = new Logger('MultiTenant');
   private readonly cache = new Map<string, CacheEntry>();
   private readonly cacheEnabled: boolean;
   private readonly cacheTtl: number;
   private readonly cacheMax: number;
+  private readonly debug: boolean;
 
   constructor(
     private readonly tenantContext: TenantContextService,
@@ -48,11 +50,27 @@ export class TenantMiddleware implements NestMiddleware {
     this.cacheEnabled = options.tenantResolverCache?.enabled ?? false;
     this.cacheTtl = options.tenantResolverCache?.ttl ?? DEFAULT_CACHE_TTL;
     this.cacheMax = options.tenantResolverCache?.max ?? DEFAULT_CACHE_MAX;
+    this.debug = options.debug ?? false;
+
+    if (this.debug) {
+      this.logger.debug('MultiTenant middleware initialized');
+      this.logger.debug(`  Strategy: ${options.extractionStrategy ?? 'header'}`);
+      this.logger.debug(`  Require tenant: ${String(options.requireTenant ?? false)}`);
+      this.logger.debug(`  Cache enabled: ${String(this.cacheEnabled)}`);
+      if (this.cacheEnabled) {
+        this.logger.debug(`  Cache TTL: ${String(this.cacheTtl)}ms`);
+        this.logger.debug(`  Cache max: ${String(this.cacheMax)}`);
+      }
+    }
   }
 
   async use(req: Request, _res: Response, next: NextFunction): Promise<void> {
+    const method = req.method;
+    const path = req.path;
+
     // Check if route is excluded
-    if (this.isRouteExcluded(req.path)) {
+    if (this.isRouteExcluded(path)) {
+      this.log(`[${method} ${path}] Route excluded from tenant extraction`);
       next();
       return;
     }
@@ -60,18 +78,24 @@ export class TenantMiddleware implements NestMiddleware {
     const strategy = this.options.extractionStrategy ?? 'header';
     const context = this.createEventContext(req, strategy);
 
+    this.log(`[${method} ${path}] Extracting tenant using '${strategy}' strategy`);
     const tenantId = await this.extractTenantId(req);
 
     if (!tenantId) {
+      this.log(`[${method} ${path}] No tenant ID found`);
       // Trigger onTenantMissing hook
       await this.triggerOnTenantMissing(context);
 
       if (this.options.requireTenant) {
+        this.log(`[${method} ${path}] Tenant required - rejecting request (400)`);
         throw new HttpException('Tenant identification required', HttpStatus.BAD_REQUEST);
       }
+      this.log(`[${method} ${path}] Continuing without tenant`);
       next();
       return;
     }
+
+    this.log(`[${method} ${path}] Tenant ID extracted: ${tenantId}`);
 
     // Trigger onTenantIdExtracted hook
     await this.triggerOnTenantIdExtracted(tenantId, context);
@@ -79,45 +103,67 @@ export class TenantMiddleware implements NestMiddleware {
     // Resolve full tenant data if resolver is provided
     let tenant: Tenant;
     if (this.options.tenantResolver) {
+      this.log(`[${method} ${path}] Resolving tenant data for: ${tenantId}`);
       const resolved = await this.resolveTenant(tenantId);
       if (!resolved) {
+        this.log(`[${method} ${path}] Tenant not found: ${tenantId}`);
         // Trigger onTenantNotFound hook
         await this.triggerOnTenantNotFound(tenantId, context);
 
         if (this.options.requireTenant) {
+          this.log(`[${method} ${path}] Tenant required - rejecting request (404)`);
           throw new HttpException('Tenant not found', HttpStatus.NOT_FOUND);
         }
+        this.log(`[${method} ${path}] Continuing without tenant`);
         next();
         return;
       }
       tenant = resolved;
+      this.log(`[${method} ${path}] Tenant resolved: ${tenant.id} (${tenant.name ?? 'unnamed'})`);
     } else {
       tenant = { id: tenantId };
+      this.log(`[${method} ${path}] Using ID-only tenant: ${tenantId}`);
     }
 
     // Validate tenant if validator is provided
     if (this.options.tenantValidator) {
+      this.log(`[${method} ${path}] Validating tenant: ${tenant.id}`);
       const validationResult = await this.validateTenant(tenant, context);
       if (!validationResult.valid) {
+        const reason = validationResult.reason ?? 'Tenant validation failed';
+        this.log(`[${method} ${path}] Validation failed: ${reason}`);
         // Trigger onTenantValidationFailed hook
         await this.triggerOnTenantValidationFailed(tenant, validationResult.reason, context);
 
         if (this.options.requireTenant) {
-          const message = validationResult.reason ?? 'Tenant validation failed';
-          throw new HttpException(message, HttpStatus.FORBIDDEN);
+          this.log(`[${method} ${path}] Tenant required - rejecting request (403)`);
+          throw new HttpException(reason, HttpStatus.FORBIDDEN);
         }
+        this.log(`[${method} ${path}] Continuing without tenant`);
         next();
         return;
       }
+      this.log(`[${method} ${path}] Validation passed`);
     }
 
     // Trigger onTenantResolved hook
     await this.triggerOnTenantResolved(tenant, context);
 
+    this.log(`[${method} ${path}] Setting tenant context: ${tenant.id}`);
+
     // Run the rest of the request within the tenant context
     this.tenantContext.run(tenant, () => {
       next();
     });
+  }
+
+  /**
+   * Log a debug message if debug mode is enabled
+   */
+  private log(message: string): void {
+    if (this.debug) {
+      this.logger.debug(message);
+    }
   }
 
   /**
@@ -133,8 +179,10 @@ export class TenantMiddleware implements NestMiddleware {
     if (this.cacheEnabled) {
       const cached = this.getFromCache(tenantId);
       if (cached) {
+        this.log(`Cache hit for tenant: ${tenantId}`);
         return cached;
       }
+      this.log(`Cache miss for tenant: ${tenantId}`);
     }
 
     // Call the resolver
@@ -143,6 +191,7 @@ export class TenantMiddleware implements NestMiddleware {
     // Cache the result if enabled and tenant was found
     if (this.cacheEnabled && resolved) {
       this.setInCache(tenantId, resolved);
+      this.log(`Cached tenant: ${tenantId} (expires in ${String(this.cacheTtl)}ms)`);
     }
 
     return resolved;

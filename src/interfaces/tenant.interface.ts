@@ -274,6 +274,13 @@ export interface MultiTenantModuleOptions {
    * Can also throw HttpException for custom status codes
    */
   tenantValidator?: TenantValidator;
+
+  /**
+   * Enable debug logging for tenant extraction
+   * Logs detailed information about extraction, resolution, and validation
+   * @default false
+   */
+  debug?: boolean;
 }
 
 /**

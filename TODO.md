@@ -126,6 +126,18 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Async validation supported
   - Returns HTTP 403 when validation fails and `requireTenant: true`
 
+- [x] **Debug/Logging Mode** ✅
+  ```typescript
+  MultiTenantModule.forRoot({
+    debug: true, // Enable detailed logging
+  })
+  ```
+  - Logs initialization settings (strategy, cache config)
+  - Logs extraction process per request
+  - Logs cache hits/misses
+  - Logs validation results
+  - Uses NestJS Logger with `[MultiTenant]` context
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification

@@ -556,6 +556,47 @@ Request → Extract ID → Resolve Tenant → Validate → Set Context → Handl
 | Rate limiting | `async (t) => await checkRateLimit(t.id)` |
 | IP allowlist | `(t, ctx) => t.allowedIps.includes(getIp(ctx.request))` |
 
+## Debug Mode
+
+Enable detailed logging to understand what's happening during tenant extraction:
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'header',
+  tenantResolver: (id) => this.tenantService.findById(id),
+  debug: true, // Enable debug logging
+})
+```
+
+### Sample Output
+
+```
+[MultiTenant] MultiTenant middleware initialized
+[MultiTenant]   Strategy: header
+[MultiTenant]   Require tenant: false
+[MultiTenant]   Cache enabled: true
+[MultiTenant]   Cache TTL: 300000ms
+[MultiTenant]   Cache max: 1000
+[MultiTenant] [GET /api/users] Extracting tenant using 'header' strategy
+[MultiTenant] [GET /api/users] Tenant ID extracted: tenant-123
+[MultiTenant] [GET /api/users] Resolving tenant data for: tenant-123
+[MultiTenant] [GET /api/users] Cache miss for tenant: tenant-123
+[MultiTenant] [GET /api/users] Tenant resolved: tenant-123 (Acme Corp)
+[MultiTenant] [GET /api/users] Cached tenant: tenant-123 (expires in 300000ms)
+[MultiTenant] [GET /api/users] Validating tenant: tenant-123
+[MultiTenant] [GET /api/users] Validation passed
+[MultiTenant] [GET /api/users] Setting tenant context: tenant-123
+```
+
+### When to Use Debug Mode
+
+| Environment | Recommendation |
+|-------------|----------------|
+| Development | ✅ Enable for troubleshooting |
+| Testing | ✅ Enable to verify tenant flow |
+| Staging | ⚠️ Enable temporarily for debugging |
+| Production | ❌ Disable (performance overhead) |
+
 ## Decorators
 
 ### @CurrentTenant()
@@ -695,6 +736,7 @@ MultiTenantModule.forRoot({
 | `eventHooks.onTenantMissing` | `(ctx) => void` | `undefined` | Called when no tenant ID in request |
 | `eventHooks.onTenantValidationFailed` | `(tenant, reason, ctx) => void` | `undefined` | Called when tenant validation fails |
 | `tenantValidator` | `(tenant, ctx) => boolean \| TenantValidationResult` | `undefined` | Validate tenant before allowing request |
+| `debug` | `boolean` | `false` | Enable debug logging for tenant extraction |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

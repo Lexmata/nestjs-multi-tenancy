@@ -50,9 +50,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Async validation supported
   - Integrates with `requireTenant` option (returns 403 Forbidden when invalid)
 
+- **Debug/Logging Mode**: Enable detailed logging for troubleshooting
+  - Configure with `debug: true`
+  - Logs extraction strategy, tenant ID, resolution, caching, and validation
+  - Uses NestJS Logger with `[MultiTenant]` context
+  - Shows HTTP method and path for each request
+
 ### Changed
 
-- Test suite expanded from 89 to 176 tests
+- Test suite expanded from 89 to 188 tests
 
 ## [0.1.0-beta] - 2025-12-17
 
