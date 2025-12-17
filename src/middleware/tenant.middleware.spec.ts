@@ -1156,4 +1156,280 @@ describe('TenantMiddleware', () => {
       expect(tenantResolver).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('event hooks', () => {
+    describe('onTenantIdExtracted', () => {
+      it('should call onTenantIdExtracted when tenant ID is extracted', async () => {
+        const onTenantIdExtracted = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantIdExtracted },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantIdExtracted).toHaveBeenCalledTimes(1);
+        expect(onTenantIdExtracted).toHaveBeenCalledWith(
+          'tenant-123',
+          expect.objectContaining({
+            strategy: 'header',
+            path: '/api/users',
+          }),
+        );
+      });
+
+      it('should support async onTenantIdExtracted hook', async () => {
+        const onTenantIdExtracted = vi.fn().mockResolvedValue(undefined);
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantIdExtracted },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantIdExtracted).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not call onTenantIdExtracted when no tenant ID', async () => {
+        const onTenantIdExtracted = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantIdExtracted },
+        });
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantIdExtracted).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('onTenantResolved', () => {
+      it('should call onTenantResolved when tenant is resolved with resolver', async () => {
+        const onTenantResolved = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: () => ({ id: 'tenant-123', name: 'Test Tenant' }),
+          eventHooks: { onTenantResolved },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantResolved).toHaveBeenCalledTimes(1);
+        expect(onTenantResolved).toHaveBeenCalledWith(
+          { id: 'tenant-123', name: 'Test Tenant' },
+          expect.objectContaining({ strategy: 'header' }),
+        );
+      });
+
+      it('should call onTenantResolved when no resolver (ID-only tenant)', async () => {
+        const onTenantResolved = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantResolved },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantResolved).toHaveBeenCalledTimes(1);
+        expect(onTenantResolved).toHaveBeenCalledWith(
+          { id: 'tenant-123' },
+          expect.objectContaining({ strategy: 'header' }),
+        );
+      });
+
+      it('should support async onTenantResolved hook', async () => {
+        const onTenantResolved = vi.fn().mockResolvedValue(undefined);
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantResolved },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantResolved).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('onTenantNotFound', () => {
+      it('should call onTenantNotFound when resolver returns null', async () => {
+        const onTenantNotFound = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: () => null,
+          eventHooks: { onTenantNotFound },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'unknown-tenant' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantNotFound).toHaveBeenCalledTimes(1);
+        expect(onTenantNotFound).toHaveBeenCalledWith(
+          'unknown-tenant',
+          expect.objectContaining({
+            strategy: 'header',
+            path: '/api/users',
+          }),
+        );
+      });
+
+      it('should support async onTenantNotFound hook', async () => {
+        const onTenantNotFound = vi.fn().mockResolvedValue(undefined);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: () => null,
+          eventHooks: { onTenantNotFound },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'unknown-tenant' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantNotFound).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not call onTenantNotFound when tenant is found', async () => {
+        const onTenantNotFound = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: (id) => ({ id }),
+          eventHooks: { onTenantNotFound },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantNotFound).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('onTenantMissing', () => {
+      it('should call onTenantMissing when no tenant ID could be extracted', async () => {
+        const onTenantMissing = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantMissing },
+        });
+        // No tenant header
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantMissing).toHaveBeenCalledTimes(1);
+        expect(onTenantMissing).toHaveBeenCalledWith(
+          expect.objectContaining({
+            strategy: 'header',
+            path: '/api/users',
+          }),
+        );
+      });
+
+      it('should support async onTenantMissing hook', async () => {
+        const onTenantMissing = vi.fn().mockResolvedValue(undefined);
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantMissing },
+        });
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantMissing).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not call onTenantMissing when tenant ID is extracted', async () => {
+        const onTenantMissing = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantMissing },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantMissing).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('multiple hooks', () => {
+      it('should call multiple hooks in correct order for successful resolution', async () => {
+        const callOrder: string[] = [];
+        const onTenantIdExtracted = vi.fn().mockImplementation(() => callOrder.push('extracted'));
+        const onTenantResolved = vi.fn().mockImplementation(() => callOrder.push('resolved'));
+
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: (id) => ({ id, name: 'Test' }),
+          eventHooks: { onTenantIdExtracted, onTenantResolved },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(callOrder).toEqual(['extracted', 'resolved']);
+      });
+
+      it('should call hooks with correct context for different strategies', async () => {
+        const onTenantIdExtracted = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'subdomain',
+          eventHooks: { onTenantIdExtracted },
+        });
+        mockRequest.hostname = 'tenant-abc.example.com';
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantIdExtracted).toHaveBeenCalledWith(
+          'tenant-abc',
+          expect.objectContaining({
+            strategy: 'subdomain',
+          }),
+        );
+      });
+
+      it('should include request in context', async () => {
+        const onTenantIdExtracted = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: { onTenantIdExtracted },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantIdExtracted).toHaveBeenCalledWith(
+          'tenant-123',
+          expect.objectContaining({
+            request: expect.any(Object),
+          }),
+        );
+      });
+    });
+
+    describe('hooks without event handlers', () => {
+      it('should work without any event hooks configured', async () => {
+        createMiddleware({ extractionStrategy: 'header' });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).resolves.not.toThrow();
+        expect(mockNext).toHaveBeenCalled();
+      });
+
+      it('should work with empty eventHooks object', async () => {
+        createMiddleware({
+          extractionStrategy: 'header',
+          eventHooks: {},
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).resolves.not.toThrow();
+        expect(mockNext).toHaveBeenCalled();
+      });
+    });
+  });
 });

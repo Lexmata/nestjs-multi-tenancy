@@ -35,9 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic expiration of stale entries
   - Cache management methods: `clearCache()`, `invalidateTenant()`, `getCacheStats()`
 
+- **Event Hooks & Lifecycle Events**: React to tenant extraction lifecycle
+  - `onTenantIdExtracted`: Called when tenant ID is extracted from request
+  - `onTenantResolved`: Called when tenant is successfully resolved
+  - `onTenantNotFound`: Called when tenant resolver returns null
+  - `onTenantMissing`: Called when no tenant ID in request
+  - All hooks receive context with request, strategy, and path
+  - Supports both sync and async hooks
+
 ### Changed
 
-- Test suite expanded from 89 to 142 tests
+- Test suite expanded from 89 to 159 tests
 
 ## [0.1.0-beta] - 2025-12-17
 

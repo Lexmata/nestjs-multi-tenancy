@@ -147,6 +147,22 @@ MultiTenantModule.forRoot({
     max: 1000,              // Max entries (default)
   },
 
+  // Event hooks for logging, metrics, and custom logic
+  eventHooks: {
+    onTenantIdExtracted: (tenantId, ctx) => {
+      logger.debug(`Tenant ID extracted: ${tenantId} from ${ctx.strategy}`);
+    },
+    onTenantResolved: (tenant, ctx) => {
+      metrics.increment('tenant.resolved', { tenant: tenant.id });
+    },
+    onTenantNotFound: (tenantId, ctx) => {
+      logger.warn(`Tenant not found: ${tenantId}`);
+    },
+    onTenantMissing: (ctx) => {
+      logger.debug(`No tenant in request: ${ctx.path}`);
+    },
+  },
+
   // Custom extractor function for 'custom' strategy
   customExtractor: (request) => request.headers['x-custom-header'],
 
@@ -424,6 +440,59 @@ export class TenantService {
 | Real-time tenant updates needed | ❌ Disable or use very short TTL |
 | Low-traffic internal APIs | ❌ Usually not needed |
 
+## Event Hooks
+
+React to tenant lifecycle events for logging, metrics, or custom logic:
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'header',
+  tenantResolver: (id) => this.tenantService.findById(id),
+  eventHooks: {
+    // Called when tenant ID is extracted from request
+    onTenantIdExtracted: (tenantId, context) => {
+      console.log(`Extracted tenant: ${tenantId} via ${context.strategy}`);
+    },
+
+    // Called when tenant is successfully resolved
+    onTenantResolved: (tenant, context) => {
+      metrics.increment('tenant.resolved', { plan: tenant.plan });
+    },
+
+    // Called when resolver returns null
+    onTenantNotFound: (tenantId, context) => {
+      logger.warn(`Unknown tenant: ${tenantId} at ${context.path}`);
+    },
+
+    // Called when no tenant ID in request
+    onTenantMissing: (context) => {
+      logger.debug(`Anonymous request: ${context.path}`);
+    },
+  },
+})
+```
+
+### Event Context
+
+All hooks receive a context object:
+
+```typescript
+interface TenantEventContext {
+  request: unknown;                    // The HTTP request object
+  strategy: TenantExtractionStrategy;  // 'header', 'jwt', etc.
+  path: string;                        // Request path
+}
+```
+
+### Use Cases
+
+| Hook | Use Case |
+|------|----------|
+| `onTenantIdExtracted` | Audit logging, request tracing |
+| `onTenantResolved` | Metrics, feature flags per tenant |
+| `onTenantNotFound` | Security alerts, invalid tenant monitoring |
+| `onTenantMissing` | Analytics for anonymous traffic |
+
 ## Decorators
 
 ### @CurrentTenant()
@@ -556,6 +625,11 @@ MultiTenantModule.forRoot({
 | `tenantResolverCache.enabled` | `boolean` | `false` | Enable caching of resolved tenants |
 | `tenantResolverCache.ttl` | `number` | `300000` | Cache TTL in milliseconds (5 min default) |
 | `tenantResolverCache.max` | `number` | `1000` | Maximum number of cached entries |
+| `eventHooks` | `TenantEventHooks` | `undefined` | Lifecycle event hooks |
+| `eventHooks.onTenantIdExtracted` | `(id, ctx) => void` | `undefined` | Called when tenant ID is extracted |
+| `eventHooks.onTenantResolved` | `(tenant, ctx) => void` | `undefined` | Called when tenant is resolved |
+| `eventHooks.onTenantNotFound` | `(id, ctx) => void` | `undefined` | Called when tenant resolver returns null |
+| `eventHooks.onTenantMissing` | `(ctx) => void` | `undefined` | Called when no tenant ID in request |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

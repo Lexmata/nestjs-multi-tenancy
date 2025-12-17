@@ -100,6 +100,18 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - LRU eviction when cache is full
   - Cache management: `clearCache()`, `invalidateTenant()`, `getCacheStats()`
 
+- [x] **Event Hooks & Lifecycle Events** ✅
+  ```typescript
+  eventHooks: {
+    onTenantIdExtracted: (id, ctx) => logger.debug(`Extracted: ${id}`),
+    onTenantResolved: (tenant, ctx) => metrics.inc('resolved'),
+    onTenantNotFound: (id, ctx) => logger.warn(`Not found: ${id}`),
+    onTenantMissing: (ctx) => logger.debug('Anonymous request'),
+  },
+  ```
+  - Full lifecycle visibility for logging, metrics, alerts
+  - Async hooks supported
+
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback
   - Support API key-based tenant identification

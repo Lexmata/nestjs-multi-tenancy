@@ -1,8 +1,16 @@
 export type {
+  BearerTokenResolver,
   CustomTenantExtractor,
   MultiTenantModuleAsyncOptions,
   MultiTenantModuleOptions,
+  OnTenantIdExtracted,
+  OnTenantMissing,
+  OnTenantNotFound,
+  OnTenantResolved,
   Tenant,
+  TenantCacheOptions,
+  TenantEventContext,
+  TenantEventHooks,
   TenantExtractionStrategy,
   TenantResolver,
 } from './tenant.interface';

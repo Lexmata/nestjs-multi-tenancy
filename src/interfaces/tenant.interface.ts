@@ -51,6 +51,80 @@ export type BearerTokenResolver = (token: string) => null | Promise<null | strin
 export type TenantResolver = (tenantId: string) => null | Promise<null | Tenant> | Tenant;
 
 /**
+ * Context passed to event hooks
+ */
+export interface TenantEventContext {
+  /**
+   * The HTTP request object (Express Request or similar)
+   */
+  request: unknown;
+
+  /**
+   * The extraction strategy used
+   */
+  strategy: TenantExtractionStrategy;
+
+  /**
+   * Request path
+   */
+  path: string;
+}
+
+/**
+ * Event hook called when tenant ID is extracted from request
+ */
+export type OnTenantIdExtracted = (
+  tenantId: string,
+  context: TenantEventContext,
+) => Promise<void> | void;
+
+/**
+ * Event hook called when tenant is successfully resolved
+ */
+export type OnTenantResolved = (
+  tenant: Tenant,
+  context: TenantEventContext,
+) => Promise<void> | void;
+
+/**
+ * Event hook called when tenant ID was extracted but resolver returned null
+ */
+export type OnTenantNotFound = (
+  tenantId: string,
+  context: TenantEventContext,
+) => Promise<void> | void;
+
+/**
+ * Event hook called when no tenant ID could be extracted from request
+ */
+export type OnTenantMissing = (context: TenantEventContext) => Promise<void> | void;
+
+/**
+ * Lifecycle event hooks configuration
+ */
+export interface TenantEventHooks {
+  /**
+   * Called when tenant ID is extracted from request (before resolution)
+   */
+  onTenantIdExtracted?: OnTenantIdExtracted;
+
+  /**
+   * Called when no tenant ID could be extracted from request
+   */
+  onTenantMissing?: OnTenantMissing;
+
+  /**
+   * Called when tenant ID was extracted but resolver returned null
+   */
+  onTenantNotFound?: OnTenantNotFound;
+
+  /**
+   * Called when tenant is successfully resolved
+   */
+  onTenantResolved?: OnTenantResolved;
+}
+
+/**
  * Cache configuration options for tenant resolver
  */
 export interface TenantCacheOptions {
@@ -147,6 +221,12 @@ export interface MultiTenantModuleOptions {
    * Caches resolved tenant data to avoid repeated lookups
    */
   tenantResolverCache?: TenantCacheOptions;
+
+  /**
+   * Event hooks for tenant lifecycle events
+   * Useful for logging, metrics, and custom logic
+   */
+  eventHooks?: TenantEventHooks;
 }
 
 /**

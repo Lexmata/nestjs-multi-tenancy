@@ -11,7 +11,12 @@ import {
   DEFAULT_TENANT_QUERY_PARAM,
   MULTI_TENANT_OPTIONS,
 } from '../constants';
-import type { MultiTenantModuleOptions, Tenant } from '../interfaces';
+import type {
+  MultiTenantModuleOptions,
+  Tenant,
+  TenantEventContext,
+  TenantExtractionStrategy,
+} from '../interfaces';
 import { TenantContextService } from '../services';
 
 /**
@@ -51,9 +56,15 @@ export class TenantMiddleware implements NestMiddleware {
       return;
     }
 
+    const strategy = this.options.extractionStrategy ?? 'header';
+    const context = this.createEventContext(req, strategy);
+
     const tenantId = await this.extractTenantId(req);
 
     if (!tenantId) {
+      // Trigger onTenantMissing hook
+      await this.triggerOnTenantMissing(context);
+
       if (this.options.requireTenant) {
         throw new HttpException('Tenant identification required', HttpStatus.BAD_REQUEST);
       }
@@ -61,11 +72,17 @@ export class TenantMiddleware implements NestMiddleware {
       return;
     }
 
+    // Trigger onTenantIdExtracted hook
+    await this.triggerOnTenantIdExtracted(tenantId, context);
+
     // Resolve full tenant data if resolver is provided
     let tenant: Tenant;
     if (this.options.tenantResolver) {
       const resolved = await this.resolveTenant(tenantId);
       if (!resolved) {
+        // Trigger onTenantNotFound hook
+        await this.triggerOnTenantNotFound(tenantId, context);
+
         if (this.options.requireTenant) {
           throw new HttpException('Tenant not found', HttpStatus.NOT_FOUND);
         }
@@ -76,6 +93,9 @@ export class TenantMiddleware implements NestMiddleware {
     } else {
       tenant = { id: tenantId };
     }
+
+    // Trigger onTenantResolved hook
+    await this.triggerOnTenantResolved(tenant, context);
 
     // Run the rest of the request within the tenant context
     this.tenantContext.run(tenant, () => {
@@ -415,5 +435,65 @@ export class TenantMiddleware implements NestMiddleware {
       }
       return pattern.test(path);
     });
+  }
+
+  /**
+   * Create event context object
+   */
+  private createEventContext(req: Request, strategy: TenantExtractionStrategy): TenantEventContext {
+    return {
+      request: req,
+      strategy,
+      path: req.path,
+    };
+  }
+
+  /**
+   * Trigger onTenantIdExtracted hook
+   */
+  private async triggerOnTenantIdExtracted(
+    tenantId: string,
+    context: TenantEventContext,
+  ): Promise<void> {
+    const hook = this.options.eventHooks?.onTenantIdExtracted;
+    if (hook) {
+      await hook(tenantId, context);
+    }
+  }
+
+  /**
+   * Trigger onTenantResolved hook
+   */
+  private async triggerOnTenantResolved(
+    tenant: Tenant,
+    context: TenantEventContext,
+  ): Promise<void> {
+    const hook = this.options.eventHooks?.onTenantResolved;
+    if (hook) {
+      await hook(tenant, context);
+    }
+  }
+
+  /**
+   * Trigger onTenantNotFound hook
+   */
+  private async triggerOnTenantNotFound(
+    tenantId: string,
+    context: TenantEventContext,
+  ): Promise<void> {
+    const hook = this.options.eventHooks?.onTenantNotFound;
+    if (hook) {
+      await hook(tenantId, context);
+    }
+  }
+
+  /**
+   * Trigger onTenantMissing hook
+   */
+  private async triggerOnTenantMissing(context: TenantEventContext): Promise<void> {
+    const hook = this.options.eventHooks?.onTenantMissing;
+    if (hook) {
+      await hook(context);
+    }
   }
 }
