@@ -223,7 +223,7 @@
     <p class="text-text-secondary mb-4">Extract tenant ID from the subdomain of the request URL.</p>
     <app-code-block [code]="subdomainStrategy" />
 
-    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-6 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary">
         <strong>Example:</strong> <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">tenant-123.example.com</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code>
@@ -239,7 +239,7 @@
     <p class="text-text-secondary mb-4">Extract tenant ID from a URL path segment.</p>
     <app-code-block [code]="pathStrategy" />
 
-    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-6 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary space-y-1">
         <p><code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">/tenant-123/api/users</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code></p>
@@ -256,7 +256,7 @@
     <p class="text-text-secondary mb-4">Extract tenant ID from a query parameter.</p>
     <app-code-block [code]="queryStrategy" />
 
-    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+    <div class="flex gap-4 bg-primary/10 border border-primary/20 rounded-lg p-6 mt-4">
       <span class="text-xl">💡</span>
       <div class="text-text-secondary">
         <strong>Example:</strong> <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">/api/users?tenantId=tenant-123</code> → tenant ID: <code class="bg-inline-code-bg text-inline-code-text px-1.5 py-0.5 rounded text-sm">"tenant-123"</code>
@@ -403,7 +403,7 @@
       <!-- Prisma -->
       <a
         routerLink="/examples/prisma"
-        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+        class="block bg-surface border border-border rounded-xl p-8 hover:border-primary/40 transition-colors group"
       >
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 bg-gradient-to-br from-[#2D3748] to-[#1A202C] rounded-lg flex items-center justify-center shrink-0">
@@ -424,7 +424,7 @@
       <!-- TypeORM -->
       <a
         routerLink="/examples/typeorm"
-        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+        class="block bg-surface border border-border rounded-xl p-8 hover:border-primary/40 transition-colors group"
       >
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 bg-gradient-to-br from-[#E83524] to-[#C62828] rounded-lg flex items-center justify-center shrink-0">
@@ -445,7 +445,7 @@
       <!-- Drizzle -->
       <a
         routerLink="/examples/drizzle"
-        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+        class="block bg-surface border border-border rounded-xl p-8 hover:border-primary/40 transition-colors group"
       >
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 bg-gradient-to-br from-[#C5F74F] to-[#8BC34A] rounded-lg flex items-center justify-center shrink-0">
@@ -466,7 +466,7 @@
       <!-- MikroORM -->
       <a
         routerLink="/examples/mikro-orm"
-        class="block bg-surface border border-border rounded-xl p-6 hover:border-primary/40 transition-colors group"
+        class="block bg-surface border border-border rounded-xl p-8 hover:border-primary/40 transition-colors group"
       >
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 bg-gradient-to-br from-[#1976D2] to-[#0D47A1] rounded-lg flex items-center justify-center shrink-0">
