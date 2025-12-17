@@ -492,6 +492,69 @@ interface TenantEventContext {
 | `onTenantResolved` | Metrics, feature flags per tenant |
 | `onTenantNotFound` | Security alerts, invalid tenant monitoring |
 | `onTenantMissing` | Analytics for anonymous traffic |
+| `onTenantValidationFailed` | Security alerts, access denied logging |
+
+## Tenant Validation
+
+Validate tenants before allowing requests. Useful for checking subscription status, permissions, or tenant state:
+
+```typescript
+MultiTenantModule.forRoot({
+  extractionStrategy: 'header',
+  tenantResolver: (id) => this.tenantService.findById(id),
+  requireTenant: true,
+
+  // Simple boolean validation
+  tenantValidator: (tenant) => tenant.isActive === true,
+
+  // Async validation with database check
+  tenantValidator: async (tenant, ctx) => {
+    const subscription = await this.subscriptionService.check(tenant.id);
+    return subscription.status === 'active';
+  },
+
+  // Validation with custom error message
+  tenantValidator: (tenant) => {
+    if (!tenant.isActive) {
+      return { valid: false, reason: 'Tenant is deactivated' };
+    }
+    if (tenant.subscriptionExpired) {
+      return { valid: false, reason: 'Subscription expired' };
+    }
+    return { valid: true };
+  },
+})
+```
+
+### Validation Result
+
+Return a boolean or `TenantValidationResult`:
+
+```typescript
+interface TenantValidationResult {
+  valid: boolean;
+  reason?: string;  // Custom error message (default: "Tenant validation failed")
+}
+```
+
+### Validation Flow
+
+```
+Request → Extract ID → Resolve Tenant → Validate → Set Context → Handle Request
+                                          ↓
+                            If invalid & requireTenant: HTTP 403 Forbidden
+                            If invalid & !requireTenant: Continue without tenant
+```
+
+### Use Cases
+
+| Scenario | Implementation |
+|----------|---------------|
+| Active tenant check | `(t) => t.isActive` |
+| Subscription validation | `(t) => t.subscriptionStatus === 'active'` |
+| Feature flag check | `(t, ctx) => hasFeature(t, ctx.path)` |
+| Rate limiting | `async (t) => await checkRateLimit(t.id)` |
+| IP allowlist | `(t, ctx) => t.allowedIps.includes(getIp(ctx.request))` |
 
 ## Decorators
 
@@ -630,6 +693,8 @@ MultiTenantModule.forRoot({
 | `eventHooks.onTenantResolved` | `(tenant, ctx) => void` | `undefined` | Called when tenant is resolved |
 | `eventHooks.onTenantNotFound` | `(id, ctx) => void` | `undefined` | Called when tenant resolver returns null |
 | `eventHooks.onTenantMissing` | `(ctx) => void` | `undefined` | Called when no tenant ID in request |
+| `eventHooks.onTenantValidationFailed` | `(tenant, reason, ctx) => void` | `undefined` | Called when tenant validation fails |
+| `tenantValidator` | `(tenant, ctx) => boolean \| TenantValidationResult` | `undefined` | Validate tenant before allowing request |
 | `customExtractor` | `(req: Request) => string \| null \| Promise<string \| null>` | - | Custom extraction function |
 | `tenantResolver` | `(id: string) => Tenant \| null \| Promise<Tenant \| null>` | - | Resolve full tenant from ID |
 | `requireTenant` | `boolean` | `false` | Throw if tenant not found |

@@ -107,10 +107,24 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
     onTenantResolved: (tenant, ctx) => metrics.inc('resolved'),
     onTenantNotFound: (id, ctx) => logger.warn(`Not found: ${id}`),
     onTenantMissing: (ctx) => logger.debug('Anonymous request'),
+    onTenantValidationFailed: (tenant, reason, ctx) => logger.warn(`Validation failed: ${reason}`),
   },
   ```
   - Full lifecycle visibility for logging, metrics, alerts
   - Async hooks supported
+
+- [x] **Tenant Validation Hook** ✅
+  ```typescript
+  tenantValidator: (tenant, ctx) => {
+    if (!tenant.isActive) return { valid: false, reason: 'Tenant deactivated' };
+    if (tenant.subscriptionExpired) return { valid: false, reason: 'Subscription expired' };
+    return true;
+  },
+  ```
+  - Validate tenants before allowing requests
+  - Custom error messages via `TenantValidationResult`
+  - Async validation supported
+  - Returns HTTP 403 when validation fails and `requireTenant: true`
 
 - [ ] **Bearer Token Tenant Extraction**
   - Extract tenant from opaque bearer tokens via callback

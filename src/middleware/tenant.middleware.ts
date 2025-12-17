@@ -16,6 +16,7 @@ import type {
   Tenant,
   TenantEventContext,
   TenantExtractionStrategy,
+  TenantValidationResult,
 } from '../interfaces';
 import { TenantContextService } from '../services';
 
@@ -92,6 +93,22 @@ export class TenantMiddleware implements NestMiddleware {
       tenant = resolved;
     } else {
       tenant = { id: tenantId };
+    }
+
+    // Validate tenant if validator is provided
+    if (this.options.tenantValidator) {
+      const validationResult = await this.validateTenant(tenant, context);
+      if (!validationResult.valid) {
+        // Trigger onTenantValidationFailed hook
+        await this.triggerOnTenantValidationFailed(tenant, validationResult.reason, context);
+
+        if (this.options.requireTenant) {
+          const message = validationResult.reason ?? 'Tenant validation failed';
+          throw new HttpException(message, HttpStatus.FORBIDDEN);
+        }
+        next();
+        return;
+      }
     }
 
     // Trigger onTenantResolved hook
@@ -495,5 +512,42 @@ export class TenantMiddleware implements NestMiddleware {
     if (hook) {
       await hook(context);
     }
+  }
+
+  /**
+   * Trigger onTenantValidationFailed hook
+   */
+  private async triggerOnTenantValidationFailed(
+    tenant: Tenant,
+    reason: string | undefined,
+    context: TenantEventContext,
+  ): Promise<void> {
+    const hook = this.options.eventHooks?.onTenantValidationFailed;
+    if (hook) {
+      await hook(tenant, reason, context);
+    }
+  }
+
+  /**
+   * Validate tenant using the configured validator
+   */
+  private async validateTenant(
+    tenant: Tenant,
+    context: TenantEventContext,
+  ): Promise<TenantValidationResult> {
+    const validator = this.options.tenantValidator;
+    if (!validator) {
+      return { valid: true };
+    }
+
+    const result = await validator(tenant, context);
+
+    // Handle boolean result
+    if (typeof result === 'boolean') {
+      return { valid: result };
+    }
+
+    // Handle TenantValidationResult
+    return result;
   }
 }

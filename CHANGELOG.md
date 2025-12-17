@@ -40,12 +40,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `onTenantResolved`: Called when tenant is successfully resolved
   - `onTenantNotFound`: Called when tenant resolver returns null
   - `onTenantMissing`: Called when no tenant ID in request
+  - `onTenantValidationFailed`: Called when tenant validation fails
   - All hooks receive context with request, strategy, and path
   - Supports both sync and async hooks
 
+- **Tenant Validation Hook**: Validate tenants before allowing requests
+  - Configure with `tenantValidator: (tenant, ctx) => boolean | TenantValidationResult`
+  - Return `{ valid: false, reason: 'Custom message' }` for custom error messages
+  - Async validation supported
+  - Integrates with `requireTenant` option (returns 403 Forbidden when invalid)
+
 ### Changed
 
-- Test suite expanded from 89 to 159 tests
+- Test suite expanded from 89 to 176 tests
 
 ## [0.1.0-beta] - 2025-12-17
 

@@ -100,6 +100,40 @@ export type OnTenantNotFound = (
 export type OnTenantMissing = (context: TenantEventContext) => Promise<void> | void;
 
 /**
+ * Result of tenant validation
+ */
+export interface TenantValidationResult {
+  /**
+   * Whether the tenant is valid
+   */
+  valid: boolean;
+
+  /**
+   * Optional reason for rejection (used in error message)
+   */
+  reason?: string;
+}
+
+/**
+ * Function type for validating a tenant
+ * Return true/false, or TenantValidationResult for custom error messages
+ * Can also throw an error directly to reject with custom status code
+ */
+export type TenantValidator = (
+  tenant: Tenant,
+  context: TenantEventContext,
+) => boolean | Promise<boolean | TenantValidationResult> | TenantValidationResult;
+
+/**
+ * Event hook called when tenant validation fails
+ */
+export type OnTenantValidationFailed = (
+  tenant: Tenant,
+  reason: string | undefined,
+  context: TenantEventContext,
+) => Promise<void> | void;
+
+/**
  * Lifecycle event hooks configuration
  */
 export interface TenantEventHooks {
@@ -122,6 +156,11 @@ export interface TenantEventHooks {
    * Called when tenant is successfully resolved
    */
   onTenantResolved?: OnTenantResolved;
+
+  /**
+   * Called when tenant validation fails
+   */
+  onTenantValidationFailed?: OnTenantValidationFailed;
 }
 
 /**
@@ -227,6 +266,14 @@ export interface MultiTenantModuleOptions {
    * Useful for logging, metrics, and custom logic
    */
   eventHooks?: TenantEventHooks;
+
+  /**
+   * Function to validate tenant before allowing request
+   * Return true to allow, false to reject
+   * Can return TenantValidationResult for custom error messages
+   * Can also throw HttpException for custom status codes
+   */
+  tenantValidator?: TenantValidator;
 }
 
 /**

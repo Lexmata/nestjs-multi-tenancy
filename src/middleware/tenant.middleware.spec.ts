@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { TenantMiddleware } from './tenant.middleware';
 import { TenantContextService } from '../services';
 import { MultiTenantModuleOptions } from '../interfaces';
@@ -1428,6 +1428,310 @@ describe('TenantMiddleware', () => {
         await expect(
           middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
         ).resolves.not.toThrow();
+        expect(mockNext).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('tenant validation', () => {
+    describe('basic validation', () => {
+      it('should allow request when validator returns true', async () => {
+        const tenantValidator = vi.fn().mockReturnValue(true);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(tenantValidator).toHaveBeenCalledTimes(1);
+        expect(tenantValidator).toHaveBeenCalledWith(
+          { id: 'tenant-123' },
+          expect.objectContaining({ strategy: 'header' }),
+        );
+        expect(mockNext).toHaveBeenCalled();
+      });
+
+      it('should allow request when validator returns { valid: true }', async () => {
+        const tenantValidator = vi.fn().mockReturnValue({ valid: true });
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(mockNext).toHaveBeenCalled();
+      });
+
+      it('should reject request when validator returns false and requireTenant is true', async () => {
+        const tenantValidator = vi.fn().mockReturnValue(false);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).rejects.toThrow(HttpException);
+        expect(mockNext).not.toHaveBeenCalled();
+      });
+
+      it('should continue without tenant when validator returns false and requireTenant is false', async () => {
+        const tenantValidator = vi.fn().mockReturnValue(false);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: false,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(mockNext).toHaveBeenCalled();
+      });
+    });
+
+    describe('validation result with reason', () => {
+      it('should use reason in error message when provided', async () => {
+        const tenantValidator = vi.fn().mockReturnValue({
+          valid: false,
+          reason: 'Tenant subscription expired',
+        });
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        try {
+          await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+          expect.fail('Should have thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect((error as HttpException).message).toBe('Tenant subscription expired');
+          expect((error as HttpException).getStatus()).toBe(HttpStatus.FORBIDDEN);
+        }
+      });
+
+      it('should use default message when reason is not provided', async () => {
+        const tenantValidator = vi.fn().mockReturnValue({ valid: false });
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        try {
+          await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+          expect.fail('Should have thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect((error as HttpException).message).toBe('Tenant validation failed');
+        }
+      });
+    });
+
+    describe('async validation', () => {
+      it('should support async validator returning true', async () => {
+        const tenantValidator = vi.fn().mockResolvedValue(true);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(mockNext).toHaveBeenCalled();
+      });
+
+      it('should support async validator returning false', async () => {
+        const tenantValidator = vi.fn().mockResolvedValue(false);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).rejects.toThrow(HttpException);
+      });
+
+      it('should support async validator returning validation result', async () => {
+        const tenantValidator = vi.fn().mockResolvedValue({
+          valid: false,
+          reason: 'Tenant is suspended',
+        });
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator,
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        try {
+          await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+          expect.fail('Should have thrown');
+        } catch (error) {
+          expect((error as HttpException).message).toBe('Tenant is suspended');
+        }
+      });
+    });
+
+    describe('validation with resolver', () => {
+      it('should pass resolved tenant to validator', async () => {
+        const tenantValidator = vi.fn().mockReturnValue(true);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: (id) => ({ id, name: 'Acme Corp', isActive: true }),
+          tenantValidator,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(tenantValidator).toHaveBeenCalledWith(
+          { id: 'tenant-123', name: 'Acme Corp', isActive: true },
+          expect.any(Object),
+        );
+      });
+
+      it('should not call validator if resolver returns null', async () => {
+        const tenantValidator = vi.fn().mockReturnValue(true);
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver: () => null,
+          tenantValidator,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(tenantValidator).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('onTenantValidationFailed hook', () => {
+      it('should call onTenantValidationFailed when validation fails', async () => {
+        const onTenantValidationFailed = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator: () => ({ valid: false, reason: 'Inactive tenant' }),
+          eventHooks: { onTenantValidationFailed },
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).rejects.toThrow();
+
+        expect(onTenantValidationFailed).toHaveBeenCalledTimes(1);
+        expect(onTenantValidationFailed).toHaveBeenCalledWith(
+          { id: 'tenant-123' },
+          'Inactive tenant',
+          expect.objectContaining({ strategy: 'header' }),
+        );
+      });
+
+      it('should call onTenantValidationFailed with undefined reason when not provided', async () => {
+        const onTenantValidationFailed = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator: () => false,
+          eventHooks: { onTenantValidationFailed },
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).rejects.toThrow();
+
+        expect(onTenantValidationFailed).toHaveBeenCalledWith(
+          { id: 'tenant-123' },
+          undefined,
+          expect.any(Object),
+        );
+      });
+
+      it('should not call onTenantValidationFailed when validation passes', async () => {
+        const onTenantValidationFailed = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator: () => true,
+          eventHooks: { onTenantValidationFailed },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(onTenantValidationFailed).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('validation order', () => {
+      it('should validate after resolution and before onTenantResolved', async () => {
+        const callOrder: string[] = [];
+        const tenantResolver = vi.fn().mockImplementation((id) => {
+          callOrder.push('resolved');
+          return { id, name: 'Test' };
+        });
+        const tenantValidator = vi.fn().mockImplementation(() => {
+          callOrder.push('validated');
+          return true;
+        });
+        const onTenantResolved = vi.fn().mockImplementation(() => {
+          callOrder.push('onResolved');
+        });
+
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantResolver,
+          tenantValidator,
+          eventHooks: { onTenantResolved },
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+        expect(callOrder).toEqual(['resolved', 'validated', 'onResolved']);
+      });
+
+      it('should not call onTenantResolved if validation fails', async () => {
+        const onTenantResolved = vi.fn();
+        createMiddleware({
+          extractionStrategy: 'header',
+          tenantValidator: () => false,
+          eventHooks: { onTenantResolved },
+          requireTenant: true,
+        });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await expect(
+          middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+        ).rejects.toThrow();
+
+        expect(onTenantResolved).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('without validator', () => {
+      it('should skip validation when no validator configured', async () => {
+        createMiddleware({ extractionStrategy: 'header' });
+        mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+        await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
         expect(mockNext).toHaveBeenCalled();
       });
     });

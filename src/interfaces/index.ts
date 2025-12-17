@@ -7,10 +7,13 @@ export type {
   OnTenantMissing,
   OnTenantNotFound,
   OnTenantResolved,
+  OnTenantValidationFailed,
   Tenant,
   TenantCacheOptions,
   TenantEventContext,
   TenantEventHooks,
   TenantExtractionStrategy,
   TenantResolver,
+  TenantValidationResult,
+  TenantValidator,
 } from './tenant.interface';
