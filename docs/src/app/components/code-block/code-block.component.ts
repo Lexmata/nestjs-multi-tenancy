@@ -10,6 +10,7 @@ import {
 
 declare const hljs: {
   highlightElement: (element: HTMLElement) => void;
+  highlight: (code: string, options: { language: string }) => { value: string };
 };
 
 @Component({
@@ -29,21 +30,51 @@ export class CodeBlockComponent implements AfterViewInit {
   constructor() {
     effect(() => {
       const code = this.code();
+      const lang = this.language();
       const el = this.codeElement();
-      if (el && code && typeof hljs !== 'undefined') {
-        setTimeout(() => {
-          el.nativeElement.textContent = code;
-          hljs.highlightElement(el.nativeElement);
-        });
+      if (el && code) {
+        this.highlightCode(el.nativeElement, code, lang);
       }
     });
   }
 
   ngAfterViewInit() {
     const el = this.codeElement();
-    if (el && typeof hljs !== 'undefined') {
-      hljs.highlightElement(el.nativeElement);
+    if (el) {
+      this.highlightCode(el.nativeElement, this.code(), this.language());
     }
+  }
+
+  private highlightCode(element: HTMLElement, code: string, language: string) {
+    if (typeof hljs === 'undefined') {
+      // Fallback: just set text content without highlighting
+      element.textContent = code;
+      return;
+    }
+
+    // Use hljs.highlight for better control
+    try {
+      const result = hljs.highlight(code, { language: this.mapLanguage(language) });
+      element.innerHTML = result.value;
+      element.classList.add('hljs');
+    } catch {
+      // If language not supported, try auto-detection via highlightElement
+      element.textContent = code;
+      element.removeAttribute('data-highlighted');
+      hljs.highlightElement(element);
+    }
+  }
+
+  private mapLanguage(lang: string): string {
+    // Map common aliases
+    const languageMap: Record<string, string> = {
+      ts: 'typescript',
+      js: 'javascript',
+      prisma: 'sql',
+      sh: 'bash',
+      shell: 'bash',
+    };
+    return languageMap[lang] || lang;
   }
 
   async copyCode() {

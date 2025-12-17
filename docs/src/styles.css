@@ -72,62 +72,106 @@ body {
 .hljs {
   background: transparent !important;
   padding: 0 !important;
+  color: #abb2bf;
 }
 
+/* Keywords: import, from, export, const, let, async, await, return, if, else, etc. */
 .hljs-keyword,
 .hljs-selector-tag,
-.hljs-literal,
-.hljs-section,
-.hljs-link {
+.hljs-section {
   color: #c678dd;
 }
 
+/* Strings */
 .hljs-string,
-.hljs-title,
-.hljs-name,
-.hljs-type,
-.hljs-attribute,
-.hljs-symbol,
-.hljs-bullet,
-.hljs-addition,
-.hljs-variable,
-.hljs-template-tag,
 .hljs-template-variable {
   color: #98c379;
 }
 
-.hljs-comment,
-.hljs-quote,
-.hljs-deletion,
-.hljs-meta {
-  color: #5c6370;
-}
-
-.hljs-number,
-.hljs-regexp,
-.hljs-literal,
-.hljs-link {
-  color: #d19a66;
-}
-
-.hljs-class .hljs-title,
-.hljs-title.class_ {
+/* Types, classes, decorators */
+.hljs-title,
+.hljs-title.class_,
+.hljs-type {
   color: #e5c07b;
 }
 
-.hljs-function .hljs-title,
-.hljs-title.function_ {
+/* Function names */
+.hljs-title.function_,
+.hljs-function .hljs-title {
   color: #61afef;
 }
 
+/* Variables, properties, attributes */
+.hljs-variable,
+.hljs-attr,
+.hljs-attribute,
+.hljs-property {
+  color: #e06c75;
+}
+
+/* Numbers, booleans, null */
+.hljs-number,
+.hljs-literal,
+.hljs-regexp {
+  color: #d19a66;
+}
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+
+/* Built-ins, symbols */
+.hljs-built_in,
+.hljs-symbol,
+.hljs-bullet {
+  color: #56b6c2;
+}
+
+/* Names, tags */
+.hljs-name,
+.hljs-tag {
+  color: #e06c75;
+}
+
+/* Template tags */
+.hljs-template-tag {
+  color: #c678dd;
+}
+
+/* Params */
 .hljs-params {
   color: #abb2bf;
 }
 
-.hljs-attr {
-  color: #d19a66;
+/* Meta, deletion, addition */
+.hljs-meta {
+  color: #61afef;
 }
 
-.hljs-built_in {
+.hljs-deletion {
+  color: #e06c75;
+  background: rgba(224, 108, 117, 0.15);
+}
+
+.hljs-addition {
+  color: #98c379;
+  background: rgba(152, 195, 121, 0.15);
+}
+
+/* Links */
+.hljs-link {
+  color: #61afef;
+  text-decoration: underline;
+}
+
+/* Selector classes, ids */
+.hljs-selector-class {
   color: #e5c07b;
+}
+
+.hljs-selector-id {
+  color: #61afef;
 }
