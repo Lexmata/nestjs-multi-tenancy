@@ -1,0 +1,45 @@
+# GitHub Discussions Configuration
+# Note: Discussions must be enabled in repository settings first
+
+# To enable GitHub Discussions:
+# 1. Go to repository Settings > General
+# 2. Scroll to "Features" section
+# 3. Check "Discussions"
+# 4. Configure categories as described below
+
+# Recommended Categories to create in GitHub UI:
+#
+# 📣 Announcements (announcement type)
+#    - For maintainer announcements only
+#    - New releases, breaking changes, etc.
+#
+# 💬 Q&A (question/answer type)
+#    - Questions about using the library
+#    - Best practices discussions
+#    - Template: q-a.yml
+#
+# 💡 Ideas (open-ended type)
+#    - Feature suggestions
+#    - API improvement ideas
+#    - Template: ideas.yml
+#
+# 🎉 Show and Tell (open-ended type)
+#    - Community project showcases
+#    - Success stories
+#    - Template: show-and-tell.yml
+#
+# 🗳️ Polls (poll type)
+#    - Community input on decisions
+#    - Feature prioritization
+
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://lexmata.github.io/nestjs-multi-tenancy/
+    about: Check the documentation for guides and API reference
+  - name: 🐛 Bug Reports
+    url: https://github.com/Lexmata/nestjs-multi-tenancy/issues/new?template=bug_report.yml
+    about: Report bugs via GitHub Issues, not Discussions
+  - name: 🔒 Security Issues
+    url: https://github.com/Lexmata/nestjs-multi-tenancy/security/advisories/new
+    about: Report security vulnerabilities privately

@@ -1,0 +1,76 @@
+title: '[Show & Tell] '
+labels:
+  - showcase
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Show Off Your Project!
+
+        Built something cool with `@lexmata/nestjs-multi-tenant`? Share it with the community!
+
+        We love seeing how people use the library in real-world projects. Your showcase might:
+        - 💡 Inspire others
+        - 📚 Serve as a learning resource
+        - 🔗 Get featured in our documentation
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Project Description
+      description: Tell us about your project!
+      placeholder: |
+        My project is a... that uses multi-tenancy for...
+    validations:
+      required: true
+
+  - type: textarea
+    id: highlights
+    attributes:
+      label: Highlights
+      description: What's special about how you're using the library?
+      placeholder: |
+        - Interesting patterns or techniques
+        - Challenges you overcame
+        - Performance optimizations
+        - Custom integrations
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Snippets (Optional)
+      description: Share any interesting code patterns
+      placeholder: |
+        ```typescript
+        // Your cool code here
+        ```
+      render: typescript
+
+  - type: input
+    id: link
+    attributes:
+      label: Project Link (Optional)
+      description: Link to your project, demo, or repository (if public)
+      placeholder: https://github.com/...
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Project Type
+      description: What type of project is this?
+      options:
+        - SaaS Application
+        - API / Backend Service
+        - Internal Tool
+        - Open Source Library
+        - Learning Project
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: tips
+    attributes:
+      label: Tips for Others
+      description: Any advice for others building similar projects?
+      placeholder: If I were to start again, I would...

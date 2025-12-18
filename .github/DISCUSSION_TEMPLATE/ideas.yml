@@ -1,0 +1,75 @@
+title: '[Idea] '
+labels:
+  - enhancement
+  - idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Share Your Idea
+
+        Have a feature idea or suggestion for `@lexmata/nestjs-multi-tenant`? We'd love to hear it!
+
+        Great ideas help shape the future of this library. Before sharing:
+        - 🔍 Search [existing ideas](https://github.com/Lexmata/nestjs-multi-tenancy/discussions/categories/ideas)
+        - 📋 Check the [roadmap/TODO](https://github.com/Lexmata/nestjs-multi-tenancy/blob/develop/TODO.md)
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Motivation
+      description: What problem does this idea solve? What's the motivation?
+      placeholder: |
+        Currently, when I try to... I have to...
+        It would be better if...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution or approach
+      placeholder: |
+        I think the library could...
+
+        Example usage:
+        ```typescript
+        // Your proposed API
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: I also thought about...
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does this idea relate to?
+      options:
+        - New Feature
+        - API Improvement
+        - Performance Optimization
+        - Developer Experience
+        - Documentation
+        - Testing Utilities
+        - Integration (ORM, GraphQL, etc.)
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Willingness to Contribute
+      description: Would you be interested in contributing to this feature?
+      options:
+        - label: I would be willing to help implement this feature
+        - label: I would be willing to help test this feature
+        - label: I would be willing to help document this feature

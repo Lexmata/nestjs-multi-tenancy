@@ -416,10 +416,12 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Lock file maintenance monthly
   - Security vulnerability alerts enabled
 
-- [ ] **Add GitHub Discussions**
-  - Q&A category for support
-  - Ideas category for feature requests
-  - Show off category for community projects
+- [x] **Add GitHub Discussions** ✅
+  - Q&A template for support questions
+  - Ideas template for feature requests with contribution checkboxes
+  - Show & Tell template for community project showcases
+  - Config with contact links to docs, issues, and security advisories
+  - Note: Enable Discussions in repo settings to activate
 
 - [ ] **Docker Development Environment**
   - `docker-compose.yml` for local development

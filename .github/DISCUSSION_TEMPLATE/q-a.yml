@@ -1,0 +1,58 @@
+title: '[Q&A] '
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Ask a Question
+
+        Have a question about using `@lexmata/nestjs-multi-tenant`? You're in the right place!
+
+        Before asking, please:
+        - 📖 Check the [documentation](https://lexmata.github.io/nestjs-multi-tenancy/)
+        - 🔍 Search [existing discussions](https://github.com/Lexmata/nestjs-multi-tenancy/discussions)
+        - 🐛 If this is a bug, please [open an issue](https://github.com/Lexmata/nestjs-multi-tenancy/issues/new) instead
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: How do I...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context that might help us answer your question
+      placeholder: |
+        - What are you trying to achieve?
+        - What have you tried so far?
+        - Any relevant code snippets?
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does your question relate to?
+      options:
+        - Setup & Configuration
+        - Tenant Extraction Strategies
+        - Database Integration (Prisma, TypeORM, etc.)
+        - Guards & Decorators
+        - Testing
+        - Performance
+        - GraphQL / WebSocket / Microservices
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: What version of the package are you using?
+      placeholder: '0.1.0'
