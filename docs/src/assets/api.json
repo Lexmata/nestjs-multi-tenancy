@@ -1,0 +1,3533 @@
+{
+  "id": 0,
+  "name": "@lexmata/nestjs-multi-tenant",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 1,
+      "name": "MultiTenantModule",
+      "variant": "declaration",
+      "kind": 128,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "NestJS module for multi-tenant application support"
+          }
+        ],
+        "blockTags": [
+          {
+            "tag": "@example",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n// Synchronous configuration\n@Module({\n  imports: [\n    MultiTenantModule.forRoot({\n      extractionStrategy: 'header',\n      tenantHeader: 'x-tenant-id',\n      requireTenant: true,\n    }),\n  ],\n})\nexport class AppModule {}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n// Asynchronous configuration\n@Module({\n  imports: [\n    MultiTenantModule.forRootAsync({\n      imports: [ConfigModule],\n      useFactory: (config: ConfigService) => ({\n        extractionStrategy: config.get('TENANT_STRATEGY'),\n        tenantResolver: async (tenantId) => {\n          // Fetch tenant from database\n          return { id: tenantId, name: 'Tenant Name' };\n        },\n      }),\n      inject: [ConfigService],\n    }),\n  ],\n})\nexport class AppModule {}\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 8,
+          "name": "constructor",
+          "variant": "declaration",
+          "kind": 512,
+          "flags": {},
+          "signatures": [
+            {
+              "id": 9,
+              "name": "MultiTenantModule",
+              "variant": "signature",
+              "kind": 16384,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": 1,
+                "name": "MultiTenantModule",
+                "package": "@lexmata/nestjs-multi-tenant"
+              }
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "configure",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/multi-tenant.module.ts",
+              "line": 94,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L94"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 11,
+              "name": "configure",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Apply tenant middleware to all routes"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/multi-tenant.module.ts",
+                  "line": 94,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L94"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 12,
+                  "name": "consumer",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/middleware/middleware-consumer.interface.d.ts",
+                      "qualifiedName": "MiddlewareConsumer"
+                    },
+                    "name": "MiddlewareConsumer",
+                    "package": "@nestjs/common"
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "void"
+              },
+              "implementationOf": {
+                "type": "reference",
+                "target": -1,
+                "name": "NestModule.configure"
+              }
+            }
+          ],
+          "implementationOf": {
+            "type": "reference",
+            "target": -1,
+            "name": "NestModule.configure"
+          }
+        },
+        {
+          "id": 2,
+          "name": "forRoot",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {
+            "isStatic": true
+          },
+          "sources": [
+            {
+              "fileName": "src/multi-tenant.module.ts",
+              "line": 52,
+              "character": 9,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L52"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 3,
+              "name": "forRoot",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Configure the module with static options"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/multi-tenant.module.ts",
+                  "line": 52,
+                  "character": 9,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L52"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 4,
+                  "name": "options",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 177,
+                    "name": "MultiTenantModuleOptions",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  },
+                  "defaultValue": "{}"
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/modules/dynamic-module.interface.d.ts",
+                  "qualifiedName": "DynamicModule"
+                },
+                "name": "DynamicModule",
+                "package": "@nestjs/common"
+              }
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "forRootAsync",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {
+            "isStatic": true
+          },
+          "sources": [
+            {
+              "fileName": "src/multi-tenant.module.ts",
+              "line": 72,
+              "character": 9,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L72"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 6,
+              "name": "forRootAsync",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Configure the module with async options (factory pattern)"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/multi-tenant.module.ts",
+                  "line": 72,
+                  "character": 9,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L72"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 7,
+                  "name": "options",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 170,
+                    "name": "MultiTenantModuleAsyncOptions",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/modules/dynamic-module.interface.d.ts",
+                  "qualifiedName": "DynamicModule"
+                },
+                "name": "DynamicModule",
+                "package": "@nestjs/common"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Constructors",
+          "children": [8]
+        },
+        {
+          "title": "Methods",
+          "children": [10, 2, 5]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/multi-tenant.module.ts",
+          "line": 48,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/multi-tenant.module.ts#L48"
+        }
+      ],
+      "implementedTypes": [
+        {
+          "type": "reference",
+          "target": {
+            "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/modules/nest-module.interface.d.ts",
+            "qualifiedName": "NestModule"
+          },
+          "name": "NestModule",
+          "package": "@nestjs/common"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "TenantContextService",
+      "variant": "declaration",
+      "kind": 128,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Service for managing tenant context using AsyncLocalStorage\nThis allows tenant information to be accessed anywhere in the request lifecycle\nwithout explicitly passing it through the call stack"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 14,
+          "name": "constructor",
+          "variant": "declaration",
+          "kind": 512,
+          "flags": {},
+          "signatures": [
+            {
+              "id": 15,
+              "name": "TenantContextService",
+              "variant": "signature",
+              "kind": 16384,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": 13,
+                "name": "TenantContextService",
+                "package": "@lexmata/nestjs-multi-tenant"
+              }
+            }
+          ]
+        },
+        {
+          "id": 24,
+          "name": "getTenant",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/services/tenant-context.service.ts",
+              "line": 28,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L28"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 25,
+              "name": "getTenant",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Get the current tenant from the context"
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The current tenant or undefined if not in a tenant context"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/services/tenant-context.service.ts",
+                  "line": 28,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L28"
+                }
+              ],
+              "type": {
+                "type": "union",
+                "types": [
+                  {
+                    "type": "intrinsic",
+                    "name": "undefined"
+                  },
+                  {
+                    "type": "reference",
+                    "target": 193,
+                    "name": "Tenant",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 26,
+          "name": "getTenantId",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/services/tenant-context.service.ts",
+              "line": 36,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L36"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 27,
+              "name": "getTenantId",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Get the current tenant ID from the context"
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The current tenant ID or undefined if not in a tenant context"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/services/tenant-context.service.ts",
+                  "line": 36,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L36"
+                }
+              ],
+              "type": {
+                "type": "union",
+                "types": [
+                  {
+                    "type": "intrinsic",
+                    "name": "undefined"
+                  },
+                  {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "hasTenant",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/services/tenant-context.service.ts",
+              "line": 44,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L44"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 29,
+              "name": "hasTenant",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Check if currently running within a tenant context"
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "True if in a tenant context, false otherwise"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/services/tenant-context.service.ts",
+                  "line": 44,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L44"
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "run",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/services/tenant-context.service.ts",
+              "line": 20,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L20"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 18,
+              "name": "run",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Run a function within a tenant context"
+                  }
+                ],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "The result of the function"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/services/tenant-context.service.ts",
+                  "line": 20,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L20"
+                }
+              ],
+              "typeParameters": [
+                {
+                  "id": 19,
+                  "name": "T",
+                  "variant": "typeParam",
+                  "kind": 131072,
+                  "flags": {}
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 20,
+                  "name": "tenant",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The tenant to set as the current context"
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reference",
+                    "target": 193,
+                    "name": "Tenant",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                },
+                {
+                  "id": 21,
+                  "name": "fn",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The function to run within the tenant context"
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 22,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "src/services/tenant-context.service.ts",
+                          "line": 20,
+                          "character": 29,
+                          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L20"
+                        }
+                      ],
+                      "signatures": [
+                        {
+                          "id": 23,
+                          "name": "__type",
+                          "variant": "signature",
+                          "kind": 4096,
+                          "flags": {},
+                          "sources": [
+                            {
+                              "fileName": "src/services/tenant-context.service.ts",
+                              "line": 20,
+                              "character": 29,
+                              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L20"
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": 19,
+                            "name": "T",
+                            "package": "@lexmata/nestjs-multi-tenant",
+                            "refersToTypeParameter": true
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 19,
+                "name": "T",
+                "package": "@lexmata/nestjs-multi-tenant",
+                "refersToTypeParameter": true
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Constructors",
+          "children": [14]
+        },
+        {
+          "title": "Methods",
+          "children": [24, 26, 28, 17]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/services/tenant-context.service.ts",
+          "line": 11,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/services/tenant-context.service.ts#L11"
+        }
+      ]
+    },
+    {
+      "id": 148,
+      "name": "TenantGuard",
+      "variant": "declaration",
+      "kind": 128,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Guard that ensures a valid tenant context exists for the request.\nWorks with REST controllers, GraphQL resolvers, WebSocket gateways, and microservice handlers.\nUse with @RequireTenant() decorator on controllers, resolvers, gateways, handlers, or methods."
+          }
+        ],
+        "blockTags": [
+          {
+            "tag": "@example",
+            "name": "REST Controller",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Controller('users')\n@UseGuards(TenantGuard)\n@RequireTenant()\nexport class UsersController {}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "GraphQL Resolver",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Resolver(() => User)\n@UseGuards(TenantGuard)\n@RequireTenant()\nexport class UsersResolver {}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "WebSocket Gateway",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@WebSocketGateway()\n@UseGuards(TenantGuard)\n@RequireTenant()\nexport class ChatGateway {}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "Microservice Controller",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Controller()\n@UseGuards(TenantGuard)\n@RequireTenant()\nexport class UsersHandler {}\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 149,
+          "name": "constructor",
+          "variant": "declaration",
+          "kind": 512,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/guards/tenant.guard.ts",
+              "line": 55,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L55"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 150,
+              "name": "TenantGuard",
+              "variant": "signature",
+              "kind": 16384,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "src/guards/tenant.guard.ts",
+                  "line": 55,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L55"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 151,
+                  "name": "reflector",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/@nestjs+core@10.4.20_@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2__@nestjs+_1031b346502275d0fd746cdba7b0b7f6/node_modules/@nestjs/core/services/reflector.service.d.ts",
+                      "qualifiedName": "Reflector"
+                    },
+                    "name": "Reflector",
+                    "package": "@nestjs/core"
+                  }
+                },
+                {
+                  "id": 152,
+                  "name": "tenantContext",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 13,
+                    "name": "TenantContextService",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 148,
+                "name": "TenantGuard",
+                "package": "@lexmata/nestjs-multi-tenant"
+              }
+            }
+          ]
+        },
+        {
+          "id": 155,
+          "name": "canActivate",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/guards/tenant.guard.ts",
+              "line": 60,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L60"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 156,
+              "name": "canActivate",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [],
+                "blockTags": [
+                  {
+                    "tag": "@returns",
+                    "content": [
+                      {
+                        "kind": "text",
+                        "text": "Value indicating whether or not the current request is allowed to\nproceed."
+                      }
+                    ]
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/guards/tenant.guard.ts",
+                  "line": 60,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L60"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 157,
+                  "name": "context",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Current execution context. Provides access to details about\nthe current request pipeline."
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/features/execution-context.interface.d.ts",
+                      "qualifiedName": "ExecutionContext"
+                    },
+                    "name": "ExecutionContext",
+                    "package": "@nestjs/common"
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "boolean"
+              },
+              "implementationOf": {
+                "type": "reference",
+                "target": -1,
+                "name": "CanActivate.canActivate"
+              }
+            }
+          ],
+          "implementationOf": {
+            "type": "reference",
+            "target": -1,
+            "name": "CanActivate.canActivate"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Constructors",
+          "children": [149]
+        },
+        {
+          "title": "Methods",
+          "children": [155]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/guards/tenant.guard.ts",
+          "line": 54,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L54"
+        }
+      ],
+      "implementedTypes": [
+        {
+          "type": "reference",
+          "target": {
+            "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/features/can-activate.interface.d.ts",
+            "qualifiedName": "CanActivate"
+          },
+          "name": "CanActivate",
+          "package": "@nestjs/common"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "TenantMiddleware",
+      "variant": "declaration",
+      "kind": 128,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Middleware that extracts tenant information from incoming requests\nand establishes the tenant context for the request lifecycle"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 31,
+          "name": "constructor",
+          "variant": "declaration",
+          "kind": 512,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/middleware/tenant.middleware.ts",
+              "line": 63,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L63"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 32,
+              "name": "TenantMiddleware",
+              "variant": "signature",
+              "kind": 16384,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "src/middleware/tenant.middleware.ts",
+                  "line": 63,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L63"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 33,
+                  "name": "tenantContext",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 13,
+                    "name": "TenantContextService",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                },
+                {
+                  "id": 34,
+                  "name": "options",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": 177,
+                    "name": "MultiTenantModuleOptions",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 30,
+                "name": "TenantMiddleware",
+                "package": "@lexmata/nestjs-multi-tenant"
+              }
+            }
+          ]
+        },
+        {
+          "id": 61,
+          "name": "clearCache",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/middleware/tenant.middleware.ts",
+              "line": 262,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L262"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 62,
+              "name": "clearCache",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Clear the tenant cache\nUseful for testing or when tenant data is updated"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/middleware/tenant.middleware.ts",
+                  "line": 262,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L262"
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "void"
+              }
+            }
+          ]
+        },
+        {
+          "id": 66,
+          "name": "getCacheStats",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/middleware/tenant.middleware.ts",
+              "line": 276,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 67,
+              "name": "getCacheStats",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Get current cache statistics"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/middleware/tenant.middleware.ts",
+                  "line": 276,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                }
+              ],
+              "type": {
+                "type": "reflection",
+                "declaration": {
+                  "id": 68,
+                  "name": "__type",
+                  "variant": "declaration",
+                  "kind": 65536,
+                  "flags": {},
+                  "children": [
+                    {
+                      "id": 69,
+                      "name": "enabled",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "src/middleware/tenant.middleware.ts",
+                          "line": 276,
+                          "character": 21,
+                          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "boolean"
+                      }
+                    },
+                    {
+                      "id": 70,
+                      "name": "max",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "src/middleware/tenant.middleware.ts",
+                          "line": 276,
+                          "character": 39,
+                          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "number"
+                      }
+                    },
+                    {
+                      "id": 71,
+                      "name": "size",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "src/middleware/tenant.middleware.ts",
+                          "line": 276,
+                          "character": 52,
+                          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "number"
+                      }
+                    },
+                    {
+                      "id": 72,
+                      "name": "ttl",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "src/middleware/tenant.middleware.ts",
+                          "line": 276,
+                          "character": 66,
+                          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "number"
+                      }
+                    }
+                  ],
+                  "groups": [
+                    {
+                      "title": "Properties",
+                      "children": [69, 70, 71, 72]
+                    }
+                  ],
+                  "sources": [
+                    {
+                      "fileName": "src/middleware/tenant.middleware.ts",
+                      "line": 276,
+                      "character": 19,
+                      "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L276"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": 63,
+          "name": "invalidateTenant",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/middleware/tenant.middleware.ts",
+              "line": 269,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L269"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 64,
+              "name": "invalidateTenant",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "Invalidate a specific tenant from cache"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "src/middleware/tenant.middleware.ts",
+                  "line": 269,
+                  "character": 2,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L269"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 65,
+                  "name": "tenantId",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "id": 43,
+          "name": "use",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/middleware/tenant.middleware.ts",
+              "line": 86,
+              "character": 8,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L86"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 44,
+              "name": "use",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "src/middleware/tenant.middleware.ts",
+                  "line": 86,
+                  "character": 8,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L86"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 45,
+                  "name": "req",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "src/middleware/tenant.middleware.ts",
+                      "qualifiedName": "PlatformRequest"
+                    },
+                    "name": "PlatformRequest",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                },
+                {
+                  "id": 46,
+                  "name": "_res",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "unknown"
+                  }
+                },
+                {
+                  "id": 47,
+                  "name": "next",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "src/middleware/tenant.middleware.ts",
+                      "qualifiedName": "PlatformNextFunction"
+                    },
+                    "name": "PlatformNextFunction",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+                  "qualifiedName": "Promise"
+                },
+                "typeArguments": [
+                  {
+                    "type": "intrinsic",
+                    "name": "void"
+                  }
+                ],
+                "name": "Promise",
+                "package": "typescript"
+              },
+              "implementationOf": {
+                "type": "reference",
+                "target": -1,
+                "name": "NestMiddleware.use"
+              }
+            }
+          ],
+          "implementationOf": {
+            "type": "reference",
+            "target": -1,
+            "name": "NestMiddleware.use"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Constructors",
+          "children": [31]
+        },
+        {
+          "title": "Methods",
+          "children": [61, 66, 63, 43]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/middleware/tenant.middleware.ts",
+          "line": 55,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/middleware/tenant.middleware.ts#L55"
+        }
+      ],
+      "implementedTypes": [
+        {
+          "type": "reference",
+          "target": {
+            "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/middleware/nest-middleware.interface.d.ts",
+            "qualifiedName": "NestMiddleware"
+          },
+          "name": "NestMiddleware",
+          "package": "@nestjs/common"
+        }
+      ]
+    },
+    {
+      "id": 170,
+      "name": "MultiTenantModuleAsyncOptions",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Async configuration options for the MultiTenantModule"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 171,
+          "name": "imports",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional module imports"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 298,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L298"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": {
+                "sourceFileName": "src/interfaces/tenant.interface.ts",
+                "qualifiedName": "ModuleImport"
+              },
+              "name": "ModuleImport",
+              "package": "@lexmata/nestjs-multi-tenant"
+            }
+          }
+        },
+        {
+          "id": 172,
+          "name": "inject",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Dependencies to inject into the factory function"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 303,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L303"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "union",
+              "types": [
+                {
+                  "type": "reference",
+                  "target": {
+                    "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/type.interface.d.ts",
+                    "qualifiedName": "Type"
+                  },
+                  "typeArguments": [
+                    {
+                      "type": "intrinsic",
+                      "name": "unknown"
+                    }
+                  ],
+                  "name": "Type",
+                  "package": "@nestjs/common"
+                },
+                {
+                  "type": "reference",
+                  "target": {
+                    "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/abstract.interface.d.ts",
+                    "qualifiedName": "Abstract"
+                  },
+                  "typeArguments": [
+                    {
+                      "type": "intrinsic",
+                      "name": "unknown"
+                    }
+                  ],
+                  "name": "Abstract",
+                  "package": "@nestjs/common"
+                },
+                {
+                  "type": "reference",
+                  "target": {
+                    "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/modules/injection-token.interface.d.ts",
+                    "qualifiedName": "InjectionToken"
+                  },
+                  "name": "InjectionToken",
+                  "package": "@nestjs/common"
+                },
+                {
+                  "type": "reference",
+                  "target": {
+                    "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/interfaces/modules/optional-factory-dependency.interface.d.ts",
+                    "qualifiedName": "OptionalFactoryDependency"
+                  },
+                  "name": "OptionalFactoryDependency",
+                  "package": "@nestjs/common"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": 173,
+          "name": "useFactory",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Factory function to create options"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 308,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L308"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 174,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "src/interfaces/tenant.interface.ts",
+                  "line": 308,
+                  "character": 14,
+                  "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L308"
+                }
+              ],
+              "signatures": [
+                {
+                  "id": 175,
+                  "name": "__type",
+                  "variant": "signature",
+                  "kind": 4096,
+                  "flags": {},
+                  "sources": [
+                    {
+                      "fileName": "src/interfaces/tenant.interface.ts",
+                      "line": 308,
+                      "character": 14,
+                      "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L308"
+                    }
+                  ],
+                  "parameters": [
+                    {
+                      "id": 176,
+                      "name": "args",
+                      "variant": "param",
+                      "kind": 32768,
+                      "flags": {
+                        "isRest": true
+                      },
+                      "type": {
+                        "type": "array",
+                        "elementType": {
+                          "type": "intrinsic",
+                          "name": "unknown"
+                        }
+                      }
+                    }
+                  ],
+                  "type": {
+                    "type": "union",
+                    "types": [
+                      {
+                        "type": "reference",
+                        "target": 177,
+                        "name": "MultiTenantModuleOptions",
+                        "package": "@lexmata/nestjs-multi-tenant"
+                      },
+                      {
+                        "type": "reference",
+                        "target": {
+                          "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+                          "qualifiedName": "Promise"
+                        },
+                        "typeArguments": [
+                          {
+                            "type": "reference",
+                            "target": 177,
+                            "name": "MultiTenantModuleOptions",
+                            "package": "@lexmata/nestjs-multi-tenant"
+                          }
+                        ],
+                        "name": "Promise",
+                        "package": "typescript"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [171, 172, 173]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 294,
+          "character": 17,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L294"
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "name": "MultiTenantModuleOptions",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Configuration options for the MultiTenantModule"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 178,
+          "name": "bearerTokenResolver",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Function to resolve tenant ID from bearer token (when using 'bearer' strategy)\nUse this for opaque tokens like API keys that need database lookup"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 197,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L197"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "src/interfaces/tenant.interface.ts",
+              "qualifiedName": "BearerTokenResolver"
+            },
+            "name": "BearerTokenResolver",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 179,
+          "name": "customExtractor",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Custom extractor function (when using 'custom' strategy)"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 202,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L202"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 166,
+            "name": "CustomTenantExtractor",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 192,
+          "name": "debug",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Enable debug logging for tenant extraction\nLogs detailed information about extraction, resolution, and validation"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\nfalse\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 283,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L283"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        },
+        {
+          "id": 190,
+          "name": "eventHooks",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Event hooks for tenant lifecycle events\nUseful for logging, metrics, and custom logic"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 268,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L268"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "src/interfaces/tenant.interface.ts",
+              "qualifiedName": "TenantEventHooks"
+            },
+            "name": "TenantEventHooks",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 180,
+          "name": "excludeRoutes",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Routes to exclude from tenant extraction (regex patterns)"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 207,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L207"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "union",
+              "types": [
+                {
+                  "type": "intrinsic",
+                  "name": "string"
+                },
+                {
+                  "type": "reference",
+                  "target": {
+                    "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+                    "qualifiedName": "RegExp"
+                  },
+                  "name": "RegExp",
+                  "package": "typescript"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": 181,
+          "name": "extractionStrategy",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Strategy for extracting tenant identifier"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n'header'\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 213,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L213"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 198,
+            "name": "TenantExtractionStrategy",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 185,
+          "name": "jwtTenantClaim",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "JWT claim path to extract tenant ID from (when using 'jwt' strategy)\nSupports dot notation for nested claims (e.g., 'user.tenantId', 'org.id')"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n'tenantId'\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 238,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L238"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 182,
+          "name": "requireTenant",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Whether to throw an error if tenant cannot be determined"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\nfalse\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 219,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L219"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        },
+        {
+          "id": 183,
+          "name": "tenantCookie",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Cookie name to extract tenant ID from (when using 'cookie' strategy)"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n'tenant_id'\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 225,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L225"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 184,
+          "name": "tenantHeader",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Header name to extract tenant ID from (when using 'header' strategy)"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n'x-tenant-id'\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 231,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L231"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 186,
+          "name": "tenantPathIndex",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path segment index to extract tenant ID from (when using 'path' strategy)"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n0\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 244,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L244"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "number"
+          }
+        },
+        {
+          "id": 187,
+          "name": "tenantQueryParam",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Query parameter name to extract tenant ID from (when using 'query' strategy)"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@default",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n'tenantId'\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 250,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L250"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 188,
+          "name": "tenantResolver",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Function to resolve full tenant data from tenant ID\nIf not provided, tenant will only contain the ID"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 256,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L256"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 199,
+            "name": "TenantResolver",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 189,
+          "name": "tenantResolverCache",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Cache configuration for tenant resolver results\nCaches resolved tenant data to avoid repeated lookups"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 262,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L262"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "src/interfaces/tenant.interface.ts",
+              "qualifiedName": "TenantCacheOptions"
+            },
+            "name": "TenantCacheOptions",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        },
+        {
+          "id": 191,
+          "name": "tenantValidator",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Function to validate tenant before allowing request\nReturn true to allow, false to reject\nCan return TenantValidationResult for custom error messages\nCan also throw HttpException for custom status codes"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 276,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L276"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "src/interfaces/tenant.interface.ts",
+              "qualifiedName": "TenantValidator"
+            },
+            "name": "TenantValidator",
+            "package": "@lexmata/nestjs-multi-tenant"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [178, 179, 192, 190, 180, 181, 185, 182, 183, 184, 186, 187, 188, 189, 191]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 192,
+          "character": 17,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L192"
+        }
+      ]
+    },
+    {
+      "id": 193,
+      "name": "Tenant",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Represents a tenant in a multi-tenant application"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 194,
+          "name": "id",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Unique identifier for the tenant"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 11,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L11"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 195,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional tenant name"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 16,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L16"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [194, 195]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 7,
+          "character": 17,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L7"
+        }
+      ],
+      "indexSignatures": [
+        {
+          "id": 196,
+          "name": "__index",
+          "variant": "signature",
+          "kind": 8192,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Additional tenant metadata"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 21,
+              "character": 2,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L21"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 197,
+              "name": "key",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "intrinsic",
+                "name": "string"
+              }
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "unknown"
+          }
+        }
+      ]
+    },
+    {
+      "id": 166,
+      "name": "CustomTenantExtractor",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Function type for custom tenant extraction"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 40,
+          "character": 12,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L40"
+        }
+      ],
+      "type": {
+        "type": "reflection",
+        "declaration": {
+          "id": 167,
+          "name": "__type",
+          "variant": "declaration",
+          "kind": 65536,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 40,
+              "character": 36,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L40"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 168,
+              "name": "__type",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 169,
+                  "name": "request",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/@types+node@22.19.3/node_modules/@types/node/web-globals/fetch.d.ts",
+                      "qualifiedName": "__global.Request"
+                    },
+                    "name": "Request",
+                    "package": "@types/node",
+                    "qualifiedName": "__global.Request"
+                  }
+                }
+              ],
+              "type": {
+                "type": "union",
+                "types": [
+                  {
+                    "type": "literal",
+                    "value": null
+                  },
+                  {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+                      "qualifiedName": "Promise"
+                    },
+                    "typeArguments": [
+                      {
+                        "type": "union",
+                        "types": [
+                          {
+                            "type": "literal",
+                            "value": null
+                          },
+                          {
+                            "type": "intrinsic",
+                            "name": "string"
+                          }
+                        ]
+                      }
+                    ],
+                    "name": "Promise",
+                    "package": "typescript"
+                  },
+                  {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 198,
+      "name": "TenantExtractionStrategy",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Strategy for extracting tenant identifier from requests"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 27,
+          "character": 12,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L27"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "literal",
+            "value": "bearer"
+          },
+          {
+            "type": "literal",
+            "value": "cookie"
+          },
+          {
+            "type": "literal",
+            "value": "custom"
+          },
+          {
+            "type": "literal",
+            "value": "header"
+          },
+          {
+            "type": "literal",
+            "value": "jwt"
+          },
+          {
+            "type": "literal",
+            "value": "path"
+          },
+          {
+            "type": "literal",
+            "value": "query"
+          },
+          {
+            "type": "literal",
+            "value": "subdomain"
+          }
+        ]
+      }
+    },
+    {
+      "id": 199,
+      "name": "TenantResolver",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Function type for resolving tenant data from an identifier"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/interfaces/tenant.interface.ts",
+          "line": 51,
+          "character": 12,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L51"
+        }
+      ],
+      "type": {
+        "type": "reflection",
+        "declaration": {
+          "id": 200,
+          "name": "__type",
+          "variant": "declaration",
+          "kind": 65536,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/interfaces/tenant.interface.ts",
+              "line": 51,
+              "character": 29,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/interfaces/tenant.interface.ts#L51"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 201,
+              "name": "__type",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 202,
+                  "name": "tenantId",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "union",
+                "types": [
+                  {
+                    "type": "literal",
+                    "value": null
+                  },
+                  {
+                    "type": "reference",
+                    "target": {
+                      "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.es5.d.ts",
+                      "qualifiedName": "Promise"
+                    },
+                    "typeArguments": [
+                      {
+                        "type": "union",
+                        "types": [
+                          {
+                            "type": "literal",
+                            "value": null
+                          },
+                          {
+                            "type": "reference",
+                            "target": 193,
+                            "name": "Tenant",
+                            "package": "@lexmata/nestjs-multi-tenant"
+                          }
+                        ]
+                      }
+                    ],
+                    "name": "Promise",
+                    "package": "typescript"
+                  },
+                  {
+                    "type": "reference",
+                    "target": 193,
+                    "name": "Tenant",
+                    "package": "@lexmata/nestjs-multi-tenant"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 158,
+      "name": "CurrentTenant",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Parameter decorator to inject the current tenant into a controller method, GraphQL resolver, WebSocket gateway, or microservice handler"
+          }
+        ],
+        "blockTags": [
+          {
+            "tag": "@example",
+            "name": "REST Controller",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Get('profile')\ngetProfile(@CurrentTenant() tenant: Tenant) {\n  return this.service.getProfile(tenant.id);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "GraphQL Resolver",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Query(() => User)\nasync me(@CurrentTenant() tenant: Tenant) {\n  return this.userService.findByTenant(tenant.id);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "WebSocket Gateway",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@SubscribeMessage('message')\nhandleMessage(@CurrentTenant() tenant: Tenant, @MessageBody() data: string) {\n  return this.chatService.handleMessage(tenant.id, data);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "Microservice Handler",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@MessagePattern('user.create')\ncreateUser(@CurrentTenant() tenant: Tenant, @Payload() data: CreateUserDto) {\n  return this.userService.create(tenant.id, data);\n}\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/decorators/tenant.decorator.ts",
+          "line": 176,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/tenant.decorator.ts#L176"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 159,
+          "name": "CurrentTenant",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/decorators/tenant.decorator.ts",
+              "line": 176,
+              "character": 13,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/tenant.decorator.ts#L176"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 160,
+              "name": "dataOrPipes",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {
+                "isRest": true
+              },
+              "type": {
+                "type": "array",
+                "elementType": {
+                  "type": "intrinsic",
+                  "name": "unknown"
+                }
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.decorators.legacy.d.ts",
+              "qualifiedName": "ParameterDecorator"
+            },
+            "name": "ParameterDecorator",
+            "package": "typescript"
+          }
+        }
+      ]
+    },
+    {
+      "id": 161,
+      "name": "RequireTenant",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Decorator to mark a controller or method as requiring a valid tenant context\nUse with TenantGuard to enforce tenant requirements"
+          }
+        ],
+        "blockTags": [
+          {
+            "tag": "@example",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Controller('users')\n@RequireTenant()\nexport class UsersController {\n  // All methods require a tenant\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Controller('users')\nexport class UsersController {\n  @Get()\n  @RequireTenant()\n  findAll() {\n    // Only this method requires a tenant\n  }\n}\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/decorators/require-tenant.decorator.ts",
+          "line": 29,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/require-tenant.decorator.ts#L29"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 162,
+          "name": "RequireTenant",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/decorators/require-tenant.decorator.ts",
+              "line": 29,
+              "character": 29,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/require-tenant.decorator.ts#L29"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/decorators/core/set-metadata.decorator.d.ts",
+              "qualifiedName": "CustomDecorator"
+            },
+            "typeArguments": [
+              {
+                "type": "intrinsic",
+                "name": "string"
+              }
+            ],
+            "name": "CustomDecorator",
+            "package": "@nestjs/common"
+          }
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "name": "TenantId",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Parameter decorator to inject only the current tenant ID into a controller method, GraphQL resolver, WebSocket gateway, or microservice handler"
+          }
+        ],
+        "blockTags": [
+          {
+            "tag": "@example",
+            "name": "REST Controller",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Get('profile')\ngetProfile(@TenantId() tenantId: string) {\n  return this.service.getProfile(tenantId);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "GraphQL Resolver",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@Query(() => [User])\nasync users(@TenantId() tenantId: string) {\n  return this.userService.findAllByTenant(tenantId);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "WebSocket Gateway",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@SubscribeMessage('join-room')\nhandleJoinRoom(@TenantId() tenantId: string, @MessageBody() roomId: string) {\n  return this.chatService.joinRoom(tenantId, roomId);\n}\n```"
+              }
+            ]
+          },
+          {
+            "tag": "@example",
+            "name": "Microservice Handler",
+            "content": [
+              {
+                "kind": "code",
+                "text": "```typescript\n@EventPattern('order.created')\nhandleOrderCreated(@TenantId() tenantId: string, @Payload() data: OrderDto) {\n  return this.orderService.process(tenantId, data);\n}\n```"
+              }
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/decorators/tenant.decorator.ts",
+          "line": 218,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/tenant.decorator.ts#L218"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 164,
+          "name": "TenantId",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "src/decorators/tenant.decorator.ts",
+              "line": 218,
+              "character": 13,
+              "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/decorators/tenant.decorator.ts#L218"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 165,
+              "name": "dataOrPipes",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {
+                "isRest": true
+              },
+              "type": {
+                "type": "array",
+                "elementType": {
+                  "type": "intrinsic",
+                  "name": "unknown"
+                }
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "sourceFileName": "node_modules/.pnpm/typescript@5.9.3/node_modules/typescript/lib/lib.decorators.legacy.d.ts",
+              "qualifiedName": "ParameterDecorator"
+            },
+            "name": "ParameterDecorator",
+            "package": "typescript"
+          }
+        }
+      ]
+    },
+    {
+      "id": 203,
+      "name": "DEFAULT_TENANT_HEADER",
+      "variant": "declaration",
+      "kind": 32,
+      "flags": {
+        "isConst": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Default header name for tenant ID extraction"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/constants.ts",
+          "line": 9,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/constants.ts#L9"
+        }
+      ],
+      "type": {
+        "type": "literal",
+        "value": "x-tenant-id"
+      },
+      "defaultValue": "'x-tenant-id'"
+    },
+    {
+      "id": 204,
+      "name": "DEFAULT_TENANT_PATH_INDEX",
+      "variant": "declaration",
+      "kind": 32,
+      "flags": {
+        "isConst": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Default path segment index for tenant ID extraction"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/constants.ts",
+          "line": 19,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/constants.ts#L19"
+        }
+      ],
+      "type": {
+        "type": "literal",
+        "value": 0
+      },
+      "defaultValue": "0"
+    },
+    {
+      "id": 205,
+      "name": "DEFAULT_TENANT_QUERY_PARAM",
+      "variant": "declaration",
+      "kind": 32,
+      "flags": {
+        "isConst": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Default query parameter name for tenant ID extraction"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/constants.ts",
+          "line": 14,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/constants.ts#L14"
+        }
+      ],
+      "type": {
+        "type": "literal",
+        "value": "tenantId"
+      },
+      "defaultValue": "'tenantId'"
+    },
+    {
+      "id": 206,
+      "name": "MULTI_TENANT_OPTIONS",
+      "variant": "declaration",
+      "kind": 32,
+      "flags": {
+        "isConst": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Injection token for MultiTenant module options"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/constants.ts",
+          "line": 4,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/constants.ts#L4"
+        }
+      ],
+      "type": {
+        "type": "literal",
+        "value": "MULTI_TENANT_OPTIONS"
+      },
+      "defaultValue": "'MULTI_TENANT_OPTIONS'"
+    },
+    {
+      "id": 147,
+      "name": "REQUIRE_TENANT_KEY",
+      "variant": "declaration",
+      "kind": 32,
+      "flags": {
+        "isConst": true
+      },
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Metadata key for requiring tenant"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "src/guards/tenant.guard.ts",
+          "line": 14,
+          "character": 13,
+          "url": "https://github.com/Lexmata/nestjs-multi-tenancy/blob/49f4cc54a8e862dd54394cec1deb039ea498642c/src/guards/tenant.guard.ts#L14"
+        }
+      ],
+      "type": {
+        "type": "literal",
+        "value": "requireTenant"
+      },
+      "defaultValue": "'requireTenant'"
+    }
+  ],
+  "groups": [
+    {
+      "title": "Classes",
+      "children": [1, 13, 148, 30]
+    },
+    {
+      "title": "Interfaces",
+      "children": [170, 177, 193]
+    },
+    {
+      "title": "Type Aliases",
+      "children": [166, 198, 199]
+    },
+    {
+      "title": "Variables",
+      "children": [203, 204, 205, 206, 147]
+    },
+    {
+      "title": "Functions",
+      "children": [158, 161, 163]
+    }
+  ],
+  "packageName": "@lexmata/nestjs-multi-tenant",
+  "packageVersion": "0.1.0-beta",
+  "symbolIdMap": {
+    "0": {
+      "sourceFileName": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "1": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule"
+    },
+    "2": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.forRoot"
+    },
+    "3": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.forRoot"
+    },
+    "4": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "options"
+    },
+    "5": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.forRootAsync"
+    },
+    "6": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.forRootAsync"
+    },
+    "7": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "options"
+    },
+    "10": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.configure"
+    },
+    "11": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "MultiTenantModule.configure"
+    },
+    "12": {
+      "sourceFileName": "src/multi-tenant.module.ts",
+      "qualifiedName": "consumer"
+    },
+    "13": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService"
+    },
+    "17": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.run"
+    },
+    "18": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.run"
+    },
+    "19": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "T"
+    },
+    "20": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "tenant"
+    },
+    "21": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "fn"
+    },
+    "22": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "__type"
+    },
+    "23": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "__type"
+    },
+    "24": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.getTenant"
+    },
+    "25": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.getTenant"
+    },
+    "26": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.getTenantId"
+    },
+    "27": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.getTenantId"
+    },
+    "28": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.hasTenant"
+    },
+    "29": {
+      "sourceFileName": "src/services/tenant-context.service.ts",
+      "qualifiedName": "TenantContextService.hasTenant"
+    },
+    "30": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware"
+    },
+    "31": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.__constructor"
+    },
+    "32": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware"
+    },
+    "33": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "tenantContext"
+    },
+    "34": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "options"
+    },
+    "43": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.use"
+    },
+    "44": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.use"
+    },
+    "45": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "req"
+    },
+    "46": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "_res"
+    },
+    "47": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "next"
+    },
+    "61": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.clearCache"
+    },
+    "62": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.clearCache"
+    },
+    "63": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.invalidateTenant"
+    },
+    "64": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.invalidateTenant"
+    },
+    "65": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "tenantId"
+    },
+    "66": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.getCacheStats"
+    },
+    "67": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "TenantMiddleware.getCacheStats"
+    },
+    "68": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "__type"
+    },
+    "69": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "__type.enabled"
+    },
+    "70": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "__type.max"
+    },
+    "71": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "__type.size"
+    },
+    "72": {
+      "sourceFileName": "src/middleware/tenant.middleware.ts",
+      "qualifiedName": "__type.ttl"
+    },
+    "147": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "REQUIRE_TENANT_KEY"
+    },
+    "148": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "TenantGuard"
+    },
+    "149": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "TenantGuard.__constructor"
+    },
+    "150": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "TenantGuard"
+    },
+    "151": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "reflector"
+    },
+    "152": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "tenantContext"
+    },
+    "155": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "TenantGuard.canActivate"
+    },
+    "156": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "TenantGuard.canActivate"
+    },
+    "157": {
+      "sourceFileName": "src/guards/tenant.guard.ts",
+      "qualifiedName": "context"
+    },
+    "158": {
+      "sourceFileName": "src/decorators/tenant.decorator.ts",
+      "qualifiedName": "CurrentTenant"
+    },
+    "159": {
+      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/decorators/http/create-route-param-metadata.decorator.d.ts",
+      "qualifiedName": "CurrentTenant"
+    },
+    "160": {
+      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/decorators/http/create-route-param-metadata.decorator.d.ts",
+      "qualifiedName": "dataOrPipes"
+    },
+    "161": {
+      "sourceFileName": "src/decorators/require-tenant.decorator.ts",
+      "qualifiedName": "RequireTenant"
+    },
+    "162": {
+      "sourceFileName": "src/decorators/require-tenant.decorator.ts",
+      "qualifiedName": "RequireTenant"
+    },
+    "163": {
+      "sourceFileName": "src/decorators/tenant.decorator.ts",
+      "qualifiedName": "TenantId"
+    },
+    "164": {
+      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/decorators/http/create-route-param-metadata.decorator.d.ts",
+      "qualifiedName": "TenantId"
+    },
+    "165": {
+      "sourceFileName": "node_modules/.pnpm/@nestjs+common@10.4.20_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/decorators/http/create-route-param-metadata.decorator.d.ts",
+      "qualifiedName": "dataOrPipes"
+    },
+    "166": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "CustomTenantExtractor"
+    },
+    "167": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "168": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "169": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "request"
+    },
+    "170": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleAsyncOptions"
+    },
+    "171": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleAsyncOptions.imports"
+    },
+    "172": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleAsyncOptions.inject"
+    },
+    "173": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleAsyncOptions.useFactory"
+    },
+    "174": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "175": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "176": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "args"
+    },
+    "177": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions"
+    },
+    "178": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.bearerTokenResolver"
+    },
+    "179": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.customExtractor"
+    },
+    "180": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.excludeRoutes"
+    },
+    "181": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.extractionStrategy"
+    },
+    "182": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.requireTenant"
+    },
+    "183": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantCookie"
+    },
+    "184": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantHeader"
+    },
+    "185": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.jwtTenantClaim"
+    },
+    "186": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantPathIndex"
+    },
+    "187": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantQueryParam"
+    },
+    "188": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantResolver"
+    },
+    "189": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantResolverCache"
+    },
+    "190": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.eventHooks"
+    },
+    "191": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.tenantValidator"
+    },
+    "192": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "MultiTenantModuleOptions.debug"
+    },
+    "193": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "Tenant"
+    },
+    "194": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "Tenant.id"
+    },
+    "195": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "Tenant.name"
+    },
+    "196": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "Tenant.__index"
+    },
+    "198": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "TenantExtractionStrategy"
+    },
+    "199": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "TenantResolver"
+    },
+    "200": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "201": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "__type"
+    },
+    "202": {
+      "sourceFileName": "src/interfaces/tenant.interface.ts",
+      "qualifiedName": "tenantId"
+    },
+    "203": {
+      "sourceFileName": "src/constants.ts",
+      "qualifiedName": "DEFAULT_TENANT_HEADER"
+    },
+    "204": {
+      "sourceFileName": "src/constants.ts",
+      "qualifiedName": "DEFAULT_TENANT_PATH_INDEX"
+    },
+    "205": {
+      "sourceFileName": "src/constants.ts",
+      "qualifiedName": "DEFAULT_TENANT_QUERY_PARAM"
+    },
+    "206": {
+      "sourceFileName": "src/constants.ts",
+      "qualifiedName": "MULTI_TENANT_OPTIONS"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/index.ts"
+    },
+    "reflections": {
+      "1": 0
+    }
+  }
+}

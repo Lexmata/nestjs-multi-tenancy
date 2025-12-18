@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "json": "docs/src/assets/api.json",
+  "name": "@lexmata/nestjs-multi-tenant",
+  "readme": "none",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "categorizeByGroup": true,
+  "sort": ["kind", "alphabetical"],
+  "kindSortOrder": ["Module", "Class", "Interface", "TypeAlias", "Function", "Variable", "Enum"],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "plugin": [],
+  "tsconfig": "tsconfig.json"
+}

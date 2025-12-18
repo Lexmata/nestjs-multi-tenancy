@@ -1,0 +1,240 @@
+<div class="api-reference">
+  <!-- Header -->
+  <div class="api-header">
+    <a routerLink="/" class="back-link">
+      <fa-icon [icon]="faArrowLeft" />
+      <span>Back to Docs</span>
+    </a>
+    <h1>API Reference</h1>
+    <p class="subtitle">
+      Complete API documentation auto-generated from TypeScript source
+    </p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search API..."
+        [value]="searchQuery()"
+        (input)="setSearch($event)"
+        class="search-input"
+      />
+    </div>
+    <div class="category-filters">
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'all'"
+        (click)="setCategory('all')"
+      >
+        All
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'modules'"
+        (click)="setCategory('modules')"
+      >
+        Modules
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'classes'"
+        (click)="setCategory('classes')"
+      >
+        Classes
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'interfaces'"
+        (click)="setCategory('interfaces')"
+      >
+        Interfaces
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'types'"
+        (click)="setCategory('types')"
+      >
+        Types
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="selectedCategory() === 'functions'"
+        (click)="setCategory('functions')"
+      >
+        Functions
+      </button>
+    </div>
+  </div>
+
+  <!-- API Items grouped by kind -->
+  @for (group of groupedItems(); track group[0]) {
+    <section class="api-group">
+      <h2 class="group-title">{{ group[0] }}s</h2>
+      <div class="items-list">
+        @for (item of group[1]; track item.id) {
+          <div class="api-item" [class]="getKindClass(item.kind)">
+            <div
+              class="item-header"
+              (click)="toggleExpanded(item.id.toString())"
+              [class.expanded]="isExpanded(item.id.toString())"
+            >
+              <fa-icon
+                [icon]="isExpanded(item.id.toString()) ? faChevronDown : faChevronRight"
+                class="expand-icon"
+              />
+              <fa-icon [icon]="getKindIcon(item.kind)" class="kind-icon" />
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-kind">{{ getKindString(item.kind) }}</span>
+            </div>
+
+            @if (isExpanded(item.id.toString())) {
+              <div class="item-content">
+                <!-- Description -->
+                @if (getComment(item)) {
+                  <p class="item-description">{{ getComment(item) }}</p>
+                }
+
+                <!-- Source link -->
+                @if (getSourceLink(item)) {
+                  <a [href]="getSourceLink(item)" target="_blank" class="source-link">
+                    View source on GitHub
+                  </a>
+                }
+
+                <!-- Function/Method Parameters -->
+                @if (getParameters(item).length > 0) {
+                  <div class="params-section">
+                    <h4>Parameters</h4>
+                    <table class="params-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (param of getParameters(item); track param.id) {
+                          <tr>
+                            <td class="param-name">
+                              {{ param.name }}
+                              @if (isOptional(param)) {
+                                <span class="optional-badge">optional</span>
+                              }
+                            </td>
+                            <td class="param-type">
+                              <code>{{ formatType(param.type) }}</code>
+                            </td>
+                            <td class="param-desc">
+                              {{ getParamDescription(param) }}
+                              @if (hasDefault(param)) {
+                                <span class="default-value">Default: <code>{{ getDefault(param) }}</code></span>
+                              }
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+
+                <!-- Return type -->
+                @if (item.signatures?.length) {
+                  <div class="returns-section">
+                    <h4>Returns</h4>
+                    <code class="return-type">{{ getReturnType(item) }}</code>
+                    @if (getReturns(item)) {
+                      <p class="return-desc">{{ getReturns(item) }}</p>
+                    }
+                  </div>
+                }
+
+                <!-- Properties (for classes/interfaces) -->
+                @if (getProperties(item).length > 0) {
+                  <div class="properties-section">
+                    <h4>Properties</h4>
+                    <table class="props-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (prop of getProperties(item); track prop.id) {
+                          <tr>
+                            <td class="prop-name">
+                              {{ prop.name }}
+                              @if (isOptional(prop)) {
+                                <span class="optional-badge">optional</span>
+                              }
+                              @if (prop.flags?.isReadonly) {
+                                <span class="readonly-badge">readonly</span>
+                              }
+                            </td>
+                            <td class="prop-type">
+                              <code>{{ formatType(prop.type) }}</code>
+                            </td>
+                            <td class="prop-desc">
+                              {{ getComment(prop) }}
+                              @if (hasDefault(prop)) {
+                                <span class="default-value">Default: <code>{{ getDefault(prop) }}</code></span>
+                              }
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+
+                <!-- Methods (for classes) -->
+                @if (getMethods(item).length > 0) {
+                  <div class="methods-section">
+                    <h4>Methods</h4>
+                    @for (method of getMethods(item); track method.id) {
+                      <div class="method-item">
+                        <div class="method-signature">
+                          <span class="method-name">{{ method.name }}</span>
+                          <span class="method-params">
+                            ({{ getMethodParamsString(method) }})
+                          </span>
+                          <span class="method-return">: {{ getReturnType(method) }}</span>
+                        </div>
+                        @if (getComment(method)) {
+                          <p class="method-desc">{{ getComment(method) }}</p>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Example -->
+                @if (getExampleCode(item)) {
+                  <div class="example-section">
+                    <h4>Example</h4>
+                    <pre class="example-code"><code>{{ getExampleCode(item) }}</code></pre>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Empty state -->
+  @if (filteredItems().length === 0) {
+    <div class="empty-state">
+      <p>No API items found matching your criteria.</p>
+      <button class="reset-btn" (click)="setCategory('all'); searchQuery.set('')">
+        Reset filters
+      </button>
+    </div>
+  }
+</div>
+

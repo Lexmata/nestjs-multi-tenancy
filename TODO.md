@@ -322,10 +322,13 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - System preference detection
   - Smooth transition animation
 
-- [ ] **API Reference Page**
-  - Auto-generated from TypeScript source
-  - TypeDoc or similar integration
-  - Interactive type explorer
+- [x] **API Reference Page** ✅
+  - Auto-generated from TypeScript source using TypeDoc
+  - JSON output parsed by Angular component at `/api` route
+  - Interactive type explorer with search, category filters
+  - Expandable items showing parameters, properties, methods
+  - Source links to GitHub
+  - `pnpm run docs:api` script to regenerate API docs
 
 - [ ] **Add Troubleshooting Guide**
   - Common issues and solutions

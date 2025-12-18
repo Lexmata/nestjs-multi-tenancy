@@ -82,5 +82,9 @@ export class SidebarComponent {
         { title: 'MikroORM', path: '/examples/mikro-orm' },
       ],
     },
+    {
+      title: 'Reference',
+      items: [{ title: 'API Reference', path: '/api' }],
+    },
   ];
 }

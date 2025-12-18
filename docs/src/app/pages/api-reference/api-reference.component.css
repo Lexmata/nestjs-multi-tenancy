@@ -1,0 +1,468 @@
+@reference "../../../styles.css";
+
+.api-reference {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.api-header {
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: var(--color-accent-light);
+}
+
+.api-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff, var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.search-box {
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.filter-btn.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* API Groups */
+.api-group {
+  margin-bottom: 2rem;
+}
+
+.group-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* API Item */
+.api-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.api-item:hover {
+  border-color: var(--color-accent);
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.item-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.expand-icon {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  width: 1rem;
+  transition: transform 0.2s;
+}
+
+.item-header.expanded .expand-icon {
+  transform: rotate(0);
+}
+
+.kind-icon {
+  font-size: 0.875rem;
+  padding: 0.375rem;
+  border-radius: 6px;
+}
+
+/* Kind-specific colors */
+.kind-module .kind-icon {
+  color: #61afef;
+  background: rgba(97, 175, 239, 0.1);
+}
+
+.kind-class .kind-icon {
+  color: #e5c07b;
+  background: rgba(229, 192, 123, 0.1);
+}
+
+.kind-interface .kind-icon {
+  color: #c678dd;
+  background: rgba(198, 120, 221, 0.1);
+}
+
+.kind-type .kind-icon {
+  color: #56b6c2;
+  background: rgba(86, 182, 194, 0.1);
+}
+
+.kind-function .kind-icon {
+  color: #98c379;
+  background: rgba(152, 195, 121, 0.1);
+}
+
+.kind-other .kind-icon {
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.item-name {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 600;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.item-kind {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+/* Item Content */
+.item-content {
+  padding: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.item-description {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.source-link {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+}
+
+/* Tables */
+.params-section,
+.properties-section,
+.methods-section,
+.returns-section,
+.example-section {
+  margin-top: 1.5rem;
+}
+
+.params-section h4,
+.properties-section h4,
+.methods-section h4,
+.returns-section h4,
+.example-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+
+.params-table,
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.params-table th,
+.props-table th {
+  text-align: left;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.params-table td,
+.props-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.param-name,
+.prop-name {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.param-type,
+.prop-type {
+  color: var(--color-accent);
+}
+
+.param-type code,
+.prop-type code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.param-desc,
+.prop-desc {
+  color: var(--color-text-muted);
+}
+
+.optional-badge,
+.readonly-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.optional-badge {
+  background: rgba(152, 195, 121, 0.15);
+  color: #98c379;
+}
+
+.readonly-badge {
+  background: rgba(86, 182, 194, 0.15);
+  color: #56b6c2;
+}
+
+.default-value {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.default-value code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+}
+
+/* Returns */
+.return-type {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--color-accent);
+}
+
+.return-desc {
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+/* Methods */
+.method-item {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.method-signature {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.9rem;
+}
+
+.method-name {
+  color: #98c379;
+  font-weight: 600;
+}
+
+.method-params {
+  color: var(--color-text-muted);
+}
+
+.method-return {
+  color: var(--color-accent);
+}
+
+.method-desc {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Example */
+.example-code {
+  background: var(--color-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.example-code code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  white-space: pre;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+}
+
+.reset-btn {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 8px;
+  color: var(--color-bg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.reset-btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .api-reference {
+    padding: 1rem;
+  }
+
+  .api-header h1 {
+    font-size: 2rem;
+  }
+
+  .category-filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.5rem;
+  }
+
+  .filter-btn {
+    flex-shrink: 0;
+  }
+
+  .params-table,
+  .props-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .item-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .item-name {
+    font-size: 0.9rem;
+  }
+
+  .item-kind {
+    display: none;
+  }
+}
+
