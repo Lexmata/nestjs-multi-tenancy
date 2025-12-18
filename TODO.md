@@ -178,20 +178,20 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Core Features
 
-- [ ] **Tenant Resolver Caching**
+- [x] **Tenant Resolver Caching** ✅
   ```typescript
   MultiTenantModule.forRoot({
     tenantResolver: async (id) => fetchTenant(id),
-    cacheOptions: {
-      ttl: 300, // seconds
-      maxSize: 1000,
-      strategy: 'lru',
+    tenantResolverCache: {
+      enabled: true,
+      ttl: 300000, // milliseconds
+      max: 1000,
     },
   })
   ```
   - In-memory LRU cache by default
-  - Support for Redis/external cache adapters
-  - Cache invalidation hooks
+  - Configurable TTL and max size
+  - Cache invalidation methods: `clearCache()`, `invalidateTenant(id)`, `getCacheStats()`
 
 - [ ] **Event Hooks / Lifecycle Events**
   ```typescript
