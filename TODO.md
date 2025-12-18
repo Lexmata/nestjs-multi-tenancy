@@ -272,6 +272,15 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Test async configuration
   - Test route exclusions
 
+- [x] **Test Utilities Export** ✅
+  - Created `src/testing/index.ts` with testing utilities
+  - `MockTenantContextService` - mock implementation for testing
+  - `createMockTenantContext()` - factory for mock context
+  - `createMockRequest()` - create request with tenant attached
+  - `createMockExecutionContext()` - mock ExecutionContext for guards/decorators
+  - `createTestTenant()` / `createTestTenants()` - helpers for creating test data
+  - Exported as `@lexmata/nestjs-multi-tenant/testing` subpath
+
 - [ ] **Performance Benchmarks**
   - Measure middleware overhead
   - Compare extraction strategies
