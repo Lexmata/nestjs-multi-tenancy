@@ -193,31 +193,37 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Configurable TTL and max size
   - Cache invalidation methods: `clearCache()`, `invalidateTenant(id)`, `getCacheStats()`
 
-- [ ] **Event Hooks / Lifecycle Events**
+- [x] **Event Hooks / Lifecycle Events** ✅
   ```typescript
-  onTenantResolved?: (tenant: Tenant, request: Request) => void | Promise<void>;
-  onTenantNotFound?: (tenantId: string | null, request: Request) => void | Promise<void>;
-  onTenantError?: (error: Error, request: Request) => void | Promise<void>;
+  eventHooks: {
+    onTenantIdExtracted?: (tenantId: string, ctx: TenantEventContext) => void | Promise<void>;
+    onTenantResolved?: (tenant: Tenant, ctx: TenantEventContext) => void | Promise<void>;
+    onTenantNotFound?: (tenantId: string, ctx: TenantEventContext) => void | Promise<void>;
+    onTenantMissing?: (ctx: TenantEventContext) => void | Promise<void>;
+    onTenantValidationFailed?: (tenant: Tenant, reason: string, ctx: TenantEventContext) => void | Promise<void>;
+  }
   ```
-  - Emit events via NestJS EventEmitter (optional integration)
+  - All hooks receive context with request, strategy, and path
+  - Supports both sync and async hooks
   - Allow logging, metrics collection, audit trails
 
-- [ ] **Tenant Validation Hook**
+- [x] **Tenant Validation Hook** ✅
   ```typescript
-  tenantValidator?: (tenant: Tenant) => boolean | Promise<boolean>;
+  tenantValidator?: (tenant: Tenant, ctx: TenantEventContext) => boolean | TenantValidationResult | Promise<boolean | TenantValidationResult>;
   ```
   - Reject requests with invalid/suspended tenants
   - Support async validation (e.g., check subscription status)
+  - Return `{ valid: false, reason: 'message' }` for custom error messages
 
-- [ ] **Debug/Logging Mode**
+- [x] **Debug/Logging Mode** ✅
   ```typescript
   MultiTenantModule.forRoot({
-    debug: true, // or 'verbose'
-    logger: customLogger,
+    debug: true,
   })
   ```
-  - Log tenant extraction attempts
-  - Log cache hits/misses
+  - Logs extraction strategy, tenant ID, resolution, caching, and validation
+  - Uses NestJS Logger with `[MultiTenant]` context
+  - Shows HTTP method and path for each request
   - Integration with NestJS Logger
 
 ### Ecosystem Integration
