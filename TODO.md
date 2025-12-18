@@ -228,24 +228,28 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Ecosystem Integration
 
-- [ ] **GraphQL Support**
-  - `@CurrentTenant()` decorator for GraphQL resolvers
-  - Extract tenant from GraphQL context
-  - Support Apollo Server and Mercurius
+- [x] **GraphQL Support** ✅
+  - `@CurrentTenant()` and `@TenantId()` decorators work with GraphQL resolvers
+  - `TenantGuard` works with GraphQL execution context
+  - Automatic context detection (HTTP vs GraphQL)
+  - No hard dependency on `@nestjs/graphql` (graceful fallback)
   ```typescript
-  @Resolver()
+  @Resolver(() => User)
+  @UseGuards(TenantGuard)
+  @RequireTenant()
   export class UsersResolver {
-    @Query()
+    @Query(() => [User])
     users(@CurrentTenant() tenant: Tenant) {
       return this.usersService.findByTenant(tenant.id);
     }
   }
   ```
 
-- [ ] **WebSocket Support**
-  - Tenant context propagation in WebSocket gateways
-  - Extract tenant on connection handshake
-  - Support Socket.io and ws adapters
+- [x] **WebSocket Support** ✅
+  - `@CurrentTenant()` and `@TenantId()` decorators work with WebSocket gateways
+  - `TenantGuard` works with WebSocket execution context
+  - Extracts tenant from `client.tenant`, `client.handshake.tenant`, or `client.data.tenant`
+  - WebSocket-specific error messages
 
 - [x] **Microservices Support** ✅
   - Propagate tenant context across service boundaries
