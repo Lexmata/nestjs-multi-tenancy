@@ -15,8 +15,8 @@ export const REQUIRE_TENANT_KEY = 'requireTenant';
 
 /**
  * Guard that ensures a valid tenant context exists for the request.
- * Works with REST controllers, GraphQL resolvers, and WebSocket gateways.
- * Use with @RequireTenant() decorator on controllers, resolvers, gateways, or methods.
+ * Works with REST controllers, GraphQL resolvers, WebSocket gateways, and microservice handlers.
+ * Use with @RequireTenant() decorator on controllers, resolvers, gateways, handlers, or methods.
  *
  * @example REST Controller
  * ```typescript
@@ -40,6 +40,14 @@ export const REQUIRE_TENANT_KEY = 'requireTenant';
  * @UseGuards(TenantGuard)
  * @RequireTenant()
  * export class ChatGateway {}
+ * ```
+ *
+ * @example Microservice Controller
+ * ```typescript
+ * @Controller()
+ * @UseGuards(TenantGuard)
+ * @RequireTenant()
+ * export class UsersHandler {}
  * ```
  */
 @Injectable()
@@ -74,6 +82,11 @@ export class TenantGuard implements CanActivate {
         case 'ws':
           throw new HttpException(
             'Tenant context required for this WebSocket operation',
+            HttpStatus.FORBIDDEN,
+          );
+        case 'rpc':
+          throw new HttpException(
+            'Tenant context required for this microservice operation',
             HttpStatus.FORBIDDEN,
           );
         default:

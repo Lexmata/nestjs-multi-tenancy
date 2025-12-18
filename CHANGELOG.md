@@ -68,9 +68,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Extracts tenant from `client.tenant`, `client.handshake.tenant`, or `client.data.tenant`
   - WebSocket-specific error messages
 
+- **Microservice Support**: Full support for NestJS microservices (TCP, Redis, RabbitMQ, Kafka, gRPC, etc.)
+  - `@CurrentTenant()` and `@TenantId()` decorators work with message handlers
+  - `TenantGuard` works with RPC execution context
+  - Extracts tenant from message payload (`data.tenant`, `data.tenantId`) or RPC context
+  - Supports custom context getters (`context.getTenant()`)
+  - Microservice-specific error messages
+  - Works with `@MessagePattern()` and `@EventPattern()` handlers
+
 ### Changed
 
-- Test suite expanded from 89 to 204 tests
+- Test suite expanded from 89 to 217 tests
 
 ## [0.1.0-beta] - 2025-12-17
 

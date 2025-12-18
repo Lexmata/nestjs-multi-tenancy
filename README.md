@@ -855,6 +855,127 @@ client.tenant = tenant;
 client.data.tenant = tenant;
 ```
 
+## Microservice Support
+
+All decorators and guards work with NestJS microservices (TCP, Redis, RabbitMQ, Kafka, gRPC, etc.). The tenant is extracted from the message payload or RPC context.
+
+### Passing Tenant in Message Payload
+
+Include tenant information in your message payload:
+
+```typescript
+// Producer/Client side
+this.client.send('user.create', {
+  tenantId: 'tenant-123',  // Just the ID
+  // OR
+  tenant: { id: 'tenant-123', name: 'Acme Corp' },  // Full tenant object
+  payload: { email: 'user@example.com', name: 'John' },
+});
+
+// Or with event pattern
+this.client.emit('order.created', {
+  tenantId: 'tenant-123',
+  order: { id: 'order-456', total: 99.99 },
+});
+```
+
+### Handler with Decorators
+
+```typescript
+import { Controller } from '@nestjs/common';
+import { MessagePattern, EventPattern, Payload } from '@nestjs/microservices';
+import { UseGuards } from '@nestjs/common';
+import { CurrentTenant, TenantId, RequireTenant, TenantGuard } from '@lexmata/nestjs-multi-tenant';
+import type { Tenant } from '@lexmata/nestjs-multi-tenant';
+
+@Controller()
+@UseGuards(TenantGuard)
+@RequireTenant()
+export class UsersHandler {
+  constructor(private readonly usersService: UsersService) {}
+
+  @MessagePattern('user.create')
+  async createUser(
+    @CurrentTenant() tenant: Tenant,
+    @Payload() data: { payload: CreateUserDto },
+  ) {
+    return this.usersService.create(tenant.id, data.payload);
+  }
+
+  @MessagePattern('user.findAll')
+  async findAllUsers(@TenantId() tenantId: string) {
+    return this.usersService.findAll(tenantId);
+  }
+
+  @EventPattern('order.created')
+  async handleOrderCreated(
+    @CurrentTenant() tenant: Tenant,
+    @Payload() data: { order: OrderDto },
+  ) {
+    await this.notificationService.notifyOrderCreated(tenant.id, data.order);
+  }
+}
+```
+
+### Using RPC Context
+
+For more complex scenarios, you can set the tenant on the RPC context:
+
+```typescript
+// Custom interceptor to set tenant on context
+@Injectable()
+export class TenantInterceptor implements NestInterceptor {
+  constructor(private readonly tenantService: TenantService) {}
+
+  async intercept(context: ExecutionContext, next: CallHandler) {
+    if (context.getType() === 'rpc') {
+      const rpcContext = context.switchToRpc();
+      const data = rpcContext.getData();
+      const ctx = rpcContext.getContext();
+
+      if (data.tenantId) {
+        const tenant = await this.tenantService.findById(data.tenantId);
+        ctx.tenant = tenant;
+      }
+    }
+
+    return next.handle();
+  }
+}
+```
+
+### Tenant Location in Microservices
+
+The decorator checks these locations in order:
+1. `data.tenant` - Full tenant object in message payload
+2. `data.tenantId` - Tenant ID in payload (wrapped as `{ id: tenantId }`)
+3. `context.tenant` - Set by interceptor or middleware
+4. `context.getTenant()` - Custom getter function
+
+### Cross-Service Tenant Propagation
+
+When calling other microservices, propagate the tenant context:
+
+```typescript
+@Injectable()
+export class OrderService {
+  constructor(
+    @Inject('BILLING_SERVICE') private billingClient: ClientProxy,
+    private readonly tenantContext: TenantContextService,
+  ) {}
+
+  async createOrder(orderDto: CreateOrderDto) {
+    const tenantId = this.tenantContext.getTenantId();
+
+    // Include tenant in outgoing messages
+    return this.billingClient.send('billing.charge', {
+      tenantId,
+      order: orderDto,
+    });
+  }
+}
+```
+
 ## TenantContextService
 
 Access tenant information from anywhere in your application using AsyncLocalStorage.

@@ -25,6 +25,22 @@ interface WsClientWithTenant {
 }
 
 /**
+ * Interface for RPC/Microservice data with tenant
+ */
+interface RpcDataWithTenant {
+  tenant?: Tenant;
+  tenantId?: string;
+}
+
+/**
+ * Interface for RPC/Microservice context with tenant
+ */
+interface RpcContextWithTenant {
+  tenant?: Tenant;
+  getTenant?: () => Tenant | undefined;
+}
+
+/**
  * Get tenant from WebSocket client
  * Checks client.tenant, client.handshake.tenant, and client.data.tenant
  */
@@ -48,10 +64,50 @@ function getTenantFromWsClient(client: WsClientWithTenant): Tenant | undefined {
 }
 
 /**
- * Get the request object from execution context (supports HTTP, GraphQL, and WebSocket)
+ * Get tenant from RPC/Microservice context
+ * Checks data.tenant, data.tenantId, and context.tenant
+ */
+function getTenantFromRpc(
+  data: RpcDataWithTenant | undefined,
+  rpcContext: RpcContextWithTenant | undefined,
+): Tenant | undefined {
+  // Check data.tenant (full tenant object in message payload)
+  if (data?.tenant) {
+    return data.tenant;
+  }
+
+  // Check data.tenantId (just ID in payload, wrap it)
+  if (data?.tenantId) {
+    return { id: data.tenantId };
+  }
+
+  // Check context.tenant (set by interceptor or middleware)
+  if (rpcContext?.tenant) {
+    return rpcContext.tenant;
+  }
+
+  // Check context.getTenant() method
+  if (rpcContext?.getTenant) {
+    return rpcContext.getTenant();
+  }
+
+  return undefined;
+}
+
+/**
+ * Get the request object from execution context (supports HTTP, GraphQL, WebSocket, and RPC/Microservices)
  */
 function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
   const contextType = ctx.getType<'http' | 'graphql' | 'rpc' | 'ws'>();
+
+  // Handle RPC/Microservice context
+  if (contextType === 'rpc') {
+    const rpcCtx = ctx.switchToRpc();
+    const data = rpcCtx.getData<RpcDataWithTenant>();
+    const rpcContext = rpcCtx.getContext<RpcContextWithTenant>();
+    const tenant = getTenantFromRpc(data, rpcContext);
+    return { tenant };
+  }
 
   // Handle WebSocket context
   if (contextType === 'ws') {
@@ -83,7 +139,7 @@ function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
 }
 
 /**
- * Parameter decorator to inject the current tenant into a controller method, GraphQL resolver, or WebSocket gateway
+ * Parameter decorator to inject the current tenant into a controller method, GraphQL resolver, WebSocket gateway, or microservice handler
  *
  * @example REST Controller
  * ```typescript
@@ -108,6 +164,14 @@ function getRequestFromContext(ctx: ExecutionContext): RequestWithTenant {
  *   return this.chatService.handleMessage(tenant.id, data);
  * }
  * ```
+ *
+ * @example Microservice Handler
+ * ```typescript
+ * @MessagePattern('user.create')
+ * createUser(@CurrentTenant() tenant: Tenant, @Payload() data: CreateUserDto) {
+ *   return this.userService.create(tenant.id, data);
+ * }
+ * ```
  */
 export const CurrentTenant = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): Tenant | undefined => {
@@ -117,7 +181,7 @@ export const CurrentTenant = createParamDecorator(
 );
 
 /**
- * Parameter decorator to inject only the current tenant ID into a controller method, GraphQL resolver, or WebSocket gateway
+ * Parameter decorator to inject only the current tenant ID into a controller method, GraphQL resolver, WebSocket gateway, or microservice handler
  *
  * @example REST Controller
  * ```typescript
@@ -140,6 +204,14 @@ export const CurrentTenant = createParamDecorator(
  * @SubscribeMessage('join-room')
  * handleJoinRoom(@TenantId() tenantId: string, @MessageBody() roomId: string) {
  *   return this.chatService.joinRoom(tenantId, roomId);
+ * }
+ * ```
+ *
+ * @example Microservice Handler
+ * ```typescript
+ * @EventPattern('order.created')
+ * handleOrderCreated(@TenantId() tenantId: string, @Payload() data: OrderDto) {
+ *   return this.orderService.process(tenantId, data);
  * }
  * ```
  */

@@ -241,7 +241,7 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Extract tenant on connection handshake
   - Support Socket.io and ws adapters
 
-- [ ] **Microservices Support**
+- [x] **Microservices Support** ✅
   - Propagate tenant context across service boundaries
   - Support for message patterns (TCP, Redis, NATS, etc.)
   - Add tenant ID to message metadata

@@ -51,6 +51,26 @@ function createWsContext(client: {
   } as unknown as ExecutionContext;
 }
 
+// Helper to create RPC/Microservice context mock
+function createRpcContext(
+  data: {
+    tenant?: { id: string; name?: string };
+    tenantId?: string;
+  },
+  rpcContext?: {
+    tenant?: { id: string; name?: string };
+    getTenant?: () => { id: string; name?: string } | undefined;
+  },
+) {
+  return {
+    getType: vi.fn().mockReturnValue('rpc'),
+    switchToRpc: vi.fn().mockReturnValue({
+      getData: vi.fn().mockReturnValue(data),
+      getContext: vi.fn().mockReturnValue(rpcContext ?? {}),
+    }),
+  } as unknown as ExecutionContext;
+}
+
 describe('CurrentTenant Decorator', () => {
   describe('HTTP context', () => {
     it('should extract tenant from request', () => {
@@ -181,6 +201,67 @@ describe('CurrentTenant Decorator', () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe('RPC/Microservice context', () => {
+    it('should extract tenant from data.tenant', () => {
+      const tenant = { id: 'tenant-rpc', name: 'RPC Tenant' };
+      const mockExecutionContext = createRpcContext({ tenant });
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual(tenant);
+    });
+
+    it('should extract tenant from data.tenantId', () => {
+      const mockExecutionContext = createRpcContext({ tenantId: 'tenant-id-only' });
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual({ id: 'tenant-id-only' });
+    });
+
+    it('should extract tenant from rpcContext.tenant', () => {
+      const tenant = { id: 'tenant-ctx', name: 'Context Tenant' };
+      const mockExecutionContext = createRpcContext({}, { tenant });
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual(tenant);
+    });
+
+    it('should extract tenant from rpcContext.getTenant()', () => {
+      const tenant = { id: 'tenant-getter', name: 'Getter Tenant' };
+      const mockExecutionContext = createRpcContext({}, { getTenant: () => tenant });
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual(tenant);
+    });
+
+    it('should prefer data.tenant over context.tenant', () => {
+      const dataTenant = { id: 'data-tenant', name: 'Data' };
+      const ctxTenant = { id: 'ctx-tenant', name: 'Context' };
+      const mockExecutionContext = createRpcContext({ tenant: dataTenant }, { tenant: ctxTenant });
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toEqual(dataTenant);
+    });
+
+    it('should return undefined when no tenant in RPC context', () => {
+      const mockExecutionContext = createRpcContext({});
+
+      const factory = getParamDecoratorFactory(CurrentTenant);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
+  });
 });
 
 describe('TenantId Decorator', () => {
@@ -273,6 +354,46 @@ describe('TenantId Decorator', () => {
 
     it('should return undefined when no tenant in WebSocket client', () => {
       const mockExecutionContext = createWsContext({});
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('RPC/Microservice context', () => {
+    it('should extract tenant ID from data.tenant', () => {
+      const tenant = { id: 'tenant-rpc-id', name: 'RPC Tenant' };
+      const mockExecutionContext = createRpcContext({ tenant });
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBe('tenant-rpc-id');
+    });
+
+    it('should extract tenant ID from data.tenantId', () => {
+      const mockExecutionContext = createRpcContext({ tenantId: 'just-the-id' });
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBe('just-the-id');
+    });
+
+    it('should extract tenant ID from rpcContext.tenant', () => {
+      const tenant = { id: 'ctx-tenant-id', name: 'Context Tenant' };
+      const mockExecutionContext = createRpcContext({}, { tenant });
+
+      const factory = getParamDecoratorFactory(TenantId);
+      const result = factory(null, mockExecutionContext);
+
+      expect(result).toBe('ctx-tenant-id');
+    });
+
+    it('should return undefined when no tenant in RPC context', () => {
+      const mockExecutionContext = createRpcContext({});
 
       const factory = getParamDecoratorFactory(TenantId);
       const result = factory(null, mockExecutionContext);
