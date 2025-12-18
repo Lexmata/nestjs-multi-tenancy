@@ -80,6 +80,9 @@ export class SidebarComponent {
         { title: 'TypeORM', path: '/examples/typeorm' },
         { title: 'Drizzle ORM', path: '/examples/drizzle' },
         { title: 'MikroORM', path: '/examples/mikro-orm' },
+        { title: 'Sequelize', path: '/examples/sequelize' },
+        { title: 'Mongoose', path: '/examples/mongoose' },
+        { title: 'Knex.js', path: '/examples/knex' },
       ],
     },
     {

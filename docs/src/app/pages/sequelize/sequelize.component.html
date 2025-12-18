@@ -1,0 +1,125 @@
+<div class="page-container">
+  <a routerLink="/docs" class="back-link">
+    <fa-icon [icon]="faArrowLeft" />
+    Back to Examples
+  </a>
+
+  <h1 class="page-title">Sequelize Multi-Tenancy</h1>
+  <p class="page-subtitle">
+    Implement multi-tenant data isolation using Sequelize hooks for automatic tenant filtering
+    and optional schema-per-tenant patterns.
+  </p>
+
+  <!-- Features -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>🪝 Automatic Hooks</h3>
+      <p>Global hooks automatically filter queries and set tenant IDs</p>
+    </div>
+    <div class="feature-card">
+      <h3>🔍 Model Scopes</h3>
+      <p>Named scopes for explicit tenant filtering when needed</p>
+    </div>
+    <div class="feature-card">
+      <h3>🗄️ Schema Isolation</h3>
+      <p>Optional PostgreSQL schema-per-tenant for complete isolation</p>
+    </div>
+    <div class="feature-card">
+      <h3>🛡️ Write Protection</h3>
+      <p>Prevent cross-tenant data modification with validation hooks</p>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <section class="step-section">
+    <h2>1. Define Tenant Model</h2>
+    <p>Create the base tenant model that other models will reference:</p>
+    <app-code-block [code]="tenantModelCode" language="typescript" title="src/models/tenant.model.ts" />
+  </section>
+
+  <!-- Step 2 -->
+  <section class="step-section">
+    <h2>2. Create Tenant-Aware Models</h2>
+    <p>Define models with tenant foreign key and optional scopes:</p>
+    <app-code-block [code]="modelCode" language="typescript" title="src/models/user.model.ts" />
+  </section>
+
+  <!-- Step 3 -->
+  <section class="step-section">
+    <h2>3. Setup Tenant Hooks</h2>
+    <p>Create global hooks to automatically handle tenant filtering:</p>
+    <app-code-block [code]="hooksCode" language="typescript" title="src/database/tenant-hooks.ts" />
+
+    <div class="info-box">
+      <h4>Hook Behavior</h4>
+      <ul>
+        <li><strong>beforeFind/beforeCount</strong>: Auto-add tenant filter to WHERE clause</li>
+        <li><strong>beforeCreate</strong>: Auto-set tenantId on new records</li>
+        <li><strong>beforeUpdate</strong>: Prevent tenantId changes</li>
+        <li><strong>beforeDestroy</strong>: Verify ownership before deletion</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section class="step-section">
+    <h2>4. Configure Database Module</h2>
+    <p>Initialize Sequelize with tenant hooks:</p>
+    <app-code-block [code]="moduleCode" language="typescript" title="src/database/database.module.ts" />
+  </section>
+
+  <!-- Step 5 -->
+  <section class="step-section">
+    <h2>5. Create Tenant-Aware Service</h2>
+    <p>The service uses hooks for automatic filtering:</p>
+    <app-code-block [code]="serviceCode" language="typescript" title="src/users/users.service.ts" />
+  </section>
+
+  <!-- Step 6 -->
+  <section class="step-section">
+    <h2>6. Schema-Per-Tenant (Optional)</h2>
+    <p>For complete data isolation, use PostgreSQL schemas:</p>
+    <app-code-block [code]="schemaCode" language="typescript" title="src/database/schema-switcher.ts" />
+
+    <div class="warning-box">
+      <h4>Schema Considerations</h4>
+      <ul>
+        <li>Requires PostgreSQL or similar database with schema support</li>
+        <li>Each tenant needs separate migrations</li>
+        <li>Connection pooling may need adjustment</li>
+        <li>Best for scenarios requiring strict data isolation</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 7 -->
+  <section class="step-section">
+    <h2>7. Create Controller</h2>
+    <p>Use the standard multi-tenant decorators:</p>
+    <app-code-block [code]="controllerCode" language="typescript" title="src/users/users.controller.ts" />
+  </section>
+
+  <!-- Best Practices -->
+  <section class="step-section">
+    <h2>Best Practices</h2>
+    <div class="best-practices">
+      <div class="practice">
+        <h4>Index tenant columns</h4>
+        <p>Add indexes on tenantId for query performance.</p>
+      </div>
+      <div class="practice">
+        <h4>Use transactions</h4>
+        <p>Wrap multi-model operations in transactions.</p>
+      </div>
+      <div class="practice">
+        <h4>Validate associations</h4>
+        <p>Ensure related records belong to the same tenant.</p>
+      </div>
+      <div class="practice">
+        <h4>Test isolation</h4>
+        <p>Write tests verifying cross-tenant data is inaccessible.</p>
+      </div>
+    </div>
+  </section>
+</div>
+

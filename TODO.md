@@ -431,17 +431,20 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Additional ORM Examples
 
-- [ ] **Sequelize Multi-Tenancy Example**
-  - Sequelize hooks for tenant filtering
-  - Dynamic schema switching
+- [x] **Sequelize Multi-Tenancy Example** ✅
+  - Sequelize hooks for tenant filtering (beforeFind, beforeCreate, etc.)
+  - Dynamic schema switching for PostgreSQL
+  - Model scopes for explicit tenant filtering
 
-- [ ] **Mongoose Multi-Tenancy Example**
-  - MongoDB multi-tenancy patterns
+- [x] **Mongoose Multi-Tenancy Example** ✅
+  - MongoDB multi-tenancy patterns with plugins
   - Tenant-aware model factories
+  - Aggregation pipeline support
 
-- [ ] **Knex.js Multi-Tenancy Example**
+- [x] **Knex.js Multi-Tenancy Example** ✅
   - Query builder with automatic tenant filtering
-  - Migration per tenant
+  - Migration per tenant with schema support
+  - Transaction support with tenant context
 
 ### Community & Ecosystem
 

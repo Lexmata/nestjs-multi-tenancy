@@ -1,0 +1,124 @@
+<div class="page-container">
+  <a routerLink="/docs" class="back-link">
+    <fa-icon [icon]="faArrowLeft" />
+    Back to Examples
+  </a>
+
+  <h1 class="page-title">Knex.js Multi-Tenancy</h1>
+  <p class="page-subtitle">
+    Implement multi-tenant data isolation using Knex.js query builder with automatic 
+    tenant filtering and optional per-tenant migrations.
+  </p>
+
+  <!-- Features -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>🔨 Query Builder</h3>
+      <p>Tenant-aware query builder wrapping Knex</p>
+    </div>
+    <div class="feature-card">
+      <h3>🔄 Auto Filter</h3>
+      <p>Automatic tenant_id injection on all operations</p>
+    </div>
+    <div class="feature-card">
+      <h3>📦 Migrations</h3>
+      <p>Per-tenant schema migrations for isolation</p>
+    </div>
+    <div class="feature-card">
+      <h3>💼 Transactions</h3>
+      <p>Tenant-aware transaction support</p>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <section class="step-section">
+    <h2>1. Configure Knex</h2>
+    <p>Set up the Knex configuration file:</p>
+    <app-code-block [code]="knexConfigCode" language="typescript" title="knexfile.ts" />
+  </section>
+
+  <!-- Step 2 -->
+  <section class="step-section">
+    <h2>2. Create Migrations</h2>
+    <p>Define tables with tenant_id foreign key:</p>
+    <app-code-block [code]="migrationCode" language="typescript" title="migrations/001_create_tenants_and_users.ts" />
+
+    <div class="info-box">
+      <h4>Migration Strategy</h4>
+      <ul>
+        <li>Include <code>tenant_id</code> in all tenant-aware tables</li>
+        <li>Create indexes on <code>tenant_id</code> for query performance</li>
+        <li>Use composite unique constraints for tenant-scoped uniqueness</li>
+        <li>Set up foreign key with CASCADE delete</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="step-section">
+    <h2>3. Create Tenant Query Builder</h2>
+    <p>Request-scoped query builder with automatic tenant filtering:</p>
+    <app-code-block [code]="queryBuilderCode" language="typescript" title="src/database/tenant-query-builder.ts" />
+  </section>
+
+  <!-- Step 4 -->
+  <section class="step-section">
+    <h2>4. Configure Database Module</h2>
+    <p>Set up Knex connection and tenant query builder:</p>
+    <app-code-block [code]="moduleCode" language="typescript" title="src/database/database.module.ts" />
+  </section>
+
+  <!-- Step 5 -->
+  <section class="step-section">
+    <h2>5. Create Tenant-Aware Service</h2>
+    <p>Service using the tenant query builder:</p>
+    <app-code-block [code]="serviceCode" language="typescript" title="src/users/users.service.ts" />
+  </section>
+
+  <!-- Step 6 -->
+  <section class="step-section">
+    <h2>6. Per-Tenant Migrations (Optional)</h2>
+    <p>For schema-per-tenant isolation pattern:</p>
+    <app-code-block [code]="perTenantMigrationCode" language="typescript" title="src/database/tenant-migration.service.ts" />
+
+    <div class="warning-box">
+      <h4>Schema Isolation Trade-offs</h4>
+      <ul>
+        <li><strong>Pros:</strong> Complete data isolation, easier tenant deletion</li>
+        <li><strong>Cons:</strong> More complex migrations, connection pool per schema</li>
+        <li>Best for: Strict compliance requirements, large tenants</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 7 -->
+  <section class="step-section">
+    <h2>7. Create Controller</h2>
+    <p>Standard controller with multi-tenant decorators:</p>
+    <app-code-block [code]="controllerCode" language="typescript" title="src/users/users.controller.ts" />
+  </section>
+
+  <!-- Best Practices -->
+  <section class="step-section">
+    <h2>Best Practices</h2>
+    <div class="best-practices">
+      <div class="practice">
+        <h4>Always use the wrapper</h4>
+        <p>Never access Knex directly; use TenantQueryBuilder for safety.</p>
+      </div>
+      <div class="practice">
+        <h4>Index strategically</h4>
+        <p>Create composite indexes starting with tenant_id.</p>
+      </div>
+      <div class="practice">
+        <h4>Use transactions</h4>
+        <p>Wrap multi-table operations in tenant-aware transactions.</p>
+      </div>
+      <div class="practice">
+        <h4>Validate joins</h4>
+        <p>Ensure joined tables belong to the same tenant.</p>
+      </div>
+    </div>
+  </section>
+</div>
+

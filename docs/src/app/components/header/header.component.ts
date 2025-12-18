@@ -62,6 +62,24 @@ export class HeaderComponent {
       icon: 'M',
       description: 'Global filters with Unit of Work pattern',
     },
+    {
+      title: 'Sequelize',
+      path: '/examples/sequelize',
+      icon: 'S',
+      description: 'Hooks and scopes for tenant filtering',
+    },
+    {
+      title: 'Mongoose',
+      path: '/examples/mongoose',
+      icon: '🍃',
+      description: 'MongoDB plugins for tenant-aware models',
+    },
+    {
+      title: 'Knex.js',
+      path: '/examples/knex',
+      icon: 'K',
+      description: 'Query builder with automatic tenant filtering',
+    },
   ];
 
   @HostListener('window:scroll')

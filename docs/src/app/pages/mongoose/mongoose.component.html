@@ -1,0 +1,120 @@
+<div class="page-container">
+  <a routerLink="/docs" class="back-link">
+    <fa-icon [icon]="faArrowLeft" />
+    Back to Examples
+  </a>
+
+  <h1 class="page-title">Mongoose Multi-Tenancy</h1>
+  <p class="page-subtitle">
+    Implement MongoDB multi-tenancy using Mongoose plugins for automatic tenant filtering
+    and tenant-aware model factories.
+  </p>
+
+  <!-- Features -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>🔌 Plugin System</h3>
+      <p>Global plugin for automatic tenant filtering on all operations</p>
+    </div>
+    <div class="feature-card">
+      <h3>🏭 Model Factory</h3>
+      <p>Request-scoped factory for tenant-aware model access</p>
+    </div>
+    <div class="feature-card">
+      <h3>📊 Aggregations</h3>
+      <p>Tenant-aware aggregation pipelines</p>
+    </div>
+    <div class="feature-card">
+      <h3>🔗 Population</h3>
+      <p>Filtered population across tenant boundaries</p>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <section class="step-section">
+    <h2>1. Define Tenant Schema</h2>
+    <p>Create the tenant collection schema:</p>
+    <app-code-block [code]="tenantSchemaCode" language="typescript" title="src/schemas/tenant.schema.ts" />
+  </section>
+
+  <!-- Step 2 -->
+  <section class="step-section">
+    <h2>2. Create Tenant-Aware Schemas</h2>
+    <p>Define schemas with tenantId reference and indexes:</p>
+    <app-code-block [code]="userSchemaCode" language="typescript" title="src/schemas/user.schema.ts" />
+
+    <div class="info-box">
+      <h4>Index Strategy</h4>
+      <ul>
+        <li>Index <code>tenantId</code> for query performance</li>
+        <li>Create compound indexes for frequent query patterns</li>
+        <li>Use unique compound indexes for tenant-scoped uniqueness</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="step-section">
+    <h2>3. Create Tenant Model Factory</h2>
+    <p>Request-scoped factory for tenant-filtered models:</p>
+    <app-code-block [code]="modelFactoryCode" language="typescript" title="src/database/tenant-model.factory.ts" />
+  </section>
+
+  <!-- Step 4 -->
+  <section class="step-section">
+    <h2>4. Create Tenant Plugin (Alternative)</h2>
+    <p>Global Mongoose plugin for automatic tenant filtering:</p>
+    <app-code-block [code]="pluginCode" language="typescript" title="src/database/tenant.plugin.ts" />
+
+    <div class="info-box">
+      <h4>Plugin vs Factory</h4>
+      <p><strong>Plugin approach</strong>: Simpler, global, works with all models automatically</p>
+      <p><strong>Factory approach</strong>: More control, explicit, better for complex scenarios</p>
+    </div>
+  </section>
+
+  <!-- Step 5 -->
+  <section class="step-section">
+    <h2>5. Configure Database Module</h2>
+    <p>Set up MongoDB connection with tenant plugin:</p>
+    <app-code-block [code]="moduleCode" language="typescript" title="src/database/database.module.ts" />
+  </section>
+
+  <!-- Step 6 -->
+  <section class="step-section">
+    <h2>6. Create Tenant-Aware Service</h2>
+    <p>Service using the plugin for automatic filtering:</p>
+    <app-code-block [code]="serviceCode" language="typescript" title="src/users/users.service.ts" />
+  </section>
+
+  <!-- Step 7 -->
+  <section class="step-section">
+    <h2>7. Create Controller</h2>
+    <p>Standard controller with multi-tenant decorators:</p>
+    <app-code-block [code]="controllerCode" language="typescript" title="src/users/users.controller.ts" />
+  </section>
+
+  <!-- Best Practices -->
+  <section class="step-section">
+    <h2>Best Practices</h2>
+    <div class="best-practices">
+      <div class="practice">
+        <h4>Use compound indexes</h4>
+        <p>Always include tenantId in indexes for multi-tenant queries.</p>
+      </div>
+      <div class="practice">
+        <h4>Aggregate with $match first</h4>
+        <p>Filter by tenantId early in aggregation pipelines.</p>
+      </div>
+      <div class="practice">
+        <h4>Filter populations</h4>
+        <p>Add tenant match conditions when populating references.</p>
+      </div>
+      <div class="practice">
+        <h4>Consider sharding</h4>
+        <p>For large multi-tenant deployments, shard by tenantId.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
