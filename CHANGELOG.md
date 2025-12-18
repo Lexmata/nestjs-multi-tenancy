@@ -76,6 +76,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Microservice-specific error messages
   - Works with `@MessagePattern()` and `@EventPattern()` handlers
 
+- **Fastify Adapter Support**: Works seamlessly with both Express and Fastify
+  - Platform-agnostic middleware implementation
+  - Abstracted request path and hostname access
+  - No additional configuration required for Fastify
+
 ### Changed
 
 - Test suite expanded from 89 to 217 tests

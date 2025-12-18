@@ -976,6 +976,63 @@ export class OrderService {
 }
 ```
 
+## Fastify Support
+
+This module works seamlessly with both Express and Fastify adapters. No additional configuration is required.
+
+### Using with Fastify
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+All extraction strategies work identically with Fastify:
+
+```typescript
+// app.module.ts - same configuration for both Express and Fastify
+@Module({
+  imports: [
+    MultiTenantModule.forRoot({
+      extractionStrategy: 'header',
+      tenantHeader: 'x-tenant-id',
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### Fastify Cookies
+
+For cookie-based tenant extraction with Fastify, use `@fastify/cookie`:
+
+```bash
+pnpm add @fastify/cookie
+```
+
+```typescript
+import fastifyCookie from '@fastify/cookie';
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
+  await app.register(fastifyCookie);
+  await app.listen(3000);
+}
+```
+
 ## TenantContextService
 
 Access tenant information from anywhere in your application using AsyncLocalStorage.

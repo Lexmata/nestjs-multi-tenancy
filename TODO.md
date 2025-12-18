@@ -256,9 +256,10 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Support for message patterns (TCP, Redis, NATS, etc.)
   - Add tenant ID to message metadata
 
-- [ ] **Fastify Adapter Support**
-  - Test and document Fastify compatibility
-  - Add Fastify-specific middleware registration if needed
+- [x] **Fastify Adapter Support** ✅
+  - Platform-agnostic middleware (works with Express and Fastify)
+  - Abstracted request path and hostname access
+  - No Fastify-specific registration needed - uses standard NestJS middleware
 
 ### Testing
 
