@@ -1,0 +1,106 @@
+# Docker Compose for @lexmata/nestjs-multi-tenant development
+# Usage:
+#   docker compose up -d        # Start all services
+#   docker compose up postgres  # Start only PostgreSQL
+#   docker compose down         # Stop all services
+#   docker compose logs -f      # View logs
+
+services:
+  # PostgreSQL database for integration testing
+  postgres:
+    image: postgres:16-alpine
+    container_name: multi-tenant-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: multi_tenant_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - multi-tenant-network
+
+  # MySQL database for integration testing
+  mysql:
+    image: mysql:8.0
+    container_name: multi-tenant-mysql
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: multi_tenant_dev
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - multi-tenant-network
+
+  # Redis for caching tests
+  redis:
+    image: redis:7-alpine
+    container_name: multi-tenant-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - multi-tenant-network
+
+  # Documentation site (Angular)
+  docs:
+    build:
+      context: ./docs
+      dockerfile: Dockerfile
+    container_name: multi-tenant-docs
+    ports:
+      - '4200:80'
+    depends_on:
+      - postgres
+    networks:
+      - multi-tenant-network
+
+  # Adminer for database management UI
+  adminer:
+    image: adminer:latest
+    container_name: multi-tenant-adminer
+    ports:
+      - '8080:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+      - mysql
+    networks:
+      - multi-tenant-network
+
+volumes:
+  postgres_data:
+    name: multi-tenant-postgres-data
+  mysql_data:
+    name: multi-tenant-mysql-data
+  redis_data:
+    name: multi-tenant-redis-data
+
+networks:
+  multi-tenant-network:
+    name: multi-tenant-network
+    driver: bridge
