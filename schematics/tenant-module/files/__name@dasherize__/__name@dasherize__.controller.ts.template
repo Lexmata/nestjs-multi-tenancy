@@ -1,0 +1,73 @@
+import {
+  Controller,
+  Get,<% if (crud) { %>
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,<% } %>
+  UseGuards,
+} from '@nestjs/common';
+import {
+  CurrentTenant,
+  TenantId,
+  RequireTenant,
+  TenantGuard,
+  Tenant,
+} from '@lexmata/nestjs-multi-tenant';
+<% if (includeService) { %>import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
+<% } %>
+@Controller('<%= dasherize(name) %>')
+@UseGuards(TenantGuard)
+export class <%= classify(name) %>Controller {
+  <% if (includeService) { %>constructor(private readonly <%= camelize(name) %>Service: <%= classify(name) %>Service) {}<% } %>
+
+  @Get()
+  @RequireTenant()
+  async findAll(@CurrentTenant() tenant: Tenant) {
+    <% if (includeService) { %>return this.<%= camelize(name) %>Service.findAll(tenant);<% } else { %>// TODO: Implement findAll logic
+    return { tenantId: tenant.id, data: [] };<% } %>
+  }
+
+  @Get(':id')
+  @RequireTenant()
+  async findOne(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    <% if (includeService) { %>return this.<%= camelize(name) %>Service.findOne(id, tenantId);<% } else { %>// TODO: Implement findOne logic
+    return { id, tenantId };<% } %>
+  }
+<% if (crud) { %>
+  @Post()
+  @RequireTenant()
+  async create(
+    @Body() data: any,
+    @CurrentTenant() tenant: Tenant,
+  ) {
+    <% if (includeService) { %>return this.<%= camelize(name) %>Service.create(data, tenant);<% } else { %>// TODO: Implement create logic
+    return { ...data, tenantId: tenant.id };<% } %>
+  }
+
+  @Put(':id')
+  @RequireTenant()
+  async update(
+    @Param('id') id: string,
+    @Body() data: any,
+    @TenantId() tenantId: string,
+  ) {
+    <% if (includeService) { %>return this.<%= camelize(name) %>Service.update(id, data, tenantId);<% } else { %>// TODO: Implement update logic
+    return { id, ...data, tenantId };<% } %>
+  }
+
+  @Delete(':id')
+  @RequireTenant()
+  async remove(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    <% if (includeService) { %>return this.<%= camelize(name) %>Service.remove(id, tenantId);<% } else { %>// TODO: Implement remove logic
+    return { id, tenantId, deleted: true };<% } %>
+  }
+<% } %>}
+

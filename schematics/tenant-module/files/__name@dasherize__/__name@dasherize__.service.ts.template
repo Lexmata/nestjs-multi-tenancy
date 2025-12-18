@@ -1,0 +1,115 @@
+import { Injectable } from '@nestjs/common';
+import { TenantContextService, Tenant } from '@lexmata/nestjs-multi-tenant';
+
+@Injectable()
+export class <%= classify(name) %>Service {
+  constructor(private readonly tenantContext: TenantContextService) {}
+
+  /**
+   * Find all <%= name %> for the current tenant
+   */
+  async findAll(tenant: Tenant) {
+    // TODO: Replace with your data source logic
+    // Example with Prisma:
+    // return this.prisma.<%= camelize(name) %>.findMany({
+    //   where: { tenantId: tenant.id },
+    // });
+
+    return {
+      tenantId: tenant.id,
+      data: [],
+      message: 'Replace with your data source implementation',
+    };
+  }
+
+  /**
+   * Find one <%= name %> by ID for the specified tenant
+   */
+  async findOne(id: string, tenantId: string) {
+    // TODO: Replace with your data source logic
+    // Ensure the record belongs to the tenant
+    // Example:
+    // const record = await this.prisma.<%= camelize(name) %>.findFirst({
+    //   where: { id, tenantId },
+    // });
+    // if (!record) throw new NotFoundException();
+    // return record;
+
+    return {
+      id,
+      tenantId,
+      message: 'Replace with your data source implementation',
+    };
+  }
+
+  /**
+   * Create a new <%= name %> for the tenant
+   */
+  async create(data: any, tenant: Tenant) {
+    // TODO: Replace with your data source logic
+    // Example:
+    // return this.prisma.<%= camelize(name) %>.create({
+    //   data: { ...data, tenantId: tenant.id },
+    // });
+
+    return {
+      ...data,
+      tenantId: tenant.id,
+      createdAt: new Date(),
+      message: 'Replace with your data source implementation',
+    };
+  }
+
+  /**
+   * Update a <%= name %> ensuring it belongs to the tenant
+   */
+  async update(id: string, data: any, tenantId: string) {
+    // TODO: Replace with your data source logic
+    // Example:
+    // return this.prisma.<%= camelize(name) %>.updateMany({
+    //   where: { id, tenantId },
+    //   data,
+    // });
+
+    return {
+      id,
+      ...data,
+      tenantId,
+      updatedAt: new Date(),
+      message: 'Replace with your data source implementation',
+    };
+  }
+
+  /**
+   * Remove a <%= name %> ensuring it belongs to the tenant
+   */
+  async remove(id: string, tenantId: string) {
+    // TODO: Replace with your data source logic
+    // Example:
+    // return this.prisma.<%= camelize(name) %>.deleteMany({
+    //   where: { id, tenantId },
+    // });
+
+    return {
+      id,
+      tenantId,
+      deleted: true,
+      message: 'Replace with your data source implementation',
+    };
+  }
+
+  /**
+   * Helper to get current tenant from context (for use in methods without tenant param)
+   */
+  getCurrentTenant(): Tenant | undefined {
+    return this.tenantContext.getTenant();
+  }
+
+  /**
+   * Helper to get current tenant ID from context
+   */
+  getCurrentTenantId(): string | undefined {
+    return this.tenantContext.getTenantId();
+  }
+}
+

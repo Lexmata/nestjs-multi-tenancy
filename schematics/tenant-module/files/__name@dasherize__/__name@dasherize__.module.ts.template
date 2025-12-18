@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+<% if (includeController) { %>import { <%= classify(name) %>Controller } from './<%= dasherize(name) %>.controller';
+<% } %><% if (includeService) { %>import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
+<% } %>
+@Module({<% if (includeController) { %>
+  controllers: [<%= classify(name) %>Controller],<% } %><% if (includeService) { %>
+  providers: [<%= classify(name) %>Service],
+  exports: [<%= classify(name) %>Service],<% } %>
+})
+export class <%= classify(name) %>Module {}
+

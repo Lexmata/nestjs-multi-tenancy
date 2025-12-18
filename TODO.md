@@ -387,12 +387,15 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Exported as `@lexmata/nestjs-multi-tenant/eslint-plugin`
   - Includes `recommended` and `strict` configs
 
-- [ ] **NestJS CLI Plugin/Schematic**
+- [x] **NestJS CLI Plugin/Schematic** ✅
   ```bash
-  nest g tenant-module users
+  nest g @lexmata/nestjs-multi-tenant:tenant-module users
+  nest g @lexmata/nestjs-multi-tenant:tenant-service billing
   ```
-  - Generate tenant-aware modules
-  - Scaffold tenant-specific services
+  - `tenant-module`: Generates complete tenant-aware module with controller, service, and tests
+  - `tenant-service`: Generates standalone tenant-aware service
+  - Includes CRUD operations with tenant filtering
+  - Auto-generates test files with proper mocks
 
 - [ ] **VS Code Extension**
   - Syntax highlighting for tenant decorators

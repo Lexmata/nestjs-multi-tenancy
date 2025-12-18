@@ -1,0 +1,88 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { <%= classify(name) %>Controller } from './<%= dasherize(name) %>.controller';
+<% if (includeService) { %>import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
+<% } %>import { TenantContextService, Tenant } from '@lexmata/nestjs-multi-tenant';
+
+describe('<%= classify(name) %>Controller', () => {
+  let controller: <%= classify(name) %>Controller;
+  <% if (includeService) { %>let service: <%= classify(name) %>Service;<% } %>
+
+  const mockTenant: Tenant = {
+    id: 'test-tenant-id',
+    name: 'Test Tenant',
+  };
+
+  const mockTenantContextService = {
+    getTenant: jest.fn().mockReturnValue(mockTenant),
+    getTenantId: jest.fn().mockReturnValue(mockTenant.id),
+    hasTenant: jest.fn().mockReturnValue(true),
+  };
+<% if (includeService) { %>
+  const mock<%= classify(name) %>Service = {
+    findAll: jest.fn().mockResolvedValue({ tenantId: mockTenant.id, data: [] }),
+    findOne: jest.fn().mockResolvedValue({ id: '1', tenantId: mockTenant.id }),
+    create: jest.fn().mockResolvedValue({ id: '1', tenantId: mockTenant.id }),
+    update: jest.fn().mockResolvedValue({ id: '1', tenantId: mockTenant.id }),
+    remove: jest.fn().mockResolvedValue({ id: '1', tenantId: mockTenant.id, deleted: true }),
+  };
+<% } %>
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [<%= classify(name) %>Controller],
+      providers: [
+        { provide: TenantContextService, useValue: mockTenantContextService },
+        <% if (includeService) { %>{ provide: <%= classify(name) %>Service, useValue: mock<%= classify(name) %>Service },<% } %>
+      ],
+    }).compile();
+
+    controller = module.get<<%= classify(name) %>Controller>(<%= classify(name) %>Controller);
+    <% if (includeService) { %>service = module.get<<%= classify(name) %>Service>(<%= classify(name) %>Service);<% } %>
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('findAll', () => {
+    it('should return all <%= name %> for the tenant', async () => {
+      const result = await controller.findAll(mockTenant);
+      expect(result).toBeDefined();
+      <% if (includeService) { %>expect(service.findAll).toHaveBeenCalledWith(mockTenant);<% } %>
+    });
+  });
+
+  describe('findOne', () => {
+    it('should return a single <%= name %>', async () => {
+      const result = await controller.findOne('1', mockTenant.id);
+      expect(result).toBeDefined();
+      <% if (includeService) { %>expect(service.findOne).toHaveBeenCalledWith('1', mockTenant.id);<% } %>
+    });
+  });
+<% if (crud) { %>
+  describe('create', () => {
+    it('should create a new <%= name %>', async () => {
+      const data = { name: 'Test' };
+      const result = await controller.create(data, mockTenant);
+      expect(result).toBeDefined();
+      <% if (includeService) { %>expect(service.create).toHaveBeenCalledWith(data, mockTenant);<% } %>
+    });
+  });
+
+  describe('update', () => {
+    it('should update a <%= name %>', async () => {
+      const data = { name: 'Updated' };
+      const result = await controller.update('1', data, mockTenant.id);
+      expect(result).toBeDefined();
+      <% if (includeService) { %>expect(service.update).toHaveBeenCalledWith('1', data, mockTenant.id);<% } %>
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove a <%= name %>', async () => {
+      const result = await controller.remove('1', mockTenant.id);
+      expect(result).toBeDefined();
+      <% if (includeService) { %>expect(service.remove).toHaveBeenCalledWith('1', mockTenant.id);<% } %>
+    });
+  });
+<% } %>});
+

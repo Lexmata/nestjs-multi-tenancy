@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "schematics": "./schematics/collection.json",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -37,7 +38,8 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && pnpm run build:schematics",
+    "build:schematics": "tsc -p schematics/tsconfig.json",
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -92,6 +94,8 @@
     "rxjs": "^7.0.0"
   },
   "devDependencies": {
+    "@angular-devkit/core": "^19.0.0",
+    "@angular-devkit/schematics": "^19.0.0",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.17.0",
@@ -129,6 +133,7 @@
   },
   "files": [
     "dist",
+    "schematics",
     "README.md",
     "LICENSE"
   ],

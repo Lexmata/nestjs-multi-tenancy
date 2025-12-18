@@ -1,0 +1,60 @@
+import { Injectable } from '@nestjs/common';
+import { TenantContextService, Tenant } from '@lexmata/nestjs-multi-tenant';
+
+@Injectable()
+export class <%= classify(name) %>Service {
+  constructor(private readonly tenantContext: TenantContextService) {}
+
+  /**
+   * Get the current tenant from context
+   */
+  getCurrentTenant(): Tenant | undefined {
+    return this.tenantContext.getTenant();
+  }
+
+  /**
+   * Get the current tenant ID from context
+   */
+  getCurrentTenantId(): string | undefined {
+    return this.tenantContext.getTenantId();
+  }
+
+  /**
+   * Check if there is a tenant in the current context
+   */
+  hasTenant(): boolean {
+    return this.tenantContext.hasTenant();
+  }
+
+  /**
+   * Execute operation with tenant validation
+   * Throws if no tenant is present
+   */
+  async withTenant<T>(operation: (tenant: Tenant) => Promise<T>): Promise<T> {
+    const tenant = this.getCurrentTenant();
+    if (!tenant) {
+      throw new Error('No tenant in current context');
+    }
+    return operation(tenant);
+  }
+
+  // TODO: Add your tenant-aware business logic below
+  // Example:
+  //
+  // async findAll() {
+  //   return this.withTenant(async (tenant) => {
+  //     return this.prisma.<%= camelize(name) %>.findMany({
+  //       where: { tenantId: tenant.id },
+  //     });
+  //   });
+  // }
+  //
+  // async create(data: CreateDto) {
+  //   return this.withTenant(async (tenant) => {
+  //     return this.prisma.<%= camelize(name) %>.create({
+  //       data: { ...data, tenantId: tenant.id },
+  //     });
+  //   });
+  // }
+}
+

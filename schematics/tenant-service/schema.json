@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TenantServiceSchema",
+  "title": "Tenant Service Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the service (e.g., 'users', 'projects')",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the service?"
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the service",
+      "default": "src"
+    },
+    "flat": {
+      "type": "boolean",
+      "description": "Generate file without creating a folder",
+      "default": true
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Skip generating test file",
+      "default": false
+    }
+  },
+  "required": ["name"]
+}

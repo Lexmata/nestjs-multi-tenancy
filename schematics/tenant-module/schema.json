@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TenantModuleSchema",
+  "title": "Tenant Module Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the module (e.g., 'users', 'projects')",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the module?"
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the module",
+      "default": "src"
+    },
+    "flat": {
+      "type": "boolean",
+      "description": "Generate files without creating a folder",
+      "default": false
+    },
+    "skipImport": {
+      "type": "boolean",
+      "description": "Skip importing the module in the app module",
+      "default": false
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Skip generating test files",
+      "default": false
+    },
+    "includeController": {
+      "type": "boolean",
+      "description": "Include a tenant-aware controller",
+      "default": true
+    },
+    "includeService": {
+      "type": "boolean",
+      "description": "Include a tenant-aware service",
+      "default": true
+    },
+    "crud": {
+      "type": "boolean",
+      "description": "Generate CRUD operations in the controller",
+      "default": true
+    }
+  },
+  "required": ["name"]
+}

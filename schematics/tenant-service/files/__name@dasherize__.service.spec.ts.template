@@ -1,0 +1,89 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
+import { TenantContextService, Tenant } from '@lexmata/nestjs-multi-tenant';
+
+describe('<%= classify(name) %>Service', () => {
+  let service: <%= classify(name) %>Service;
+
+  const mockTenant: Tenant = {
+    id: 'test-tenant-id',
+    name: 'Test Tenant',
+  };
+
+  const mockTenantContextService = {
+    getTenant: jest.fn().mockReturnValue(mockTenant),
+    getTenantId: jest.fn().mockReturnValue(mockTenant.id),
+    hasTenant: jest.fn().mockReturnValue(true),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        <%= classify(name) %>Service,
+        { provide: TenantContextService, useValue: mockTenantContextService },
+      ],
+    }).compile();
+
+    service = module.get<<%= classify(name) %>Service>(<%= classify(name) %>Service);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('getCurrentTenant', () => {
+    it('should return the current tenant', () => {
+      const result = service.getCurrentTenant();
+      expect(result).toEqual(mockTenant);
+      expect(mockTenantContextService.getTenant).toHaveBeenCalled();
+    });
+
+    it('should return undefined when no tenant', () => {
+      mockTenantContextService.getTenant.mockReturnValueOnce(undefined);
+      const result = service.getCurrentTenant();
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getCurrentTenantId', () => {
+    it('should return the current tenant ID', () => {
+      const result = service.getCurrentTenantId();
+      expect(result).toBe(mockTenant.id);
+      expect(mockTenantContextService.getTenantId).toHaveBeenCalled();
+    });
+  });
+
+  describe('hasTenant', () => {
+    it('should return true when tenant exists', () => {
+      const result = service.hasTenant();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when no tenant', () => {
+      mockTenantContextService.hasTenant.mockReturnValueOnce(false);
+      const result = service.hasTenant();
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('withTenant', () => {
+    it('should execute operation with tenant', async () => {
+      const operation = jest.fn().mockResolvedValue('result');
+      const result = await service.withTenant(operation);
+      expect(result).toBe('result');
+      expect(operation).toHaveBeenCalledWith(mockTenant);
+    });
+
+    it('should throw when no tenant', async () => {
+      mockTenantContextService.getTenant.mockReturnValueOnce(undefined);
+      const operation = jest.fn();
+      await expect(service.withTenant(operation)).rejects.toThrow('No tenant in current context');
+      expect(operation).not.toHaveBeenCalled();
+    });
+  });
+});
+

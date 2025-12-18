@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "tenant-module": {
+      "description": "Generate a tenant-aware NestJS module with service, controller, and tests",
+      "factory": "./tenant-module/tenant-module.factory#tenantModule",
+      "schema": "./tenant-module/schema.json",
+      "aliases": ["tm"]
+    },
+    "tenant-service": {
+      "description": "Generate a tenant-aware NestJS service",
+      "factory": "./tenant-service/tenant-service.factory#tenantService",
+      "schema": "./tenant-service/schema.json",
+      "aliases": ["ts"]
+    }
+  }
+}
