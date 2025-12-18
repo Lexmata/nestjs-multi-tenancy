@@ -263,10 +263,12 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Testing
 
-- [ ] **Integration Tests with Real NestJS App**
-  - Create `test/e2e/` directory
-  - Test full request lifecycle
-  - Test all extraction strategies end-to-end
+- [x] **Integration Tests with Real NestJS App** ✅
+  - Created `test/e2e/` directory with 22 integration tests
+  - Tests full request lifecycle with real NestJS application
+  - Tests header, query, path, and cookie extraction strategies
+  - Tests tenant resolver, caching, event hooks, validation, and debug mode
+  - Uses supertest for HTTP testing
   - Test async configuration
   - Test route exclusions
 

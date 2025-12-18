@@ -170,6 +170,9 @@ export class TenantMiddleware implements NestMiddleware {
 
     this.log(`[${method} ${path}] Setting tenant context: ${tenant.id}`);
 
+    // Set tenant on request object for decorators
+    (req as unknown as { tenant: Tenant }).tenant = tenant;
+
     // Run the rest of the request within the tenant context
     this.tenantContext.run(tenant, () => {
       next();

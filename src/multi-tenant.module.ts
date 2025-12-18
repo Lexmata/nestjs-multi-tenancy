@@ -62,7 +62,7 @@ export class MultiTenantModule implements NestModule {
         TenantMiddleware,
         TenantGuard,
       ],
-      exports: [TenantContextService, TenantGuard, MULTI_TENANT_OPTIONS],
+      exports: [TenantContextService, TenantGuard, TenantMiddleware, MULTI_TENANT_OPTIONS],
     };
   }
 
@@ -84,7 +84,7 @@ export class MultiTenantModule implements NestModule {
         TenantMiddleware,
         TenantGuard,
       ],
-      exports: [TenantContextService, TenantGuard, MULTI_TENANT_OPTIONS],
+      exports: [TenantContextService, TenantGuard, TenantMiddleware, MULTI_TENANT_OPTIONS],
     };
   }
 
