@@ -409,10 +409,12 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
   - Changelog generation
   - npm publishing on merge to main
 
-- [ ] **Add Renovate as Alternative to Dependabot**
-  - More configurable than Dependabot
-  - Better monorepo support
-  - Auto-merge for patch updates
+- [x] **Add Renovate as Alternative to Dependabot** ✅
+  - Configured with smart package grouping (NestJS, ESLint, Vitest, etc.)
+  - Auto-merge for patch updates (prod) and minor/patch (dev)
+  - Weekly schedule with rate limiting
+  - Lock file maintenance monthly
+  - Security vulnerability alerts enabled
 
 - [ ] **Add GitHub Discussions**
   - Q&A category for support

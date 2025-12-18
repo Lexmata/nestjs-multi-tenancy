@@ -1,0 +1,111 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":separateMajorReleases",
+    "group:allNonMajor"
+  ],
+  "description": "Renovate configuration for @lexmata/nestjs-multi-tenant",
+  "labels": ["dependencies"],
+  "timezone": "America/New_York",
+  "schedule": ["before 6am on monday"],
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 5,
+  "minimumReleaseAge": "3 days",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "schedule": ["at any time"]
+  },
+  "packageRules": [
+    {
+      "description": "Auto-merge patch updates for production dependencies",
+      "matchUpdateTypes": ["patch"],
+      "matchDepTypes": ["dependencies"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "Auto-merge minor and patch updates for dev dependencies",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "Group NestJS packages together",
+      "matchPackagePatterns": ["^@nestjs/"],
+      "groupName": "NestJS packages",
+      "groupSlug": "nestjs"
+    },
+    {
+      "description": "Group TypeScript ESLint packages together",
+      "matchPackagePatterns": ["^@typescript-eslint/", "^typescript-eslint"],
+      "groupName": "TypeScript ESLint packages",
+      "groupSlug": "typescript-eslint"
+    },
+    {
+      "description": "Group ESLint plugins together",
+      "matchPackagePatterns": ["^eslint-plugin-", "^eslint-config-"],
+      "groupName": "ESLint plugins",
+      "groupSlug": "eslint-plugins"
+    },
+    {
+      "description": "Group Angular devkit packages for schematics",
+      "matchPackagePatterns": ["^@angular-devkit/"],
+      "groupName": "Angular DevKit packages",
+      "groupSlug": "angular-devkit"
+    },
+    {
+      "description": "Group Vitest packages together",
+      "matchPackagePatterns": ["^vitest", "^@vitest/"],
+      "groupName": "Vitest packages",
+      "groupSlug": "vitest"
+    },
+    {
+      "description": "Group FontAwesome packages together",
+      "matchPackagePatterns": ["^@fortawesome/"],
+      "groupName": "FontAwesome packages",
+      "groupSlug": "fontawesome"
+    },
+    {
+      "description": "Group commitlint packages together",
+      "matchPackagePatterns": ["^@commitlint/"],
+      "groupName": "Commitlint packages",
+      "groupSlug": "commitlint"
+    },
+    {
+      "description": "Require manual review for major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major"]
+    },
+    {
+      "description": "TypeScript updates require careful review",
+      "matchPackageNames": ["typescript"],
+      "automerge": false,
+      "labels": ["dependencies", "typescript"]
+    },
+    {
+      "description": "Node.js type definitions",
+      "matchPackageNames": ["@types/node"],
+      "automerge": true
+    },
+    {
+      "description": "Pin GitHub Actions to SHA for security",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on the first day of the month"],
+    "automerge": true
+  },
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["pnpmDedupe"]
+}
