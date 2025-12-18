@@ -380,10 +380,12 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Developer Experience
 
-- [ ] **ESLint Plugin**
-  - Rule to warn if `TenantContextService` used without guard
-  - Rule to detect missing `@RequireTenant()` on sensitive routes
-  - Auto-fix suggestions
+- [x] **ESLint Plugin** ✅
+  - `require-tenant-guard`: Warns when TenantContextService used without guard
+  - `require-tenant-decorator`: Detects missing @RequireTenant() on routes using @CurrentTenant/@TenantId
+  - Auto-fix suggestions for both rules
+  - Exported as `@lexmata/nestjs-multi-tenant/eslint-plugin`
+  - Includes `recommended` and `strict` configs
 
 - [ ] **NestJS CLI Plugin/Schematic**
   ```bash
