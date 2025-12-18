@@ -13,7 +13,7 @@ import globals from 'globals';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'docs/**', 'schematics/**', '*.js', '*.cjs', '*.mjs'],
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'docs/**', 'schematics/**', 'examples/**', '*.js', '*.cjs', '*.mjs'],
   },
 
   // Base ESLint recommended rules

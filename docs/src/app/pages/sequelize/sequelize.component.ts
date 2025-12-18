@@ -280,12 +280,12 @@ export class TenantSchemaManager {
   // Create schema for new tenant
   async createTenantSchema(tenantId: string) {
     const schemaName = \`tenant_\${tenantId}\`;
-    
+
     await this.sequelize.query(\`CREATE SCHEMA IF NOT EXISTS "\${schemaName}"\`);
-    
+
     // Run migrations in tenant schema
     await this.runMigrationsForSchema(schemaName);
-    
+
     return schemaName;
   }
 
@@ -316,11 +316,11 @@ export function createSchemaMiddleware(schemaManager: TenantSchemaManager) {
   return async (req: any, res: any, next: any) => {
     try {
       await schemaManager.switchToTenantSchema();
-      
+
       res.on('finish', async () => {
         await schemaManager.resetSchema();
       });
-      
+
       next();
     } catch (error) {
       next(error);

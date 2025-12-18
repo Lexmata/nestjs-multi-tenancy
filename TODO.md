@@ -448,11 +448,11 @@ A comprehensive list of suggested improvements and enhancements for `@lexmata/ne
 
 ### Community & Ecosystem
 
-- [ ] **Create Example Projects Repository**
-  - `examples/basic-header-strategy/`
-  - `examples/prisma-multi-db/`
-  - `examples/microservices/`
-  - `examples/graphql-federation/`
+- [x] **Create Example Projects Repository** ✅
+  - `examples/basic-header-strategy/` - Simple header-based multi-tenancy
+  - `examples/prisma-multi-db/` - Database-per-tenant with Prisma
+  - `examples/microservices/` - TCP microservice with tenant propagation
+  - `examples/graphql-federation/` - Apollo Federation with tenant context
 
 - [ ] **Add to NestJS Ecosystem**
   - Submit to awesome-nestjs list

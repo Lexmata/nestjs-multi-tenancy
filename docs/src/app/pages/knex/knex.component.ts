@@ -312,7 +312,7 @@ export class UsersService {
   // Raw query when needed
   async searchUsers(query: string): Promise<User[]> {
     const tenantId = this.db.getTenantId();
-    
+
     return this.db
       .raw<User>('users')
       .where('tenant_id', tenantId)
@@ -339,10 +339,10 @@ export class TenantMigrationService {
    */
   async createTenantSchema(tenantId: string): Promise<void> {
     const schemaName = \`tenant_\${tenantId.replace(/-/g, '_')}\`;
-    
+
     // Create schema
     await this.knex.raw(\`CREATE SCHEMA IF NOT EXISTS "\${schemaName}"\`);
-    
+
     // Run tenant-specific migrations
     await this.runTenantMigrations(schemaName);
   }
@@ -353,10 +353,10 @@ export class TenantMigrationService {
   private async runTenantMigrations(schemaName: string): Promise<void> {
     // Set search path to tenant schema
     await this.knex.raw(\`SET search_path TO "\${schemaName}"\`);
-    
+
     // Create tenant-specific tables
     await this.createTenantTables();
-    
+
     // Reset search path
     await this.knex.raw('SET search_path TO public');
   }
@@ -399,11 +399,11 @@ export class TenantMigrationService {
    */
   async listTenantSchemas(): Promise<string[]> {
     const result = await this.knex.raw(\`
-      SELECT schema_name 
-      FROM information_schema.schemata 
+      SELECT schema_name
+      FROM information_schema.schemata
       WHERE schema_name LIKE 'tenant_%'
     \`);
-    
+
     return result.rows.map((row: any) => row.schema_name);
   }
 }`;

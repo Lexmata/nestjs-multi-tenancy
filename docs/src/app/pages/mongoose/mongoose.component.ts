@@ -94,22 +94,22 @@ export class TenantModelFactory {
     schema: Schema,
   ): Model<T> {
     const tenantId = this.tenantContext.getTenantId();
-    
+
     if (!tenantId) {
       throw new Error(\`Cannot access \${name} model without tenant context\`);
     }
 
     // Get or create discriminator for tenant filtering
     const baseModel = this.connection.model<T>(name, schema);
-    
+
     // Add tenant filter to all queries
     const tenantFilter = { tenantId };
-    
+
     // Create a proxy that adds tenant filtering
     return new Proxy(baseModel, {
       get(target, prop) {
         const value = target[prop as keyof typeof target];
-        
+
         if (typeof value === 'function') {
           // Wrap query methods
           if (['find', 'findOne', 'findById', 'count', 'countDocuments', 'exists'].includes(prop as string)) {
@@ -118,7 +118,7 @@ export class TenantModelFactory {
               return query.where(tenantFilter);
             };
           }
-          
+
           // Auto-set tenantId on create
           if (['create', 'insertMany'].includes(prop as string)) {
             return function(...args: any[]) {
@@ -129,7 +129,7 @@ export class TenantModelFactory {
               return value.call(target, docsWithTenant, ...rest);
             };
           }
-          
+
           // Filter updates/deletes
           if (['updateOne', 'updateMany', 'deleteOne', 'deleteMany', 'findOneAndUpdate', 'findOneAndDelete'].includes(prop as string)) {
             return function(...args: any[]) {
@@ -138,7 +138,7 @@ export class TenantModelFactory {
             };
           }
         }
-        
+
         return value;
       },
     }) as Model<T>;
@@ -173,7 +173,7 @@ export function tenantPlugin(schema: Schema) {
   // Pre-find middleware
   schema.pre(/^find/, function(this: Query<any, any>, next) {
     if (!tenantContextRef) return next();
-    
+
     const tenantId = tenantContextRef.getTenantId();
     if (tenantId) {
       this.where({ tenantId });
@@ -184,7 +184,7 @@ export function tenantPlugin(schema: Schema) {
   // Pre-count middleware
   schema.pre('countDocuments', function(this: Query<any, any>, next) {
     if (!tenantContextRef) return next();
-    
+
     const tenantId = tenantContextRef.getTenantId();
     if (tenantId) {
       this.where({ tenantId });
@@ -195,7 +195,7 @@ export function tenantPlugin(schema: Schema) {
   // Pre-save middleware
   schema.pre('save', function(this: Document & { tenantId?: string }, next) {
     if (!tenantContextRef) return next();
-    
+
     if (this.isNew && !this.tenantId) {
       const tenantId = tenantContextRef.getTenantId();
       if (tenantId) {
@@ -208,11 +208,11 @@ export function tenantPlugin(schema: Schema) {
   // Pre-update middleware
   schema.pre(['updateOne', 'updateMany', 'findOneAndUpdate'], function(this: Query<any, any>, next) {
     if (!tenantContextRef) return next();
-    
+
     const tenantId = tenantContextRef.getTenantId();
     if (tenantId) {
       this.where({ tenantId });
-      
+
       // Prevent changing tenantId
       const update = this.getUpdate() as any;
       if (update?.$set?.tenantId || update?.tenantId) {
@@ -226,7 +226,7 @@ export function tenantPlugin(schema: Schema) {
   // Pre-delete middleware
   schema.pre(['deleteOne', 'deleteMany', 'findOneAndDelete'], function(this: Query<any, any>, next) {
     if (!tenantContextRef) return next();
-    
+
     const tenantId = tenantContextRef.getTenantId();
     if (tenantId) {
       this.where({ tenantId });
