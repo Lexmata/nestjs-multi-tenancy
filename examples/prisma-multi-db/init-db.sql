@@ -28,7 +28,7 @@ INSERT INTO users (email, name, role) VALUES
     ('admin@acme.com', 'Acme Admin', 'admin'),
     ('user@acme.com', 'Acme User', 'user');
 
-INSERT INTO projects (name, description, user_id) 
+INSERT INTO projects (name, description, user_id)
 SELECT 'Acme Website', 'Corporate website', id FROM users WHERE email = 'admin@acme.com';
 
 -- Initialize globex database
@@ -59,4 +59,5 @@ INSERT INTO users (email, name, role) VALUES
 
 INSERT INTO projects (name, description, user_id)
 SELECT 'Globex Platform', 'Main SaaS platform', id FROM users WHERE email = 'admin@globex.com';
+
 

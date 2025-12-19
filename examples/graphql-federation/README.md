@@ -80,7 +80,7 @@ export class TenantContextPlugin implements ApolloServerPlugin {
   async requestDidStart({ request, contextValue }) {
     const tenantId = request.http?.headers.get('x-tenant-id');
     contextValue.tenantId = tenantId;
-    
+
     return {
       async willSendSubgraphRequest({ requestContext, subgraphName }) {
         // Forward tenant header to subgraphs
@@ -122,4 +122,5 @@ graphql-federation/
             ├── users.resolver.ts
             └── users.service.ts
 ```
+
 

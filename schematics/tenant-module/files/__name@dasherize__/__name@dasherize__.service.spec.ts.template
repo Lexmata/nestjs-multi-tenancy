@@ -93,3 +93,4 @@ describe('<%= classify(name) %>Service', () => {
   });
 });
 
+

@@ -9,3 +9,4 @@ import { Module } from '@nestjs/common';
 })
 export class <%= classify(name) %>Module {}
 
+

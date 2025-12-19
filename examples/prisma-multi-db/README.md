@@ -88,7 +88,7 @@ export class TenantPrismaService {
 
   getClient(): PrismaClient {
     const tenant = this.tenantContext.getTenant<TenantWithDb>();
-    
+
     if (!this.clients.has(tenant.id)) {
       const client = new PrismaClient({
         datasources: {
@@ -97,7 +97,7 @@ export class TenantPrismaService {
       });
       this.clients.set(tenant.id, client);
     }
-    
+
     return this.clients.get(tenant.id);
   }
 }
@@ -136,4 +136,5 @@ GLOBEX_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/globex
 - Many small tenants (connection overhead)
 - Shared queries across tenants
 - Simple multi-tenancy needs
+
 
