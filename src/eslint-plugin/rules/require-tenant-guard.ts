@@ -80,8 +80,8 @@ export const requireTenantGuard: Rule.RuleModule = {
   },
 
   create(context) {
-    const options = (context.options[0] as RuleOptions) || {};
-    const allowedMethods = new Set(options.allowedWithoutGuard ?? []);
+    const options = (context.options[0] ?? {}) as RuleOptions;
+    const allowedMethods = new Set(options.allowedWithoutGuard ?? ([] as string[]));
 
     // State tracking
     let tenantServiceImported = false;

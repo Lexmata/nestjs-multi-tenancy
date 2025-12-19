@@ -291,7 +291,8 @@ export class TenantMiddleware implements NestMiddleware {
       return req.path;
     }
     // Fastify: extract path from URL (remove query string)
-    const url = req.url ?? req.raw?.url ?? '/';
+    // req.url is always defined per PlatformRequest interface
+    const url = req.url;
     const queryIndex = url.indexOf('?');
     return queryIndex === -1 ? url : url.slice(0, queryIndex);
   }

@@ -129,6 +129,8 @@ describe('Multi-Tenant E2E Tests', () => {
   let app: INestApplication;
 
   afterEach(async () => {
+    // app may not be initialized if test setup fails
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (app) {
       await app.close();
     }

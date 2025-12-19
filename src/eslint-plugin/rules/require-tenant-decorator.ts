@@ -134,8 +134,8 @@ export const requireTenantDecorator: Rule.RuleModule = {
   },
 
   create(context) {
-    const options = (context.options[0] as RuleOptions) ?? {};
-    const exemptMethods = new Set(options.exemptMethods ?? []);
+    const options = (context.options[0] ?? {}) as RuleOptions;
+    const exemptMethods = new Set(options.exemptMethods ?? ([] as string[]));
     const checkControllerDecorators = options.checkControllerDecorators !== false;
 
     let isController = false;
