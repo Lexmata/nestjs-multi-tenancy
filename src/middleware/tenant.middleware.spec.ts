@@ -1924,4 +1924,392 @@ describe('TenantMiddleware', () => {
       expect(loggerDebugSpy).toHaveBeenCalledWith('  Cache max: 500');
     });
   });
+
+  describe('Fastify compatibility', () => {
+    it('should extract path from URL when path property is missing (Fastify-style)', async () => {
+      createMiddleware({ extractionStrategy: 'path', tenantPathIndex: 0 });
+
+      // Simulate Fastify-style request without path property but with url
+      const fastifyRequest = {
+        headers: {},
+        hostname: 'example.com',
+        url: '/fastify-tenant/api/data?query=value',
+        query: {},
+        // Note: no 'path' property
+      };
+
+      await middleware.use(
+        fastifyRequest as unknown as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle URL without query string in Fastify mode', async () => {
+      createMiddleware({ extractionStrategy: 'path', tenantPathIndex: 0 });
+
+      const fastifyRequest = {
+        headers: {},
+        hostname: 'example.com',
+        url: '/fastify-tenant-no-query/api/data',
+        query: {},
+      };
+
+      await middleware.use(
+        fastifyRequest as unknown as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should get hostname from Host header when hostname property is missing', async () => {
+      createMiddleware({ extractionStrategy: 'subdomain' });
+
+      // Simulate request without hostname property
+      const requestWithoutHostname = {
+        headers: {
+          host: 'tenant1.example.com:3000',
+        },
+        path: '/api/test',
+        query: {},
+        url: '/api/test',
+      };
+
+      await middleware.use(
+        requestWithoutHostname as unknown as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('JWT edge cases', () => {
+    it('should handle empty token after Bearer prefix', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'tenantId',
+      });
+
+      mockRequest.headers = { authorization: 'Bearer ' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle Bearer with only whitespace', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'tenantId',
+      });
+
+      mockRequest.headers = { authorization: 'Bearer    ' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle malformed JWT with wrong number of parts', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'tenantId',
+      });
+
+      mockRequest.headers = { authorization: 'Bearer header.payload' }; // Missing signature
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle JWT with invalid base64 payload', async () => {
+      createMiddleware({
+        extractionStrategy: 'jwt',
+        jwtTenantClaim: 'tenantId',
+      });
+
+      mockRequest.headers = { authorization: 'Bearer header.!!!invalid!!!.signature' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('Validation edge cases', () => {
+    it('should return valid true when no validator is configured', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id, name: 'Test' }),
+        // No tenantValidator configured
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle async validator that returns boolean', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id, name: 'Test' }),
+        tenantValidator: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1));
+          return true;
+        },
+        requireTenant: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle async validator that returns object', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id, name: 'Test' }),
+        tenantValidator: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1));
+          return { valid: true };
+        },
+        requireTenant: true,
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant-123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('Route exclusion edge cases', () => {
+    it('should handle empty excludeRoutes array', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        excludeRoutes: [],
+        requireTenant: true,
+      });
+      mockRequest.path = '/api/test';
+
+      await expect(
+        middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+      ).rejects.toThrow();
+    });
+
+    it('should handle regex exclusion with special characters', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        excludeRoutes: [/^\/api\/v\d+\/health$/],
+        requireTenant: true,
+      });
+      mockRequest.path = '/api/v1/health';
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should not match partial path to exclusion string', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        excludeRoutes: ['/health'],
+        requireTenant: true,
+      });
+      mockRequest.path = '/api/healthcheck';
+
+      await expect(
+        middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('Custom extractor edge cases', () => {
+    it('should handle custom extractor returning undefined', async () => {
+      createMiddleware({
+        extractionStrategy: 'custom',
+        customExtractor: () => undefined,
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle custom extractor returning empty string', async () => {
+      createMiddleware({
+        extractionStrategy: 'custom',
+        customExtractor: () => '',
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle async custom extractor', async () => {
+      createMiddleware({
+        extractionStrategy: 'custom',
+        customExtractor: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1));
+          return 'async-tenant';
+        },
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle custom extractor that throws', async () => {
+      createMiddleware({
+        extractionStrategy: 'custom',
+        customExtractor: () => {
+          throw new Error('Custom extractor error');
+        },
+      });
+
+      await expect(
+        middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+      ).rejects.toThrow('Custom extractor error');
+    });
+  });
+
+  describe('Bearer token edge cases', () => {
+    it('should handle bearer resolver that returns undefined', async () => {
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver: async () => undefined,
+      });
+      mockRequest.headers = { authorization: 'Bearer token123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should handle bearer resolver that returns empty string', async () => {
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver: async () => '',
+      });
+      mockRequest.headers = { authorization: 'Bearer token123' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(mockNext).toHaveBeenCalled();
+    });
+
+    it('should not call bearer resolver when no auth header', async () => {
+      const resolver = vi.fn().mockResolvedValue('tenant');
+      createMiddleware({
+        extractionStrategy: 'bearer',
+        bearerTokenResolver: resolver,
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(resolver).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalled();
+    });
+  });
+
+  describe('Cache edge cases', () => {
+    it('should handle cache with custom max size', async () => {
+      const resolver = vi.fn().mockImplementation(async (id) => ({ id }));
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: resolver,
+        tenantResolverCache: {
+          enabled: true,
+          max: 2,
+        },
+      });
+
+      // Fill cache beyond max
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-2' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      mockRequest.headers = { 'x-tenant-id': 'tenant-3' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      // Request tenant-1 again - should be evicted from cache
+      mockRequest.headers = { 'x-tenant-id': 'tenant-1' };
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      // tenant-1 should be called twice (once initially, once after eviction)
+      expect(resolver).toHaveBeenCalledTimes(4);
+    });
+
+    it('should not cache null resolver results', async () => {
+      const resolver = vi.fn().mockResolvedValue(null);
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: resolver,
+        tenantResolverCache: { enabled: true },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'unknown' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      // Null results are NOT cached
+      expect(resolver).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Event hooks edge cases', () => {
+    it('should handle all event hooks being undefined', async () => {
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: (id) => ({ id }),
+        tenantValidator: () => ({ valid: false, reason: 'test' }),
+        requireTenant: true,
+        eventHooks: {},
+      });
+      mockRequest.headers = { 'x-tenant-id': 'tenant' };
+
+      await expect(
+        middleware.use(mockRequest as Request, mockResponse as Response, mockNext),
+      ).rejects.toThrow();
+    });
+
+    it('should call onTenantMissing when no tenant ID and not required', async () => {
+      const onTenantMissing = vi.fn();
+      createMiddleware({
+        extractionStrategy: 'header',
+        eventHooks: { onTenantMissing },
+      });
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(onTenantMissing).toHaveBeenCalled();
+    });
+
+    it('should call onTenantNotFound when resolver returns null', async () => {
+      const onTenantNotFound = vi.fn();
+      createMiddleware({
+        extractionStrategy: 'header',
+        tenantResolver: () => null,
+        eventHooks: { onTenantNotFound },
+      });
+      mockRequest.headers = { 'x-tenant-id': 'unknown' };
+
+      await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
+
+      expect(onTenantNotFound).toHaveBeenCalledWith('unknown', expect.any(Object));
+    });
+  });
 });
