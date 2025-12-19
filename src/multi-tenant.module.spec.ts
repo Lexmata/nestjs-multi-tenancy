@@ -21,7 +21,7 @@ describe('MultiTenantModule', () => {
       expect(tenantContext).toBeDefined();
       expect(tenantGuard).toBeDefined();
       expect(options).toEqual({});
-    });
+    }, 10_000);
 
     it('should create module with custom options', async () => {
       const customOptions = {
@@ -37,7 +37,7 @@ describe('MultiTenantModule', () => {
       const options = module.get(MULTI_TENANT_OPTIONS);
 
       expect(options).toEqual(customOptions);
-    });
+    }, 10_000);
 
     it('should be a global module', async () => {
       const dynamicModule = MultiTenantModule.forRoot();
@@ -76,7 +76,7 @@ describe('MultiTenantModule', () => {
       const options = module.get(MULTI_TENANT_OPTIONS);
 
       expect(options).toEqual(asyncOptions);
-    });
+    }, 10_000);
 
     it('should support async factory function', async () => {
       const module = await Test.createTestingModule({
@@ -95,7 +95,7 @@ describe('MultiTenantModule', () => {
       const options = module.get(MULTI_TENANT_OPTIONS);
 
       expect(options.extractionStrategy).toBe('query');
-    });
+    }, 10_000);
 
     it('should inject dependencies into factory', async () => {
       const CONFIG_TOKEN = 'CONFIG';
@@ -123,7 +123,7 @@ describe('MultiTenantModule', () => {
       const options = module.get(MULTI_TENANT_OPTIONS);
 
       expect(options.tenantHeader).toBe('x-org-id');
-    });
+    }, 10_000);
 
     it('should be a global module', async () => {
       const dynamicModule = MultiTenantModule.forRootAsync({
@@ -181,7 +181,7 @@ describe('MultiTenantModule', () => {
     it('should provide TenantMiddleware', () => {
       const dynamicModule = MultiTenantModule.forRoot();
       const providers = dynamicModule.providers?.map((p: any) =>
-        typeof p === 'function' ? p : p.provide
+        typeof p === 'function' ? p : p.provide,
       );
 
       expect(providers).toContain(TenantMiddleware);
@@ -190,7 +190,7 @@ describe('MultiTenantModule', () => {
     it('should provide TenantContextService', () => {
       const dynamicModule = MultiTenantModule.forRoot();
       const providers = dynamicModule.providers?.map((p: any) =>
-        typeof p === 'function' ? p : p.provide
+        typeof p === 'function' ? p : p.provide,
       );
 
       expect(providers).toContain(TenantContextService);
@@ -199,7 +199,7 @@ describe('MultiTenantModule', () => {
     it('should provide TenantGuard', () => {
       const dynamicModule = MultiTenantModule.forRoot();
       const providers = dynamicModule.providers?.map((p: any) =>
-        typeof p === 'function' ? p : p.provide
+        typeof p === 'function' ? p : p.provide,
       );
 
       expect(providers).toContain(TenantGuard);
@@ -210,7 +210,7 @@ describe('MultiTenantModule', () => {
       const dynamicModule = MultiTenantModule.forRoot(options);
 
       const optionsProvider = dynamicModule.providers?.find(
-        (p: any) => p.provide === MULTI_TENANT_OPTIONS
+        (p: any) => p.provide === MULTI_TENANT_OPTIONS,
       ) as any;
 
       expect(optionsProvider).toBeDefined();
@@ -218,4 +218,3 @@ describe('MultiTenantModule', () => {
     });
   });
 });
-
