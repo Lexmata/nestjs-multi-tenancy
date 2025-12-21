@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ['18', '20', '22']
+        node-version: ['20', '22']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -115,4 +115,4 @@ jobs:
         run: pnpm build
 
       - name: Check package contents
-        run: pnpm pack --dry-run
+        run: npm pack --dry-run

@@ -17,10 +17,7 @@ describe('RequireTenant Decorator', () => {
       testMethod() {}
     }
 
-    const metadata = Reflect.getMetadata(
-      REQUIRE_TENANT_KEY,
-      TestController.prototype.testMethod,
-    );
+    const metadata = Reflect.getMetadata(REQUIRE_TENANT_KEY, TestController.prototype.testMethod);
     expect(metadata).toBe(true);
   });
 
@@ -64,4 +61,3 @@ describe('RequireTenant Decorator', () => {
     expect(publicMetadata).toBeUndefined();
   });
 });
-

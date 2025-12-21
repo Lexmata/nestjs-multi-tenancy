@@ -27,4 +27,3 @@ import { REQUIRE_TENANT_KEY } from '../guards/tenant.guard';
  * ```
  */
 export const RequireTenant = () => SetMetadata(REQUIRE_TENANT_KEY, true);
-
