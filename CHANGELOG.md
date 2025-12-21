@@ -7,7 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-12-21
+
 ### Added
+
+- **ESLint Plugin**: Custom ESLint rules for tenant-aware development
+  - `require-tenant-guard`: Enforces `TenantGuard` usage when accessing tenant context
+  - `require-tenant-decorator`: Enforces `@RequireTenant()` on methods using tenant decorators
+  - Auto-fix suggestions for both rules
+
+- **NestJS CLI Schematics**: Code generation for tenant-aware modules and services
+  - `tenant-module`: Generate complete tenant-aware module with controller, service, and tests
+  - `tenant-service`: Generate standalone tenant-aware service with tests
+  - Configurable options for flat structure, CRUD operations, and test generation
+
+- **Docker Development Environment**: Complete local development setup
+  - PostgreSQL, MySQL, and Redis containers
+  - Adminer for database management
+  - Documentation site container
+  - Sample database initialization scripts
+
+- **ORM Integration Examples**: Documentation for popular ORMs
+  - Sequelize multi-tenancy patterns (row-level, schema-per-tenant)
+  - Mongoose multi-tenancy with tenant-aware models
+  - Knex.js query builder with tenant filtering
+
+- **Example Projects**: Complete working examples
+  - Basic header strategy example
+  - Prisma database-per-tenant example
+  - Microservices with TCP tenant propagation
+  - GraphQL Federation with tenant-aware subgraphs
+
+- **Renovate Configuration**: Automated dependency updates
+
+- **GitHub Discussions Templates**: Community engagement templates
+  - Q&A template for questions
+  - Ideas template for feature requests
+  - Show and Tell template for showcasing projects
 
 - **Cookie-based Tenant Extraction**: New `cookie` extraction strategy
   - Configure with `extractionStrategy: 'cookie'` and `tenantCookie: 'cookie_name'`
@@ -81,9 +117,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Abstracted request path and hostname access
   - No additional configuration required for Fastify
 
+- **Testing Utilities**: New `@lexmata/nestjs-multi-tenant/testing` export
+  - `createMockTenantContext()`: Create mock tenant context for unit tests
+  - `MockTenantContextService`: Mock service for testing
+  - `withTenantContext()`: Test helper to run code within tenant context
+
+- **API Reference**: Interactive TypeDoc-powered API documentation
+
 ### Changed
 
-- Test suite expanded from 89 to 217 tests
+- Test suite expanded from 89 to 374 tests
+- Improved CI/CD pipeline with better caching and parallel jobs
+- Enhanced documentation with ORM integration guides
+
+### Fixed
+
+- Fixed middleware caching for null tenant results
+- Fixed subdomain extraction edge cases
+- Improved error messages for missing tenant context
 
 ## [0.1.0-beta] - 2025-12-17
 
@@ -125,6 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript with strict mode enabled
 - Zero external runtime dependencies (peer deps only)
 
-[Unreleased]: https://github.com/Lexmata/nestjs-multi-tenancy/compare/v0.1.0-beta...HEAD
+[Unreleased]: https://github.com/Lexmata/nestjs-multi-tenancy/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Lexmata/nestjs-multi-tenancy/compare/v0.1.0-beta...v0.1.1
 [0.1.0-beta]: https://github.com/Lexmata/nestjs-multi-tenancy/releases/tag/v0.1.0-beta
 
