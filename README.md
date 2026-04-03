@@ -1214,6 +1214,54 @@ MultiTenantModule.forRootAsync({
 })
 ```
 
+## Publishing
+
+Releases are automated via GitHub Actions. Pushing a tag matching `v*` triggers the
+[release workflow](.github/workflows/release.yml), which runs tests, builds, publishes
+to npm, and creates a GitHub Release.
+
+### Standard release flow
+
+```bash
+# 1. Create a release branch from develop
+git checkout -b release/X.Y.Z develop
+
+# 2. Bump version (runs lint + test automatically via preversion hook)
+pnpm version X.Y.Z
+
+# 3. postversion hook pushes the commit and tag, triggering the release workflow
+
+# 4. Merge the release branch to main and develop
+git checkout main && git merge release/X.Y.Z
+git checkout develop && git merge release/X.Y.Z
+```
+
+### Manual publish (emergency)
+
+```bash
+pnpm run prepublishOnly   # lint + test + build
+pnpm publish --access public
+```
+
+Requires an npm token with publish permissions for the `@lexmata` scope set as
+`NPM_TOKEN` in the repository secrets.
+
+## Related Repositories
+
+| Repository | Relationship |
+|------------|-------------|
+| [lexmata-app-backend](https://github.com/Lexmata/lexmata-app-backend) | Primary consumer. Uses header extraction with Cognito JWT tenant claims, `TenantContextService` for Prisma query scoping, and `TenantGuard` on authenticated GraphQL resolvers. |
+| [lexmata-admin-backend](https://github.com/Lexmata/lexmata-admin-backend) | Admin API consumer. Uses header extraction with tenant resolution for cross-tenant admin operations. |
+
+## Maintainer Documentation
+
+Internal architecture, troubleshooting, and contributing guides are in
+[`docs/maintainer/`](docs/maintainer/):
+
+- [Architecture](docs/maintainer/architecture.md) — internal module structure, extraction pipeline, AsyncLocalStorage design
+- [Troubleshooting](docs/maintainer/troubleshooting.md) — common issues and debugging techniques
+- [Contributing](docs/maintainer/contributing.md) — branching model, testing requirements, publishing workflow
+
 ## License
 
 MIT © [Lexmata LLC](https://github.com/Lexmata)
