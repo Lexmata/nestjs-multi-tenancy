@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@apollo/gateway": "^2.9.0",
-    "@apollo/server": "^4.11.0",
+    "@apollo/server": "^5.5.1",
     "@as-integrations/nestjs": "^2.0.0",
     "@lexmata/nestjs-multi-tenant": "workspace:*",
     "@nestjs/apollo": "^12.2.0",
